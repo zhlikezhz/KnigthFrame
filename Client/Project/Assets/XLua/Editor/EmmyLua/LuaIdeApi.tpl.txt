@@ -1,3 +1,0 @@
-﻿﻿<%ForEachCsList(infos, function(info)%>
-	
-<%end)%>
