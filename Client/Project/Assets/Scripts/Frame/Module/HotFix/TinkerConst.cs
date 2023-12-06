@@ -13,5 +13,9 @@ namespace Huge.HotFix
         public static readonly string PatchDLLFileName = "";
         public static readonly string PatchVersionFileName = "";
         public static readonly string PatchPackageFileName = "";
+
+        public static readonly string ResDir = "res";
+        public static readonly string DownloadDir = "downloads";
+        public static readonly string ConfigFile = "config.txt";
     }
 }

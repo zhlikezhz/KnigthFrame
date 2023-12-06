@@ -7,13 +7,34 @@ using Huge;
 
 namespace Huge.HotFix
 {
+    public enum TinkerState
+    {
+        StartTinker             = 0, //开始更新
+        PrepareFirstGame        = 1, //首次进入游戏处理
+        CheckRemoteFile         = 2, //检查CDN
+        DownloadPatch           = 3, //下载Patch
+        UnzipPatch              = 4, //解压Patch
+        InstallPatch            = 5, //安装Patch
+        EndTinker               = 6, //结束更新
+    }
+
     public class TinkerManager : FSMContent
     {
+        static readonly string BI_TINKER_LOG = "BITinker";
+        static readonly Huge.SDK.BIData biData = new Huge.SDK.BIData();
+
         float m_fProgress = 0.0f;
         public float Progress
         {
             get { return m_fProgress; }
             set { m_fProgress = value; }
+        }
+
+        string m_strMessage;
+        public string Message
+        {
+            get { return m_strMessage; }
+            set { m_strMessage = value; }
         }
 
         bool m_bIsCompleted = false;
@@ -30,6 +51,20 @@ namespace Huge.HotFix
             { 
                 return m_bIsCompleted; 
             });
+        }
+
+        static public void LogGameBI(bool isError, TinkerState state, string errMsg = "")
+        {
+            biData.Clear();
+            biData.AddData("status", isError);
+            biData.AddData("startup", state);
+            biData.AddData("time", System.DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
+            if (isError)
+            {
+                Huge.Debug.LogError(errMsg);
+                biData.AddData("error", errMsg);
+            }
+            Huge.SDK.BIManager.Instance.LogGameBI(BI_TINKER_LOG, biData);
         }
     }
 }

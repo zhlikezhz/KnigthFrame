@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Networking;
 using ICSharpCode.SharpZipLib.Zip;
+using Cysharp.Threading.Tasks;
 
 namespace Huge.Utils
 {
@@ -151,6 +152,150 @@ namespace Huge.Utils
                 FastZip fastZip = new FastZip();
                 fastZip.ExtractZip(zipFile, toDir, "");
             }
+        }
+
+        public static async UniTask<byte[]> LoadFile(string filePath)
+        {
+            byte[] data = null;
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    data = await File.ReadAllBytesAsync(filePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Huge.Debug.LogError($"load file error: fileName = {filePath}, error = {ex.Message}.");
+            }
+            return data;
+        }
+
+        public static async UniTask<string> LoadFileByText(string filePath)
+        {
+            string data = null;
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    data = await File.ReadAllTextAsync(filePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Huge.Debug.LogError($"load file error: fileName = {filePath}, error = {ex.Message}.");
+            }
+            return data;
+        }
+
+        public static bool IsPresistentFileExists(string fileName)
+        {
+            string fullPath = PathUtility.GetPresistentDataFullPath(fileName);
+            return File.Exists(fullPath);
+        }
+
+        public static async UniTask<byte[]> LoadPresistentFile(string fileName)
+        {
+            byte[] data = null;
+            string fullPath = PathUtility.GetPresistentDataFullPath(fileName);
+            try
+            {
+                if (File.Exists(fullPath))
+                {
+                    data = await File.ReadAllBytesAsync(fullPath);
+                }
+            }
+            catch(Exception ex)
+            {
+                Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
+            }
+            return data;
+        }
+
+        public static async UniTask<string> LoadPresistentFileByText(string fileName)
+        {
+            string data = null;
+            string fullPath = PathUtility.GetPresistentDataFullPath(fileName);
+            try
+            {
+                if (File.Exists(fullPath))
+                {
+                    data = await File.ReadAllTextAsync(fullPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
+            }
+            return data;
+        }
+
+        public static async UniTask<byte[]> LoadStreamingFile(string fileName)
+        {
+            byte[] data = null;
+            UnityWebRequest request = null;
+            string fullPath = PathUtility.GetStreamingDataFullPath3W(fileName);
+            try
+            {
+                request = UnityWebRequest.Get(fileName);
+                await request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    data = request.downloadHandler.data;
+                    request.Dispose();
+                }
+                else
+                {
+                    Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {request.error}.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
+            }
+            finally
+            {
+                if (request != null)
+                {
+                    request.Dispose();
+                }
+            }
+            return data;
+        }
+
+        public static async UniTask<string> LoadStreamingFileText(string fileName)
+        {
+            string data = null;
+            UnityWebRequest request = null;
+            string fullPath = PathUtility.GetStreamingDataFullPath3W(fileName);
+            try
+            {
+                request = UnityWebRequest.Get(fileName);
+                await request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    data = request.downloadHandler.text;
+                    request.Dispose();
+                }
+                else
+                {
+                    Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {request.error}.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
+            }
+            finally
+            {
+                if (request != null)
+                {
+                    request.Dispose();
+                }
+            }
+            return data;
         }
     }
 }
