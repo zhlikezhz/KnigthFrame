@@ -66,5 +66,10 @@ namespace Huge.HotFix
             }
             Huge.SDK.BIManager.Instance.LogGameBI(BI_TINKER_LOG, biData);
         }
+
+        static public void ShowMessagePopup(string title, string content, string confirmTxt, string cancelTxt, System.Action confirm, System.Action cancel = null, System.Action close = null)
+        {
+
+        }
     }
 }

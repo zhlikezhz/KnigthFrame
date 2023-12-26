@@ -264,7 +264,7 @@ namespace Huge.Utils
             return data;
         }
 
-        public static async UniTask<string> LoadStreamingFileText(string fileName)
+        public static async UniTask<string> LoadStreamingFileByText(string fileName)
         {
             string data = null;
             UnityWebRequest request = null;
@@ -296,6 +296,13 @@ namespace Huge.Utils
                 }
             }
             return data;
+        }
+
+        public static async UniTask CopyStreamingFileToPresistentDir(string srcFileName, string destFileName)
+        {
+            byte[] bytes = await LoadStreamingFile(srcFileName);
+            string destFullPath = PathUtility.GetPresistentDataFullPath(destFileName);
+            await File.WriteAllBytesAsync(destFullPath, bytes);
         }
     }
 }

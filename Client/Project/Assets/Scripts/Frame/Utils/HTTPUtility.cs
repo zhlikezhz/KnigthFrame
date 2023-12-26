@@ -18,10 +18,12 @@ namespace Huge.Utils
         public bool isError = false;
         public bool isTimeout = false;
         public byte[] buffer = null;
+        public string text = "";
 
         public HTTPHandler()
         {
             msg = "";
+            text = "";
             buffer = null;
             isDone = false;
             isError = false;
@@ -88,6 +90,7 @@ namespace Huge.Utils
             handler.isError = false;
             handler.isTimeout = false;
             handler.buffer = resp.Data;
+            handler.text = resp.DataAsText;
             return handler;
         }
 

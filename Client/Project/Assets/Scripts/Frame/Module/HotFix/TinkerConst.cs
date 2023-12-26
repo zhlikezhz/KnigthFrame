@@ -16,6 +16,6 @@ namespace Huge.HotFix
 
         public static readonly string ResDir = "res";
         public static readonly string DownloadDir = "downloads";
-        public static readonly string ConfigFile = "config.txt";
+        public static readonly string VersionFile = "version.txt";
     }
 }

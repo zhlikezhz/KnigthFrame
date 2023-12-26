@@ -7,6 +7,8 @@ namespace Huge.Utils
 {
     public static class PathUtility
     {
+        public static string ProjectRootDir = Application.dataPath.Replace("\\", "/").Replace("/Assets", "");
+
         public static string streamingDataPath
         {
             get

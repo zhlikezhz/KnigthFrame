@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
@@ -20,27 +21,33 @@ namespace Huge.HotFix
             ResetGame(content).Forget();
         }
 
-        async UniTask ResetGame(FSMContent content)
-        { 
-            FirstGameState state = await CheckFirstGameState();
-            if (state == FirstGameState.EnterGame)
-            {
-                EnterGame(content);
-            }
-            else if (state == FirstGameState.FirstEnterGame)
-            {
-                FirstEnterGame(content);
-            }
-            else
-            {
-                string message = "进入游戏无正确状态";
-                TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, message);
-            }
-        }
-
         public override void OnLeave(FSMContent content)
         {
             base.OnLeave(content);
+        }
+
+        async UniTask ResetGame(FSMContent content)
+        {
+            try
+            {
+                FirstGameState state = await CheckFirstGameState();
+                if (state == FirstGameState.EnterGame)
+                {
+                    EnterGame(content);
+                }
+                else if (state == FirstGameState.FirstEnterGame)
+                {
+                    await FirstEnterGame(content);
+                }
+                else
+                {
+                    TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, "无法进入游戏");
+                }
+            }
+            catch (Exception ex)
+            {
+                TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, ex.Message);
+            }
         }
 
         /// <summary>
@@ -50,10 +57,10 @@ namespace Huge.HotFix
         async UniTask<FirstGameState> CheckFirstGameState()
         {
             FirstGameState state = FirstGameState.None;
-            if (Huge.Utils.FileUtility.IsPresistentFileExists(TinkerConst.ConfigFile))
+            if (Huge.Utils.FileUtility.IsPresistentFileExists(TinkerConst.VersionFile))
             {
-                string localJson = await Huge.Utils.FileUtility.LoadStreamingFileText(TinkerConst.ConfigFile);
-                string remoteJson = await Huge.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.ConfigFile);
+                string localJson = await Huge.Utils.FileUtility.LoadStreamingFileByText(TinkerConst.VersionFile);
+                string remoteJson = await Huge.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.VersionFile);
                 if (localJson != null)
                 {
                     TinkerConfig localConfig = JsonUtility.FromJson<TinkerConfig>(localJson);
@@ -87,7 +94,7 @@ namespace Huge.HotFix
                 }
                 else
                 {
-                    string message = $"load local config file error: fileName = {TinkerConst.ConfigFile}";
+                    string message = $"load local config file error: fileName = {TinkerConst.VersionFile}";
                     TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, message);
                 }
             }
@@ -129,13 +136,13 @@ namespace Huge.HotFix
             content.ChangeState<CheckRemoteState>();
         }
 
-        void FirstEnterGame(FSMContent content)
+        async UniTask FirstEnterGame(FSMContent content)
         {
             //首次进入游戏清理缓存
             ClearPresistentCache();
 
             //首次进入游戏解包
-            CopyStreamingAssetsToPresistentCache();
+            await CopyStreamingAssetsToPresistentCache();
         }
 
         void ClearPresistentCache()
@@ -144,14 +151,16 @@ namespace Huge.HotFix
             Huge.Utils.FileUtility.DeleteExistDirectory(resDir);
             string downloadDir = Huge.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.DownloadDir);
             Huge.Utils.FileUtility.DeleteExistDirectory(downloadDir);
+            string versionFullPath = Huge.Utils.PathUtility.GetStreamingDataFullPath(TinkerConst.VersionFile);
+            Huge.Utils.FileUtility.DeleteExistDirectory(versionFullPath);
 
             Huge.Utils.FileUtility.CreateDirectoryIfNotExist(resDir);
             Huge.Utils.FileUtility.CreateDirectoryIfNotExist(downloadDir);
         }
 
-        void CopyStreamingAssetsToPresistentCache()
+        async UniTask CopyStreamingAssetsToPresistentCache()
         {
-
+            await Huge.Utils.FileUtility.CopyStreamingFileToPresistentDir(TinkerConst.VersionFile, TinkerConst.VersionFile);
         }
     }
 }
