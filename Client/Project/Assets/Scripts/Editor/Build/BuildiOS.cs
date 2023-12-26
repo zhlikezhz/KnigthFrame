@@ -1,18 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using System.IO;
 using UnityEngine;
+using UnityEditor;
 
-public class BuildiOS : MonoBehaviour
+namespace Huge.Editor.Build
 {
-    // Start is called before the first frame update
-    void Start()
+    public class BuildiOS : Builder
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        protected override string GetBuildLocation()
+        {
+            return $"{BuildPackage.ProjectRootDir}/xcode";
+        }
     }
 }
