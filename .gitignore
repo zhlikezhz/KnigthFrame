@@ -1,0 +1,8 @@
+Client/Project/obj/
+Client/Project/Library/
+Client/Project/Logs/
+Client/Project/.vs/
+*.sln
+*.csproj
+*.vsconfig
+Client/Tools/Build/__pycache__/
