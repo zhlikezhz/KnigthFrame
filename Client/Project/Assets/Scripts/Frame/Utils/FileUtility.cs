@@ -118,7 +118,6 @@ namespace Huge.Utils
 
         public static string GetFileMD5(string filePath, bool isLowerCase = true)
         {
-            // 使用string方式计算二进制文件的hash可能会有问题，改用bytes
             var hash = MD5.Create();
             byte[] bytes = File.ReadAllBytes(filePath);
             bytes = hash.ComputeHash(bytes);

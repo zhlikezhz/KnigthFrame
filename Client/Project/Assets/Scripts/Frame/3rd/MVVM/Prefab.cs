@@ -21,20 +21,25 @@ namespace Huge.MVVM
             transform.SetParent(parent.transform, worldPositionStays);
         }
 
-        public async static UniTask<Prefab> CreateAsync(System.Type type, GameObject root = null)
+        internal async static UniTask<Prefab> CreateAsync(System.Type type, GameObject root = null)
         {
             Prefab instance = Activator.CreateInstance(type) as Prefab;
-            await instance.InitAsync(root);
+            await instance.OnInitAsync(root);
             return instance;
         }
 
-        public virtual async UniTask InitAsync(GameObject root = null)
+        internal async UniTask DestroyAsync()
+        {
+            await OnDestroyAsync();
+        }
+
+        protected virtual async UniTask OnInitAsync(GameObject root = null)
         {
             await UniTask.DelayFrame(1);
             throw new NotImplementedException("need implement Prefab.InitAsync method");
         }
 
-        public virtual async UniTask DestroyAsync()
+        protected virtual async UniTask OnDestroyAsync()
         {
             await UniTask.DelayFrame(1);
             throw new NotImplementedException("need implement Prefab.DestroyAsync method");

@@ -94,27 +94,7 @@ namespace Huge.MVVM
             SetActive(false);
         }
 
-        protected virtual void Start(params object[] args)
-        {
-
-        }
-
-        protected virtual void OnEnable()
-        {
-
-        }
-
-        protected virtual void OnDisable()
-        {
-
-        }
-
-        protected virtual void OnDestroy()
-        {
-
-        }
-
-        internal protected virtual LayerType GetLayerType()
+        internal virtual LayerType GetLayerType()
         {
             return LayerType.NormalLayer;
         }
@@ -146,7 +126,28 @@ namespace Huge.MVVM
             }
         }
 
-        public async UniTask<Section> AddSection(SectionInfo sectionInfo, GameObject parent, params object[] args)
+        protected virtual void Start(params object[] args)
+        {
+
+        }
+
+        protected virtual void OnEnable()
+        {
+
+        }
+
+        protected virtual void OnDisable()
+        {
+
+        }
+
+        protected virtual void OnDestroy()
+        {
+
+        }
+
+#region Section
+        protected async UniTask<Section> AddSection(SectionInfo sectionInfo, GameObject parent, params object[] args)
         {
             Section section = Activator.CreateInstance(sectionInfo.Section) as Section;
             m_SectionList.Add(section);
@@ -166,7 +167,7 @@ namespace Huge.MVVM
             }
         }
 
-        public async UniTask<Section> AddSection(SectionInfo sectionInfo, GameObject root, GameObject parent, params object[] args)
+        protected async UniTask<Section> AddSection(SectionInfo sectionInfo, GameObject root, GameObject parent, params object[] args)
         {
             Section section = Activator.CreateInstance(sectionInfo.Section) as Section;
             m_SectionList.Add(section);
@@ -186,7 +187,7 @@ namespace Huge.MVVM
             }
         }
 
-        public void RemoveSection(Section section)
+        protected void RemoveSection(Section section)
         {
             if (m_SectionList.Contains(section))
             {
@@ -196,12 +197,12 @@ namespace Huge.MVVM
             }
         }
 
-        public bool HasSection(SectionInfo sectionInfo) 
+        protected bool HasSection(SectionInfo sectionInfo) 
         {
             return (GetSection(sectionInfo) != null);
         }
 
-        public Section GetSection(SectionInfo sectionInfo)
+        protected Section GetSection(SectionInfo sectionInfo)
         {
             foreach(var section in m_SectionList)
             {
@@ -212,5 +213,6 @@ namespace Huge.MVVM
             }
             return null;
         }
+#endregion
     }
 }

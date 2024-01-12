@@ -268,28 +268,20 @@ namespace Huge.Pool
         public static void Release(Dictionary<TKey, TValue> toRelease) => s_Pool.Release(toRelease);
     }
 
-    public abstract class ClassObject
+    public interface ICObject
     {
-        internal virtual void _Reinit_() 
-        { 
-            throw new Exception("Implement _Reinit_");
-        }
-
-        internal virtual void _Release_() 
-        {
-            throw new Exception("Implement _Release_");
-        }
+        void _Reinit_();
+        void _Release_();
     }
 
     /// <summary>
     /// Class pool.
     /// </summary>
     /// <typeparam name="T">Type of the objects in the pull.</typeparam>
-    public abstract class ClassObjectPool<T>: ClassObject
-        where T : new()
+    public abstract class CObjectPool<T> where T : ICObject, new()
     {
         // Object pool to avoid allocations.
-        static ObjectPool<T> s_Pool;
+        static readonly ObjectPool<T> s_Pool = new ObjectPool<T>(null, null, true);
 
         /// <summary>
         /// Get a new object.
@@ -297,8 +289,9 @@ namespace Huge.Pool
         /// <returns>A new object from the pool.</returns>
         static public T Get() 
         {
-            InitObjectPool();
-            return s_Pool.Get(); 
+            T obj = s_Pool.Get(); 
+            obj._Reinit_();
+            return obj;
         }
 
         /// <summary>
@@ -307,19 +300,11 @@ namespace Huge.Pool
         /// <param name="toRelease">Object to release.</param>
         static public void Release(T toRelease) 
         {
-            InitObjectPool();
-            s_Pool.Release(toRelease); 
-        }
-
-        static void InitObjectPool()
-        {
-            if (s_Pool == null)
+            if (toRelease != null)
             {
-                s_Pool = new ObjectPool<T>(
-                    l => { ClassObject obj = l as ClassObject; obj._Reinit_(); }, 
-                    l => { ClassObject obj = l as ClassObject; obj._Release_(); }
-                );
+                toRelease._Release_();
             }
+            s_Pool.Release(toRelease); 
         }
     }
 }

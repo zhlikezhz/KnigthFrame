@@ -75,7 +75,7 @@ namespace Huge.MVVM
 
                 if (nextViewPagePos != -1)
                 {
-                    //Èç¹ûPageÊÇ¶¥²ãPage£¬ÏÔÊ¾ÆäÏÂµÄPage¼°Æä×Ó½çÃæ¡£
+                    //å¦‚æœPageæ˜¯é¡¶å±‚Pageï¼Œæ˜¾ç¤ºå…¶ä¸‹çš„PageåŠå…¶å­ç•Œé¢
                     preViewPagePos = (preViewPagePos == -1) ? 0 : preViewPagePos;
                     for (int i = preViewPagePos; i < curViewPagePos; i++)
                     {
@@ -84,7 +84,7 @@ namespace Huge.MVVM
                     }
                 }
 
-                //Ïú»ÙPage¼°ÆäÔÚÍ¬Ò»²ãµÄ×ÓPopup
+                //é”€æ¯PageåŠå…¶åœ¨åŒä¸€å±‚çš„å­Popup
                 var viewList = ListPool<View>.Get();
                 try
                 {
