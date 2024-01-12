@@ -16,6 +16,10 @@ git clean -dfq
 
 git checkout -q .
 
+git stash pull --include-untracked
+
+git stash clear
+
 git checkout ${2}
 
 git pull
@@ -27,6 +31,14 @@ git submodule foreach git remote prune orgin
 git submodule foreach git fetch -p
 
 git submodule foreach git clean -dfq
+
+git submodule foreach git checkout -q .
+
+git submodule foreach git stash pull --include-untracked
+
+git submodule foreach git stash clear
+
+git submodule foreach git checkout master
 
 git submodule foreach git pull
 

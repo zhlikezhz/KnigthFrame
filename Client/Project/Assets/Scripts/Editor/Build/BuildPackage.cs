@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-//using YooAsset.Editor;
+using YooAsset.Editor;
 
 namespace Huge.Editor.Build
 {
@@ -35,6 +35,7 @@ namespace Huge.Editor.Build
         public static void Build()
         {
             BuildConfig buildConfig = BuildUtility.ParseArgument("Huge.Editor.Build.BuildPackage.Build");
+            UnityEngine.Debug.Log(buildConfig.ToString());
             if (buildConfig.Platform == "Android")
             {
                 SwitchEnviroment(BuildTargetGroup.Android, BuildTarget.Android);
@@ -75,7 +76,6 @@ namespace Huge.Editor.Build
 
         public static void BuildAssetBundle(BuildTarget target, BuildConfig buildConfig)
         {
-            /*
             BuildParameters buildParam = new BuildParameters();
             buildParam.BuildOutputRoot = Path.Combine(ProjectRootDir, BuildConst.OutputPath);
             buildParam.StreamingAssetsRoot = $"{Application.dataPath}/StreamingAssets/{YooAsset.YooAssetSettings.DefaultYooFolderName}/";
@@ -104,7 +104,6 @@ namespace Huge.Editor.Build
             {
                 throw new Exception($"error: build package fail {buildResult.ErrorInfo}");
             }
-            */
         }
 
         public static void BuildProject(BuildTarget target, BuildConfig buildConfig)

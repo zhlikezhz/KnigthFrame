@@ -11,5 +11,14 @@ namespace Huge.Editor.Build
         {
             return $"{BuildPackage.ProjectRootDir}/xcode";
         }
+
+        public override void BuildProject(BuildConfig buildConfig)
+        {
+            PlayerSettings.iOS.buildNumber = buildConfig.BundleVersion;
+            PlayerSettings.iOS.appleDeveloperTeamID = buildConfig.TeamID;
+            PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, buildConfig.BundleID);
+            base.BuildProject(buildConfig);
+        }
     }
 }

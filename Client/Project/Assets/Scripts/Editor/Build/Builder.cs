@@ -34,7 +34,7 @@ namespace Huge.Editor.Build
         protected virtual string GetBuildLocation()
         {
             string packagePath = Path.Combine(BuildPackage.ProjectRootDir, BuildConst.OutputPath);
-            return $"{packagePath}/{m_BuildConfig.AppName}.apk";
+            return $"{packagePath}/{m_BuildConfig.PackageName}.apk";
         }
 
         protected virtual BuildOptions GetBuildOptions()
@@ -66,10 +66,12 @@ namespace Huge.Editor.Build
             };
         }
 
-        public void BuildProject(BuildConfig buildConfig)
+        public virtual void BuildProject(BuildConfig buildConfig)
         {
             m_BuildConfig = buildConfig;
 
+            PlayerSettings.productName = buildConfig.PackageName;
+            PlayerSettings.bundleVersion = m_BuildConfig.Version;
             BuildTargetGroup buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
             if (buildConfig.UseIL2CPP)
             {
@@ -80,6 +82,7 @@ namespace Huge.Editor.Build
             {
                 PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
             }
+            SetScriptingSymbols();
 
             string buildLocation = GetBuildLocation();
             BuildTarget buildTarget = EditorUserBuildSettings.activeBuildTarget;

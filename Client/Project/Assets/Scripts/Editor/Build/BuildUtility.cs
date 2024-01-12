@@ -37,13 +37,9 @@ namespace Huge.Editor.Build
                     continue;
                 }
 
-                if (string.Equals(debugArr[0], "AppID"))
+                if (string.Equals(debugArr[0], "PackageName"))
                 {
-                    param.AppID = debugArr[1];
-                }
-                else if (string.Equals(debugArr[0], "AppName"))
-                {
-                    param.AppName = debugArr[1];
+                    param.PackageName = debugArr[1];
                 }
                 else if (string.Equals(debugArr[0], "Platform"))
                 {
@@ -52,6 +48,18 @@ namespace Huge.Editor.Build
                 else if (string.Equals(debugArr[0], "Version"))
                 {
                     param.Version = debugArr[1];
+                }
+                else if (string.Equals(debugArr[0], "BundleVersion"))
+                {
+                    param.BundleVersion = debugArr[1];
+                }
+                else if (string.Equals(debugArr[0], "TeamID"))
+                {
+                    param.TeamID = debugArr[1];
+                }
+                else if (string.Equals(debugArr[0], "BundleID"))
+                {
+                    param.BundleID = debugArr[1];
                 }
                 else if (string.Equals(debugArr[0], "UseIL2cpp"))
                 {

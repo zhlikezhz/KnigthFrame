@@ -5,7 +5,8 @@ if [ $# != 3 ] ; then
 fi 
 
 TARGET_PATH="/Users/huge/work/package/iOS"
+PACKAGE_NAME=$(echo "${1}" | tr -d ' ') #Avatar
 
 fir login -T ${2}
 
-fir publish ${TARGET_PATH}/${1}.ipa "--wxwork-webhook=${3}"
+fir publish ${TARGET_PATH}/${PACKAGE_NAME}.ipa "--wxwork-webhook=${3}"

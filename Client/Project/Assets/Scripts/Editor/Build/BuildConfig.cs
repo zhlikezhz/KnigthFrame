@@ -7,9 +7,11 @@ namespace Huge.Editor.Build
 {
     public class BuildConfig
     {
-        public string AppID = "Avatar";
-        public string AppName = "com.hugesoft.avatar";
+        public string PackageName = "Anime Avatar";
         public string Version = "1.0.0";
+        public string BundleVersion = "0";
+        public string TeamID = "DFURNZYWTV";
+        public string BundleID = "com.hugesoft.avatar";
         public string Platform = "";
         public string BuildOutputPath = "";
 
@@ -20,9 +22,11 @@ namespace Huge.Editor.Build
 
         public override string ToString()
         {
-            return "AppID:" + AppID +
-                   ", AppName:" + AppName +
+            return "PackageName:" + PackageName +
                    ", Version:" + Version +
+                   ", BundleVersion:" + BundleVersion +
+                   ", TeamID:" + TeamID +
+                   ", BundleID:" + BundleID +
                    ", Platform:" + Platform +
                    ", UseIL2CPP:" + UseIL2CPP +
                    ", IsDevelopment:" + IsDevelopment +

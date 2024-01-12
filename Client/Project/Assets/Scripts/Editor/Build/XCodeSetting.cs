@@ -16,6 +16,7 @@ namespace Huge.Editor.Build
             SetPlistFile("info.plist");
             SetProjectProperty("Unity-iPhone.xcworkspace");
         }
+
         public static void SetPlistFile(string plistPath)
         {
             PlistDocument plist = new PlistDocument();
