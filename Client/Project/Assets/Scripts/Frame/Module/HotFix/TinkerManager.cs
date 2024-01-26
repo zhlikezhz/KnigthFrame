@@ -9,13 +9,13 @@ namespace Huge.HotFix
 {
     public enum TinkerState
     {
-        StartTinker             = 0, //¿ªÊ¼¸üĞÂ
-        PrepareFirstGame        = 1, //Ê×´Î½øÈëÓÎÏ·´¦Àí
-        CheckRemoteFile         = 2, //¼ì²éCDN
-        DownloadPatch           = 3, //ÏÂÔØPatch
-        UnzipPatch              = 4, //½âÑ¹Patch
-        InstallPatch            = 5, //°²×°Patch
-        EndTinker               = 6, //½áÊø¸üĞÂ
+        StartTinker             = 0, //å¼€å§‹æ›´æ–°
+        PrepareFirstGame        = 1, //é¦–æ¬¡è¿›å…¥æ¸¸æˆå¤„ç†
+        CheckRemoteFile         = 2, //æ£€æŸ¥CDN
+        DownloadPatch           = 3, //ä¸‹è½½Patch
+        UnzipPatch              = 4, //è§£å‹Patch
+        InstallPatch            = 5, //å®‰è£…Patch
+        EndTinker               = 6, //ç»“æŸæ›´æ–°
     }
 
     public class TinkerManager : FSMContent

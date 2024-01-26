@@ -1,5 +1,6 @@
 using System;
- 
+using Huge.Pool;
+
 namespace Huge.MVVM
 {
     public class DBInt64 : DBType, IComparable, IFormattable, IComparable<DBInt64>, IEquatable<DBInt64>
@@ -18,17 +19,21 @@ namespace Huge.MVVM
             }
         }
 
-        public Action<long> valueChanged;
+        public Action<DBInt64> valueChanged;
         internal override void InvokeChange()
         {
             IsDirty = false;
-            valueChanged?.Invoke(m_Value);
+            valueChanged?.Invoke(this);
+        }
+
+        public DBInt64()
+        {
+
         }
 
         public DBInt64(long value)
         {
             m_Value = value;
-            valueChanged = null;
         }
 
         public static explicit operator byte(DBInt64 value)

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using YooAsset.Editor;
+// using YooAsset.Editor;
 
 namespace Huge.Editor.Build
 {
@@ -76,34 +76,34 @@ namespace Huge.Editor.Build
 
         public static void BuildAssetBundle(BuildTarget target, BuildConfig buildConfig)
         {
-            BuildParameters buildParam = new BuildParameters();
-            buildParam.BuildOutputRoot = Path.Combine(ProjectRootDir, BuildConst.OutputPath);
-            buildParam.StreamingAssetsRoot = $"{Application.dataPath}/StreamingAssets/{YooAsset.YooAssetSettings.DefaultYooFolderName}/";
-            buildParam.BuildTarget = target;
-            //https://www.yooasset.com/docs/api/YooAsset.Editor/EBuildPipeline
-            buildParam.BuildPipeline = BuildConst.IsBuildinPipline ? EBuildPipeline.BuiltinBuildPipeline : EBuildPipeline.ScriptableBuildPipeline;
-            //https://www.yooasset.com/docs/api/YooAsset.Editor/EBuildMode
-            buildParam.BuildMode = buildConfig.IsForceRebuild ? EBuildMode.ForceRebuild : EBuildMode.IncrementalBuild;
-            buildParam.PackageName = BuildConst.AssetPackageName;
-            DateTime now = DateTime.Now;
-            buildParam.PackageVersion = now.ToString("yyyy_MM_dd_HH_mm_ss"); //buildConfig.Version;
-            buildParam.VerifyBuildingResult = true;
-            buildParam.SharedPackRule = new ZeroRedundancySharedPackRule();
-            buildParam.CompressOption = ECompressOption.LZ4;
-            //https://www.yooasset.com/docs/api/YooAsset.Editor/EOutputNameStyle
-            buildParam.OutputNameStyle = EOutputNameStyle.HashName;
-            buildParam.CopyBuildinFileOption = ECopyBuildinFileOption.ClearAndCopyAll;
+            // BuildParameters buildParam = new BuildParameters();
+            // buildParam.BuildOutputRoot = Path.Combine(ProjectRootDir, BuildConst.OutputPath);
+            // buildParam.StreamingAssetsRoot = $"{Application.dataPath}/StreamingAssets/{YooAsset.YooAssetSettings.DefaultYooFolderName}/";
+            // buildParam.BuildTarget = target;
+            // //https://www.yooasset.com/docs/api/YooAsset.Editor/EBuildPipeline
+            // buildParam.BuildPipeline = BuildConst.IsBuildinPipline ? EBuildPipeline.BuiltinBuildPipeline : EBuildPipeline.ScriptableBuildPipeline;
+            // //https://www.yooasset.com/docs/api/YooAsset.Editor/EBuildMode
+            // buildParam.BuildMode = buildConfig.IsForceRebuild ? EBuildMode.ForceRebuild : EBuildMode.IncrementalBuild;
+            // buildParam.PackageName = BuildConst.AssetPackageName;
+            // DateTime now = DateTime.Now;
+            // buildParam.PackageVersion = now.ToString("yyyy_MM_dd_HH_mm_ss"); //buildConfig.Version;
+            // buildParam.VerifyBuildingResult = true;
+            // buildParam.SharedPackRule = new ZeroRedundancySharedPackRule();
+            // buildParam.CompressOption = ECompressOption.LZ4;
+            // //https://www.yooasset.com/docs/api/YooAsset.Editor/EOutputNameStyle
+            // buildParam.OutputNameStyle = EOutputNameStyle.HashName;
+            // buildParam.CopyBuildinFileOption = ECopyBuildinFileOption.ClearAndCopyAll;
 
-            AssetBundleBuilder builder = new AssetBundleBuilder();
-            var buildResult = builder.Run(buildParam);
-            if (buildResult.Success)
-            {
-                UnityEngine.Debug.Log($"build package success {buildResult.OutputPackageDirectory}");
-            }
-            else
-            {
-                throw new Exception($"error: build package fail {buildResult.ErrorInfo}");
-            }
+            // AssetBundleBuilder builder = new AssetBundleBuilder();
+            // var buildResult = builder.Run(buildParam);
+            // if (buildResult.Success)
+            // {
+            //     UnityEngine.Debug.Log($"build package success {buildResult.OutputPackageDirectory}");
+            // }
+            // else
+            // {
+            //     throw new Exception($"error: build package fail {buildResult.ErrorInfo}");
+            // }
         }
 
         public static void BuildProject(BuildTarget target, BuildConfig buildConfig)

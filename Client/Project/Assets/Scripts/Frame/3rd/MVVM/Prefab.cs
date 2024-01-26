@@ -3,13 +3,21 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
+using Huge.Asset;
 
 namespace Huge.MVVM
 {
-    public abstract class Prefab    
+    public abstract class Prefab
     {
         public Transform transform;
         public GameObject gameObject;
+        private bool m_bIsDestoried = false;
+
+        protected Prefab()
+        {
+
+        }
 
         public void SetActive(bool actived)
         {
@@ -21,28 +29,98 @@ namespace Huge.MVVM
             transform.SetParent(parent.transform, worldPositionStays);
         }
 
-        internal async static UniTask<Prefab> CreateAsync(System.Type type, GameObject root = null)
+        internal static async UniTask<Prefab> CreateAsync(System.Type type, GameObject root = null)
         {
-            Prefab instance = Activator.CreateInstance(type) as Prefab;
-            await instance.OnInitAsync(root);
-            return instance;
+            var attr = type.GetAttribute<PrefabSettingAttribute>();
+            if (attr == null) 
+            {
+                throw new Exception($"error: {type.Name}需指定预制体路径");
+            }
+            else
+            {
+                Prefab instance = Activator.CreateInstance(type) as Prefab;
+                if (instance == null)
+                {
+                    throw new Exception($"error: {type.Name}必须继承于Prefab");
+                }
+
+                if (root == null)
+                {
+                    var prefab = await AssetManager.Instance.LoadAssetAsync<GameObject>(attr.PrefabPath);
+                    if (prefab == null)
+                    {
+                        throw new Exception($"error: {type.Name}预制体不存在{attr.PrefabPath}");
+                    }
+                    root = GameObject.Instantiate(prefab);
+                }
+                instance.gameObject = root;
+                instance.transform = root.transform;
+                instance.OnInit();
+                return instance;
+            }
         }
 
-        internal async UniTask DestroyAsync()
+        internal static async UniTask<T> CreateAsync<T>(GameObject root = null) where T : Prefab
         {
-            await OnDestroyAsync();
+            var instance = await CreateAsync(typeof(T), root);
+            return instance as T;
         }
 
-        protected virtual async UniTask OnInitAsync(GameObject root = null)
+        internal static Prefab Create(System.Type type, GameObject root = null)
         {
-            await UniTask.DelayFrame(1);
-            throw new NotImplementedException("need implement Prefab.InitAsync method");
+            var attr = type.GetAttribute<PrefabSettingAttribute>();
+            if (attr == null) 
+            {
+                throw new Exception($"error: {type.Name}需指定预制体路径");
+            }
+            else
+            {
+                Prefab instance = Activator.CreateInstance(type) as Prefab;
+                if (instance == null)
+                {
+                    throw new Exception($"error: {type.Name}必须继承于Prefab");
+                }
+
+                if (root == null)
+                {
+                    var prefab = AssetManager.Instance.LoadAsset<GameObject>(attr.PrefabPath);
+                    if (prefab == null)
+                    {
+                        throw new Exception($"error: {type.Name}预制体不存在{attr.PrefabPath}");
+                    }
+                    root = GameObject.Instantiate(prefab);
+                }
+                instance.gameObject = root;
+                instance.transform = root.transform;
+                instance.OnInit();
+                return instance;
+            }
         }
 
-        protected virtual async UniTask OnDestroyAsync()
+        internal static T Create<T>(GameObject root = null) where T : Prefab
         {
-            await UniTask.DelayFrame(1);
-            throw new NotImplementedException("need implement Prefab.DestroyAsync method");
+            var instance = Create(typeof(T), root);
+            return instance as T; 
+        }
+
+        internal void Destroy()
+        {
+            if (!m_bIsDestoried)
+            {
+                m_bIsDestoried = true;
+                OnDestroy();
+                GameObject.Destroy(gameObject);
+            }
+        }
+
+        protected virtual void OnInit()
+        {
+
+        }
+
+        protected virtual void OnDestroy()
+        {
+
         }
     }
 }

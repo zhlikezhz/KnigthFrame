@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Huge;
 using Huge.Pool;
 using Huge.Asset;
+using Unity.VisualScripting;
 
 namespace Huge.MVVM
 {
@@ -27,7 +28,7 @@ namespace Huge.MVVM
         Dictionary<System.Type, View> m_ViewPools = new Dictionary<System.Type, View>();
         Dictionary<LayerType, GameObject> m_LayerObjects = new Dictionary<LayerType, GameObject>();
 
-        const string CanvasPrefabPath = "Art/Prefab/Canvas.prefab";
+        static readonly string CanvasPrefabPath = "Art/Prefab/Canvas.prefab";
         internal async UniTask InitAsync()
         {
             GameObject prefab = await AssetManager.Instance.LoadAssetAsync<GameObject>(CanvasPrefabPath);
@@ -35,60 +36,76 @@ namespace Huge.MVVM
             GameObject.DontDestroyOnLoad(m_UIRootObject);
         }
 
-        public async UniTask<View> OpenView(ViewInfo viewInfo, params object[] args)
+        public T OpenView<T>(params object[] args) where T : View
         {
-            View view = Activator.CreateInstance(viewInfo.View) as View;
+            var t = typeof(T);
+            View view = Activator.CreateInstance(t) as View;
             m_StackView.Add(view);
             try
             {
-                await view.InitAsync(viewInfo);
-                view.AfterInit(args);
-                view.SetActive(true);
-                return view;
+                view.Init(args);
+                return view as T;
             }
             catch(Exception ex)
             {
-                Huge.Debug.LogError($"UI: init {viewInfo.View.Name} error: {ex.Message}.");
+                Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.");
                 m_StackView.Remove(view);
+                return null;
+            }
+        }
+
+        public async UniTask<T> OpenViewAsync<T>(params object[] args) where T : View
+        {
+            var t = typeof(T);
+            View view = Activator.CreateInstance(t) as View;
+            m_StackView.Add(view);
+            try
+            {
+                await view.InitAsync(args);
+                return view as T;
+            }
+            catch(Exception ex)
+            {
+                Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.");
+                if (m_StackView.Contains(view)) m_StackView.Remove(view);
                 return null;
             }
         }
 
         public void CloseView(View view)
         {
-            if (m_StackView.Contains(view))
+            if (view != null && m_StackView.Contains(view) && view.IsDestoried())
             {
-                ViewInfo viewInfo = view.GetViewInfo();
                 try
                 {
-                    view.BeforeDestroy();
                     m_StackView.Remove(view);
-                    view.DestroyAsync().Forget();
+                    view.Destroy().Forget();
                 }
                 catch (Exception ex)
                 {
-                    Huge.Debug.LogError($"UI: close {viewInfo.View.Name} error: {ex.Message}.");
-                    m_StackView.Remove(view);
+                    Huge.Debug.LogError($"UI: close {view.GetType().Name} error: {ex.Message}.");
+                    if (m_StackView.Contains(view)) m_StackView.Remove(view);
                     throw ex;
                 }
             }
         }
 
-        public void CloseView(ViewInfo viewInfo)
+        public void CloseView<T>() where T : View
         {
-            View view = GetView(viewInfo);
+            View view = GetView<T>();
             if (view != null)
             {
                 CloseView(view);
             }
         }
 
-        public View GetView(ViewInfo viewInfo)
+        public View GetView<T>() where T : View
         {
+            var t = typeof(T);
             for(int i = 0; i < m_StackView.Count; i++)
             {
                 View view = m_StackView[i];
-                if (view.GetViewInfo() == viewInfo)
+                if (view.GetType() == t)
                 {
                     return view;
                 }
@@ -96,9 +113,9 @@ namespace Huge.MVVM
             return null;
         }
 
-        internal List<View> GetViewStack()
+        internal GameObject GetMaskObject()
         {
-            return m_StackView;
+            return m_MaskObject;
         }
 
         internal GameObject GetLayerObject(LayerType layerType)
@@ -108,6 +125,11 @@ namespace Huge.MVVM
                 return layerObject;
             }
             return null;
+        }
+
+        internal List<View> GetViewStack()
+        {
+            return m_StackView;
         }
     }
 }

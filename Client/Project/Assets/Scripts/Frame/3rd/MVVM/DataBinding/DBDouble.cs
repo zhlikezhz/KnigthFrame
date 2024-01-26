@@ -18,17 +18,21 @@ namespace Huge.MVVM
             }
         }
 
-        public Action<double> valueChanged;
+        public Action<DBDouble> valueChanged;
         internal override void InvokeChange()
         {
             IsDirty = false;
-            valueChanged?.Invoke(m_Value);
+            valueChanged?.Invoke(this);
+        }
+
+        public DBDouble()
+        {
+
         }
 
         public DBDouble(double value)
         {
             m_Value = value;
-            valueChanged = null;
         }
 
         public static explicit operator byte(DBDouble value)

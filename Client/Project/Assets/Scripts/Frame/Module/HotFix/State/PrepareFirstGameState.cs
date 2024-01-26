@@ -41,7 +41,7 @@ namespace Huge.HotFix
                 }
                 else
                 {
-                    TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, "无法进入游戏");
+                    TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, "鏃犳硶杩涘叆娓告垙");
                 }
             }
             catch (Exception ex)
@@ -138,10 +138,10 @@ namespace Huge.HotFix
 
         async UniTask FirstEnterGame(FSMContent content)
         {
-            //首次进入游戏清理缓存
+            //棣栨杩涘叆娓告垙娓呯悊缂撳瓨
             ClearPresistentCache();
 
-            //首次进入游戏解包
+            //棣栨杩涘叆娓告垙瑙ｅ寘
             await CopyStreamingAssetsToPresistentCache();
         }
 

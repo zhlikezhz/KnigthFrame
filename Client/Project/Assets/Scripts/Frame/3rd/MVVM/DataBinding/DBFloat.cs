@@ -18,17 +18,21 @@ namespace Huge.MVVM
             }
         }
 
-        public Action<float> valueChanged;
+        public Action<DBFloat> valueChanged;
         internal override void InvokeChange()
         {
             IsDirty = false;
-            valueChanged?.Invoke(m_Value);
+            valueChanged?.Invoke(this);
+        }
+
+        public DBFloat()
+        {
+
         }
 
         public DBFloat(float value)
         {
             m_Value = value;
-            valueChanged = null;
         }
 
         public static explicit operator byte(DBFloat value)

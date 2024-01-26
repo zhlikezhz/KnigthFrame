@@ -3,127 +3,145 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 namespace Huge.MVVM
 {
-    public class ViewInfo
-    {
-        public System.Type View;
-        public System.Type Prefab;
-        public System.Type ViewModel;
-    }
-
-    public class SectionInfo
-    {
-        public System.Type Section;
-        public System.Type Prefab;
-        public System.Type ViewModel;
-    }
-
-    public class LoginPage : View
-    {
-
-    }
-
-    public class LoginSection : Section
-    {
-
-    }
-
-    public class LoginPrefab : Prefab
-    {
-
-    }
-
-    public class LoginViewModel : ViewModel
-    {
-
-    }
-
-    public static class ViewType
-    {
-        public static ViewInfo Login = new ViewInfo { View=typeof(LoginPage), Prefab=typeof(LoginPrefab), ViewModel=typeof(LoginViewModel) };
-        public static SectionInfo LoginSection = new SectionInfo { Section=typeof(LoginSection), Prefab=typeof(LoginPrefab), ViewModel=typeof(LoginViewModel) };
-    }
-
     public abstract class View
     {
-        Prefab m_Prefab;
-        ViewInfo m_ViewInfo;
-        ViewModel m_ViewModel;
-        List<Section> m_SectionList = new List<Section>();
-
         bool m_bIsActived = false;
+        bool m_bIsDestoried = false;
+        protected Prefab m_Prefab;
+        protected ViewModel m_ViewModel;
 
-        internal async UniTask InitAsync(ViewInfo viewInfo)
+        /// <summary>
+        /// 同步创建
+        /// </summary>
+        /// <param name="args"></param>
+        internal void Init(params object[] args)
         {
-            m_ViewInfo = viewInfo;
-            m_Prefab = await Prefab.CreateAsync(viewInfo.Prefab);
-            if (viewInfo.ViewModel != null)
+            Type t = GetType();
+            ViewSettingAttribute viewSetting = t.GetAttribute<ViewSettingAttribute>();
+            if (viewSetting == null)
             {
-                m_ViewModel = await ViewModel.CreateAsync(viewInfo.ViewModel);
+                throw new Exception("view need ViewSettingAttribute, please add ViewSettingAttribute to view");
             }
-            m_Prefab.SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+            else
+            {
+                if (viewSetting.Prefab == null)
+                {
+                    throw new Exception("view need set prefab, please add ViewSettingAttribute to view and set ViewSettingAttribute.Prefab");
+                }
+                m_Prefab = Prefab.Create(viewSetting.Prefab);
+                if (viewSetting.ViewModel != null)
+                {
+                    m_ViewModel = Activator.CreateInstance(viewSetting.ViewModel) as ViewModel;
+                }
+                m_Prefab.SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+                AfterCreate();
+
+                //调用用户接口,此时框架层都处理完成
+                m_ViewModel?.Start(args);
+                Start(args);
+            }
         }
 
-        internal virtual async UniTask DestroyAsync()
+        /// <summary>
+        /// 异步创建
+        /// </summary>
+        /// <param name="viewInfo"></param>
+        /// <returns></returns>
+        internal async UniTask InitAsync(params object[] args)
         {
-            foreach(Section section in m_SectionList)
+            Type t = GetType();
+            ViewSettingAttribute viewSetting = t.GetAttribute<ViewSettingAttribute>();
+            if (viewSetting == null)
             {
-                await section.DestroyAsync();
+                throw new Exception("view need ViewSettingAttribute, please add ViewSettingAttribute to view");
             }
-            OnDestroy();
-            if (m_ViewModel != null)
+            else
             {
-                await m_ViewModel.DestroyAsync();
+                if (viewSetting.Prefab == null)
+                {
+                    throw new Exception("view need set prefab, please add ViewSettingAttribute to view and set ViewSettingAttribute.Prefab");
+                }
+                m_Prefab = await Prefab.CreateAsync(viewSetting.Prefab);
+                if (viewSetting.ViewModel != null)
+                {
+                    m_ViewModel = Activator.CreateInstance(viewSetting.ViewModel) as ViewModel;
+                }
+                m_Prefab.SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+
+                AfterCreate();
+
+                await DoOpenAnimation();
+
+                //调用用户接口,此时框架层都处理完成
+                m_ViewModel?.Start(args);
+                Start(args);
             }
-            await m_Prefab.DestroyAsync();
         }
 
-        internal virtual void AfterInit(params object[] args)
+        protected async UniTask DoOpenAnimation()
         {
-            Start(args);
+            await UniTask.WaitForSeconds(0.1f);
         }
 
+        /// <summary>
+        /// 异步销毁
+        /// </summary>
+        /// <returns></returns> <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        internal async UniTask Destroy()
+        {
+            if (!m_bIsDestoried)
+            {
+                BeforeDestroy();
+
+                await DoCloseAnimation();
+
+                m_bIsDestoried = true;
+                m_ViewModel?.Destroy();
+                m_Prefab?.Destroy();
+
+                //调用用户接口,此时框架层都处理完成
+                OnDestroy();
+            }
+        }
+
+        protected async UniTask DoCloseAnimation()
+        {
+            await UniTask.WaitForSeconds(0.1f);
+        }
+
+        /// <summary>
+        /// 在View初始化之后被调用
+        /// </summary>
+        /// <param name="args"></param> <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        internal virtual void AfterCreate()
+        {
+            SetActive(true);
+        }
+
+        /// <summary>
+        /// 在View销毁销毁之前被调用
+        /// </summary> <summary>
+        /// 
+        /// </summary>
         internal virtual void BeforeDestroy()
         {
-            foreach(Section section in m_SectionList)
-            {
-                section.BeforeDestroy();
-            }
             SetActive(false);
         }
 
-        internal virtual LayerType GetLayerType()
+#region override
+        internal protected virtual LayerType GetLayerType()
         {
             return LayerType.NormalLayer;
-        }
-
-        public ViewInfo GetViewInfo()
-        {
-            return m_ViewInfo;
-        }
-
-        public void SetParent(GameObject parent)
-        {
-            m_Prefab.SetParent(parent);
-        }
-
-        public void SetActive(bool isActived)
-        {
-            if (m_bIsActived != isActived)
-            {
-                m_bIsActived = isActived;
-                m_Prefab.SetActive(isActived);
-                if (isActived)
-                {
-                    OnEnable();
-                }
-                else
-                {
-                    OnDisable();
-                }
-            }
         }
 
         protected virtual void Start(params object[] args)
@@ -145,74 +163,48 @@ namespace Huge.MVVM
         {
 
         }
+#endregion
 
-#region Section
-        protected async UniTask<Section> AddSection(SectionInfo sectionInfo, GameObject parent, params object[] args)
+#region public method
+        public void SetParent(GameObject parent)
         {
-            Section section = Activator.CreateInstance(sectionInfo.Section) as Section;
-            m_SectionList.Add(section);
-            try
-            {
-                await section.InitAsync(sectionInfo);
-                section.AfterInit(args);
-                section.SetParent(parent);
-                section.SetActive(true);
-                return section;
-            }
-            catch (Exception ex)
-            {
-                Huge.Debug.LogError($"UI: init {sectionInfo.Section.Name} error: {ex.Message}.");
-                m_SectionList.Remove(section);
-                return null;
-            }
+            m_Prefab.SetParent(parent);
         }
 
-        protected async UniTask<Section> AddSection(SectionInfo sectionInfo, GameObject root, GameObject parent, params object[] args)
+        public void SetActive(bool isActived)
         {
-            Section section = Activator.CreateInstance(sectionInfo.Section) as Section;
-            m_SectionList.Add(section);
-            try
+            if (m_bIsActived != isActived)
             {
-                await section.InitAsync(sectionInfo, root);
-                section.AfterInit(args);
-                section.SetParent(parent);
-                section.SetActive(true);
-                return section;
-            }
-            catch (Exception ex)
-            {
-                Huge.Debug.LogError($"UI: init {sectionInfo.Section.Name} error: {ex.Message}.");
-                m_SectionList.Remove(section);
-                return null;
-            }
-        }
-
-        protected void RemoveSection(Section section)
-        {
-            if (m_SectionList.Contains(section))
-            {
-                m_SectionList.Remove(section);
-                section.BeforeDestroy();
-                section.DestroyAsync().Forget();
-            }
-        }
-
-        protected bool HasSection(SectionInfo sectionInfo) 
-        {
-            return (GetSection(sectionInfo) != null);
-        }
-
-        protected Section GetSection(SectionInfo sectionInfo)
-        {
-            foreach(var section in m_SectionList)
-            {
-                if (section.GetSectionInfo() == sectionInfo)
+                m_bIsActived = isActived;
+                m_Prefab?.SetActive(isActived);
+                if (isActived)
                 {
-                    return section;
+                    m_ViewModel?.OnEnable();
+                    OnEnable();
+                }
+                else
+                {
+                    m_ViewModel?.OnDisable();
+                    OnDisable();
                 }
             }
-            return null;
+        }
+
+        public bool IsDestoried()
+        {
+            return m_bIsDestoried;
+        }
+
+        public bool IsActived()
+        {
+            return m_bIsActived;
+        }
+
+        public void Close()
+        {
+            UIManager.Instance.CloseView(this);
         }
 #endregion
+
     }
 }

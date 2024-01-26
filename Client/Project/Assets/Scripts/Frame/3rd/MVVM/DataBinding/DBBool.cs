@@ -18,17 +18,21 @@ namespace Huge.MVVM
             }
         }
 
-        public Action<bool> valueChanged;
+        public Action<DBBool> valueChanged;
         internal override void InvokeChange()
         {
             IsDirty = false;
-            valueChanged?.Invoke(m_Value);
+            valueChanged?.Invoke(this);
+        }
+
+        public DBBool()
+        {
+
         }
 
         public DBBool(bool value)
         {
             m_Value = value;
-            valueChanged = null;
         }
 
         static int GetInt(DBBool value)

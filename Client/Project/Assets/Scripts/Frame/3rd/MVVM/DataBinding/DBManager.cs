@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Huge.MVVM
 {
-    public class DataBindingManager : Singleton<DataBindingManager>
+    public class DBManager : Singleton<DBManager>
     {
         public HashSet<DBType> m_DBTypeList = new HashSet<DBType>();
 
@@ -14,7 +14,14 @@ namespace Huge.MVVM
             {
                 if (type.IsDirty)
                 {
-                    type.InvokeChange();
+                    try
+                    {
+                        type.InvokeChange();
+                    }
+                    catch(Exception ex)
+                    {
+                        Huge.Debug.LogError($"data binding invoke error: {ex.Message}");
+                    }
                 }
             }
         }

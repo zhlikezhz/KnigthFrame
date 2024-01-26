@@ -1,4 +1,5 @@
 using System;
+using Huge.Pool;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -8,7 +9,7 @@ namespace Huge.MVVM
     {
         public DBType()
         {
-            DataBindingManager.Instance.RegisterDB(this);
+            DBManager.Instance.RegisterDB(this);
         }
 
         bool m_bIsDispose = false;
@@ -17,7 +18,7 @@ namespace Huge.MVVM
             if (m_bIsDispose == false)
             {
                 m_bIsDispose = true;
-                DataBindingManager.Instance.RemoveDB(this);
+                DBManager.Instance.RemoveDB(this);
             }
         }
 

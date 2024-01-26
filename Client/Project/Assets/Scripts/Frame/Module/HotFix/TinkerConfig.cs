@@ -7,6 +7,6 @@ namespace Huge.HotFix
     [System.Serializable]
     public class TinkerConfig
     {
-        public string Version = "0.0.0.0"; //��汾.ǿ���汾.�ȸ��汾.GIT�汾
+        public string Version = "0.0.0.0"; //大版本.强更版本.热更版本.GIT版本
     }
 }
