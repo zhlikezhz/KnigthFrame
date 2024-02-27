@@ -6,3 +6,4 @@ Client/Project/.vs/
 *.csproj
 *.vsconfig
 Client/Tools/Build/__pycache__/
+Client/Project/Temp/
