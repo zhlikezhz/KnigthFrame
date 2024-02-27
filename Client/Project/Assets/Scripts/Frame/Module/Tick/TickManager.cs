@@ -15,15 +15,15 @@ namespace Huge
         private static bool s_Inited = false;
         private static uint s_DefaultInterval;
 
-        // ontickµ÷¶ÈÖĞ·ÖÉ¢tick±éÀúÑ¹Á¦µÄÈİÆ÷ÁĞ±í
+        // ontickè°ƒåº¦ä¸­åˆ†æ•£tickéå†å‹åŠ›çš„å®¹å™¨åˆ—è¡¨
         private static List<TickItem> s_TickItemBack = new List<TickItem>();
         private static List<TickItem>[] s_TickItemGroup = new List<TickItem>[TICK_ITEM_GROUP_NUM];
 
-        // ontickÖĞµ÷¶ÈupdateTickµÄÈİÆ÷ÁĞ±í
+        // ontickä¸­è°ƒåº¦updateTickçš„å®¹å™¨åˆ—è¡¨
         private static List<UpdateTickItem> s_UpdateTickList1 = new List<UpdateTickItem>();
         private static List<UpdateTickItem> s_UpdateTickList2 = new List<UpdateTickItem>();
 
-        // tickItem´æ´¢ÈİÆ÷
+        // tickItemå­˜å‚¨å®¹å™¨
         private static Dictionary<int, TickItemBase> s_TickItems = new Dictionary<int, TickItemBase>();
 
         private Tick()
@@ -47,7 +47,7 @@ namespace Huge
             }
         }
 
-        #region Tick»úÖÆÊµÏÖ
+        #region Tickæœºåˆ¶å®ç°
         private static int GetTickID()
         {
             s_TickIndex++;
@@ -82,7 +82,7 @@ namespace Huge
             int nowIndex = -1;
             for (uint i = 1; i <= deltaTime; i++)
             {
-                // °´¼ä¸ôÀÛ½ø´¥·¢
+                // æŒ‰é—´éš”ç´¯è¿›è§¦å‘
                 int index = GetTickGroupIdx(s_Now + i);
                 if (nowIndex == index)
                     continue;
@@ -151,7 +151,7 @@ namespace Huge
         #endregion
 
         /// <summary>
-        /// ×¢Ïú¹Ì¶¨¼ä¸ôµÄtick
+        /// æ³¨é”€å›ºå®šé—´éš”çš„tick
         /// </summary>
         /// <param name="tickID"></param>
         public static void RemoveFixedTimeTick(int tickID)
@@ -170,10 +170,10 @@ namespace Huge
         }
 
         /// <summary>
-        /// ×¢²áÄ¬ÈÏ¼ä¸ôµÄTick
+        /// æ³¨å†Œé»˜è®¤é—´éš”çš„Tick
         /// </summary>
-        /// <param name="tickFun">tick´¦Àíº¯Êı</param>
-        /// <param name="nType">tickÀàĞÍ</param>
+        /// <param name="tickFun">tickå¤„ç†å‡½æ•°</param>
+        /// <param name="nType">tickç±»å‹</param>
         /// <returns>tickId</returns>
         public static int RegisterFixedTimeTick(FixedTimeTickHandler tickFun, TickType nType = TickType.Loop)
         {
@@ -181,11 +181,11 @@ namespace Huge
         }
 
         /// <summary>
-        /// ×¢²á¹Ì¶¨¼ä¸ôµÄTick
+        /// æ³¨å†Œå›ºå®šé—´éš”çš„Tick
         /// </summary>
-        /// <param name="tickFun">tick´¦Àíº¯Êı</param>
-        /// <param name="interval">¼ä¸ô</param>
-        /// <param name="nType">tickÀàĞÍ</param>
+        /// <param name="tickFun">tickå¤„ç†å‡½æ•°</param>
+        /// <param name="interval">é—´éš”</param>
+        /// <param name="nType">tickç±»å‹</param>
         /// <returns>tickId</returns>
         public static int RegisterFixedTimeTick(FixedTimeTickHandler tickFun, uint interval, TickType nType = TickType.Loop)
         {
@@ -197,7 +197,7 @@ namespace Huge
         }
 
         /// <summary>
-        /// ×¢ÏúÃ¿Ö¡µ÷ÓÃµÄtick
+        /// æ³¨é”€æ¯å¸§è°ƒç”¨çš„tick
         /// </summary>
         /// <param name="tickID"></param>
         public static void RemoveUpdateTick(int tickID)
@@ -216,10 +216,10 @@ namespace Huge
         }
 
         /// <summary>
-        /// ×¢²áÃ¿Ö¡µ÷ÓÃµÄtick
+        /// æ³¨å†Œæ¯å¸§è°ƒç”¨çš„tick
         /// </summary>
-        /// <param name="tickAction">tick´¦Àíº¯Êı</param>
-        /// <param name="nType">tickÀàĞÍ</param>
+        /// <param name="tickAction">tickå¤„ç†å‡½æ•°</param>
+        /// <param name="nType">tickç±»å‹</param>
         /// <returns>tickId</returns>
         public static int RegisterUpdateTick(UpdateTickHandler tickAction, TickType nType)
         {

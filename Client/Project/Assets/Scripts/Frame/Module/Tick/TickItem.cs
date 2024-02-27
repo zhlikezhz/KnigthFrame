@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Huge
 {
     /// <summary>
-    /// TickÀàĞÍ
+    /// Tickç±»å‹
     /// </summary>
     public enum TickType
     {
@@ -15,12 +15,12 @@ namespace Huge
     }
 
     /// <summary>
-    /// Ö¡»Øµ÷
+    /// å¸§å›è°ƒ
     /// </summary>
     public delegate void UpdateTickHandler(uint deltaTime, int tickID);
 
     /// <summary>
-    /// ¹Ì¶¨Ê±¼ä»Øµ÷
+    /// å›ºå®šæ—¶é—´å›è°ƒ
     /// </summary>
     public delegate void FixedTimeTickHandler(int tickID);       
 
@@ -36,7 +36,7 @@ namespace Huge
     }
 
     /// <summary>
-    /// Tickµ¥Î»
+    /// Tickå•ä½
     /// </summary>
     internal class TickItem : TickItemBase
     {
@@ -68,7 +68,7 @@ namespace Huge
             NextTickTime += Interval;
             if (NextTickTime < nowTick)
             {
-                // ×·Ö¡
+                // è¿½å¸§
                 NextTickTime = nowTick + 1;
             }
 
@@ -81,7 +81,7 @@ namespace Huge
     }
 
     /// <summary>
-    /// UpdateTickµ¥Î»
+    /// UpdateTickå•ä½
     /// </summary>
     internal class UpdateTickItem : TickItemBase
     {
