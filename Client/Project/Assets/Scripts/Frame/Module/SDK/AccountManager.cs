@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SDK
 {
-    public class SDKManager : Singleton<SDKManager>
+    public class AccountManager : Singleton<AccountManager>
     {
         public void InitSDK()
         {

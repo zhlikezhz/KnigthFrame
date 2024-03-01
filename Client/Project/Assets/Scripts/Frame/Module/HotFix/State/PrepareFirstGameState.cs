@@ -16,6 +16,8 @@ namespace Huge.HotFix
 
     internal class PrepareFirstGameState : FSMState
     {
+        TinkerVersion m_CacheConfig;
+        TinkerVersion m_StreamConfig;
         public override void OnEnter(FSMContent content)
         {
             ResetGame(content).Forget();
@@ -30,7 +32,7 @@ namespace Huge.HotFix
         {
             try
             {
-                FirstGameState state = await CheckFirstGameState();
+                FirstGameState state = await CheckFirstGameState(content);
                 if (state == FirstGameState.EnterGame)
                 {
                     EnterGame(content);
@@ -47,6 +49,7 @@ namespace Huge.HotFix
             catch (Exception ex)
             {
                 TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, ex.Message);
+                Huge.Debug.LogException(ex);
             }
         }
 
@@ -54,48 +57,34 @@ namespace Huge.HotFix
         /// 
         /// </summary>
         /// <returns></returns>
-        async UniTask<FirstGameState> CheckFirstGameState()
+        async UniTask<FirstGameState> CheckFirstGameState(FSMContent content)
         {
             FirstGameState state = FirstGameState.None;
             if (Huge.Utils.FileUtility.IsPresistentFileExists(TinkerConst.VersionFile))
             {
                 string localJson = await Huge.Utils.FileUtility.LoadStreamingFileByText(TinkerConst.VersionFile);
-                string remoteJson = await Huge.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.VersionFile);
                 if (localJson != null)
                 {
-                    TinkerConfig localConfig = JsonUtility.FromJson<TinkerConfig>(localJson);
-                    TinkerConfig remoteConfig = JsonUtility.FromJson<TinkerConfig>(remoteJson);
-                    string[] localVersions = localConfig.Version.Split(".");
-                    string[] remoteVersions = remoteConfig.Version.Split(".");
-                    if (localVersions.Length == 4 && remoteVersions.Length == 4)
+                    m_StreamConfig = new TinkerVersion(localJson);
+
+                    string cacheJson = await Huge.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.VersionFile);
+                    m_CacheConfig = new TinkerVersion(cacheJson);
+
+                    //覆盖安装的时候，如果本地版本更大则进入首次安装逻辑
+                    if (IsCleanPresistent(m_StreamConfig, m_CacheConfig))
                     {
-                        try
-                        {
-                            if (IsCleanPresistent(localVersions, remoteVersions))
-                            {
-                                state = FirstGameState.FirstEnterGame;
-                            }
-                            else
-                            {
-                                state = FirstGameState.EnterGame;
-                            }
-                        }
-                        catch
-                        {
-                            string message = $"config parse error: localConfig = {localJson}, remoteConfig = {remoteJson}";
-                            TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, message);
-                        }
+                        state = FirstGameState.FirstEnterGame;
                     }
                     else
                     {
-                        string message = $"config parse error: localConfig = {localJson}, remoteConfig = {remoteJson}";
-                        TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, message);
+                        state = FirstGameState.EnterGame;
                     }
                 }
                 else
                 {
                     string message = $"load local config file error: fileName = {TinkerConst.VersionFile}";
                     TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, message);
+                    Huge.Debug.LogError(message);
                 }
             }
             else
@@ -105,23 +94,13 @@ namespace Huge.HotFix
             return state;
         }
 
-        bool IsCleanPresistent(string[] localVersions, string[] remoteVersions)
+        bool IsCleanPresistent(TinkerVersion streamConfig, TinkerVersion cacheConfig)
         {
-            int localBigVersion = int.Parse(localVersions[0]);
-            int localForceUpdateVersion = int.Parse(localVersions[1]);
-            int localHotUpdateVersion = int.Parse(localVersions[2]);
-            int localSmallVersion = int.Parse(localVersions[3]);
-
-            int remoteBigVersion = int.Parse(remoteVersions[0]);
-            int remoteForceUpdateVersion = int.Parse(remoteVersions[1]);
-            int remoteHotUpdateVersion = int.Parse(remoteVersions[2]);
-            int remoteSmallVersion = int.Parse(remoteVersions[3]);
-
-            if (remoteBigVersion >= localBigVersion)
+            if (cacheConfig.BigVersion >= streamConfig.BigVersion)
             {
-                if (remoteForceUpdateVersion >= localForceUpdateVersion)
+                if (cacheConfig.ForceUpdateVersion >= streamConfig.ForceUpdateVersion)
                 {
-                    if (remoteHotUpdateVersion >= localHotUpdateVersion)
+                    if (cacheConfig.HotUpdateVersion >= streamConfig.HotUpdateVersion)
                     {
                         return false;
                     }
@@ -133,7 +112,14 @@ namespace Huge.HotFix
         void EnterGame(FSMContent content)
         {
             TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, "success");
-            content.ChangeState<CheckRemoteState>();
+            if (m_StreamConfig != null && m_StreamConfig.Config.IsOpenHotFix)
+            {
+                content.ChangeState<CheckRemoteState>();
+            }
+            else
+            {
+                content.ChangeState<EnterGameState>();
+            }
         }
 
         async UniTask FirstEnterGame(FSMContent content)

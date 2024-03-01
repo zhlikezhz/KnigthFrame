@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using BestHTTP;
 using BestHTTP.Forms;
 using Cysharp.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Huge.Utils
 {
@@ -58,6 +59,34 @@ namespace Huge.Utils
             request.Send();
         }
 
+        public static async UniTask<HTTPHandler> Get(string url)
+        {
+            HTTPHandler handler = new HTTPHandler();
+            try
+            {
+                HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Get);
+                request.ConnectTimeout = TimeSpan.FromSeconds(HttpConnectTimeout);
+                request.Timeout = TimeSpan.FromSeconds(HttpTimeout);
+                await request.Send();
+                if (request.State == HTTPRequestStates.Finished)
+                {
+                    handler = OnRequestFinished(request, request.Response);
+                }
+                else
+                {
+                    handler = OnRequestFailed(request, request.Response);
+                }
+            }
+            catch(Exception ex)
+            {
+                handler.isDone = true;
+                handler.isError = true;
+                handler.isTimeout = false;
+                handler.msg = ex.ToString();
+            }
+            return handler;
+        }
+
         public static void Post(string url, HTTPFormBase form, HttpCallback callback)
         {
             HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Post, (req, resp) =>
@@ -79,6 +108,35 @@ namespace Huge.Utils
             request.Send();
         }
 
+        public static async UniTask<HTTPHandler> Post(string url, HTTPFormBase form)
+        {
+            HTTPHandler handler = new HTTPHandler();
+            try
+            {
+                HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Post);
+                request.ConnectTimeout = TimeSpan.FromSeconds(HttpConnectTimeout);
+                request.Timeout = TimeSpan.FromSeconds(HttpTimeout);
+                request.SetForm(form);
+                await request.Send();
+                if (request.State == HTTPRequestStates.Finished)
+                {
+                    handler = OnRequestFinished(request, request.Response);
+                }
+                else
+                {
+                    handler = OnRequestFailed(request, request.Response);
+                }
+            }
+            catch(Exception ex)
+            {
+                handler.isDone = true;
+                handler.isError = true;
+                handler.isTimeout = false;
+                handler.msg = ex.ToString();
+            }
+            return handler;
+        }
+
         static HTTPHandler OnRequestFinished(HTTPRequest req, HTTPResponse resp)
         {
             Huge.Debug.Log(
@@ -97,8 +155,8 @@ namespace Huge.Utils
         static HTTPHandler OnRequestFailed(HTTPRequest req, HTTPResponse resp)
         {
             HTTPHandler handler = new HTTPHandler();
-            handler.isDone = true;
             handler.isError = true;
+            handler.isDone = true;
 
             switch (req.State)
             {

@@ -30,7 +30,7 @@ namespace Huge
         {
             StringBuilder ret = logs[__tail];
             if ((__tail + 1) % __MAX_LOG_NUM == __head)
-            {//ÒÑÂú£¬Ôò¸²¸ÇÒ»Ìõ
+            {//å·²æ»¡ï¼Œåˆ™è¦†ç›–ä¸€æ¡
                 __tail = (__tail + 1) % __MAX_LOG_NUM;
                 __head = (__head + 1) % __MAX_LOG_NUM;
             }

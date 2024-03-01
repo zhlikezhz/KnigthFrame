@@ -3,23 +3,23 @@ using UnityEngine;
 namespace Huge
 {
     /// <summary>
-    /// ´Ëµ¥Àı¼Ì³ĞÓÚMono£¬¾ø´ó¶àÇé¿öÏÂ£¬¶¼²»ĞèÒªÊ¹ÓÃ´Ëµ¥ÀıÀàĞÍ¡£ÇëÊ¹ÓÃSingleton
-    /// ²»ĞèÒªÊÖ¶¯¹ÒÔØ
+    /// æ­¤å•ä¾‹ç»§æ‰¿äºMonoï¼Œç»å¤§å¤šæƒ…å†µä¸‹ï¼Œéƒ½ä¸éœ€è¦ä½¿ç”¨æ­¤å•ä¾‹ç±»å‹ã€‚è¯·ä½¿ç”¨Singleton
+    /// ä¸éœ€è¦æ‰‹åŠ¨æŒ‚è½½
     /// </summary>
     /// 
     public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         static T _instance;
         /// <summary>
-        /// Ïß³ÌËø
+        /// çº¿ç¨‹é”
         /// </summary>
         static readonly object _lock = new object();
         /// <summary>
-        /// ÊÇ·ñÎªÈ«¾Öµ¥Àı
+        /// æ˜¯å¦ä¸ºå…¨å±€å•ä¾‹
         /// </summary>
         protected static bool isGolbal = true;
         /// <summary>
-        /// ³ÌĞòÊÇ·ñÕıÔÚÍË³ö
+        /// ç¨‹åºæ˜¯å¦æ­£åœ¨é€€å‡º
         /// </summary>
         protected static bool ApplicationIsQuitting { get; private set; }
 
@@ -45,7 +45,7 @@ namespace Huge
                 {
                     if (_instance == null)
                     {
-                        // ÏÈÔÚ³¡¾°ÖĞÕÒÑ°
+                        // å…ˆåœ¨åœºæ™¯ä¸­æ‰¾å¯»
                         _instance = (T)FindObjectOfType(typeof(T));
 
                         if (FindObjectsOfType(typeof(T)).Length > 1)
@@ -58,7 +58,7 @@ namespace Huge
                             return _instance;
                         }
 
-                        // ³¡¾°ÖĞÕÒ²»µ½¾Í´´½¨ĞÂÎïÌå¹ÒÔØ
+                        // åœºæ™¯ä¸­æ‰¾ä¸åˆ°å°±åˆ›å»ºæ–°ç‰©ä½“æŒ‚è½½
                         if (_instance == null)
                         {
                             GameObject singletonObj = new GameObject();
@@ -77,7 +77,7 @@ namespace Huge
         }
 
         /// <summary>
-        /// µ±¹¤³ÌÔËĞĞ½áÊø£¬ÔÚÍË³öÊ±£¬²»ÔÊĞí·ÃÎÊµ¥Àı
+        /// å½“å·¥ç¨‹è¿è¡Œç»“æŸï¼Œåœ¨é€€å‡ºæ—¶ï¼Œä¸å…è®¸è®¿é—®å•ä¾‹
         /// </summary>
         public void OnApplicationQuit()
         {

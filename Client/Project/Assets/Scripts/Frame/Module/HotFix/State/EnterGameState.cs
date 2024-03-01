@@ -7,6 +7,14 @@ namespace Huge.HotFix
 {
     public class EnterGameState : FSMState
     {
+        public override void OnEnter(FSMContent content)
+        {
 
+        }
+
+        public override void OnLeave(FSMContent content)
+        {
+            base.OnLeave(content);
+        }
     }
 }
