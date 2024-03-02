@@ -7,3 +7,6 @@ Client/Project/.vs/
 *.vsconfig
 Client/Tools/Build/__pycache__/
 Client/Project/Temp/
+Client/Project/Assets/StreamingAssets/
+Client/Project/Bundles/
+Client/Project/Assets/StreamingAssets.meta
