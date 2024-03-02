@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Huge;
 using Huge.Pool;
 using Huge.Asset;
+using UnityEngine.Rendering.Universal;
 
 namespace Huge.MVVM
 {
@@ -28,21 +29,11 @@ namespace Huge.MVVM
         Dictionary<System.Type, View> m_ViewPools = new Dictionary<System.Type, View>();
         Dictionary<LayerType, GameObject> m_LayerObjects = new Dictionary<LayerType, GameObject>();
 
-        internal void Init()
-        {
-            GameObject prefab = Resources.Load<GameObject>("UIRoot");
-            m_UIRootObject = GameObject.Instantiate(prefab);
-            GameObject.DontDestroyOnLoad(m_UIRootObject);
-            m_UIRootObject.name = "uiRoot";
-            InternalInit(GameObject.Instantiate(prefab));
-        }
-
         internal async UniTask InitAsync()
         {
             var prefab = await Resources.LoadAsync<GameObject>("UIRoot");
             m_UIRootObject = GameObject.Instantiate(prefab as GameObject);
             GameObject.DontDestroyOnLoad(m_UIRootObject);
-            m_UIRootObject.name = "uiRoot";
             InternalInit(m_UIRootObject);
         }
 
@@ -51,6 +42,7 @@ namespace Huge.MVVM
             Transform uiTrans = uiRoot.transform;
             m_MaskObject = uiTrans.Find("UI/UIMask").gameObject;
             m_UICamera = uiTrans.Find("UICamera").GetComponent<Camera>();
+            Camera.main.GetComponent<UniversalAdditionalCameraData>().cameraStack.Add(m_UICamera);
             m_LayerObjects.Add(LayerType.BackLayer, uiTrans.Find("UI/BackLayer").gameObject);
             m_LayerObjects.Add(LayerType.NormalLayer, uiTrans.Find("UI/NormalLayer").gameObject);
             m_LayerObjects.Add(LayerType.PopupLayer, uiTrans.Find("UI/PopupLayer").gameObject);

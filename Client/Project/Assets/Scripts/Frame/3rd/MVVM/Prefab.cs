@@ -24,7 +24,7 @@ namespace Huge.MVVM
             gameObject.SetActive(actived);
         }
 
-        public void SetParent(GameObject parent, bool worldPositionStays = true)
+        public void SetParent(GameObject parent, bool worldPositionStays = false)
         {
             transform.SetParent(parent.transform, worldPositionStays);
         }

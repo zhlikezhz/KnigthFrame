@@ -8,6 +8,6 @@ public class LoadingPage : Page
 {
     protected override void Start(params object[] args)
     {
-        UnityEngine.Debug.LogError("------");
+
     }
 }

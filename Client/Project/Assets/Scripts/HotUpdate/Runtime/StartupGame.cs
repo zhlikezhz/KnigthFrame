@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Huge.MVVM;
+using Huge.Asset;
 
 public class StartupGame : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class StartupGame : MonoBehaviour
 
     async void Startup()
     {
+        await AssetManager.Instance.InitAsync();
         await UIManager.Instance.InitAsync();
         UIManager.Instance.OpenView<LoadingPage>();
     }
