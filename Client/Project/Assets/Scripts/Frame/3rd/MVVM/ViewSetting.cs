@@ -6,6 +6,11 @@ namespace Huge.MVVM
     {
         public readonly Type Prefab;
         public readonly Type ViewModel;
+
+        public ViewSettingAttribute(Type prefab)
+        {
+            Prefab = prefab;
+        }
         
         public ViewSettingAttribute(Type prefab, Type viewModel)
         {

@@ -71,14 +71,14 @@ namespace Huge.MVVM
             var attr = type.GetAttribute<PrefabSettingAttribute>();
             if (attr == null) 
             {
-                throw new Exception($"error: {type.Name}需指定预制体路径");
+                throw new Exception($"{type.Name} need prefab load path");
             }
             else
             {
                 Prefab instance = Activator.CreateInstance(type) as Prefab;
                 if (instance == null)
                 {
-                    throw new Exception($"error: {type.Name}必须继承于Prefab");
+                    throw new Exception($"{type.Name} need inherit Prefab");
                 }
 
                 if (root == null)
@@ -86,7 +86,7 @@ namespace Huge.MVVM
                     var prefab = AssetManager.Instance.LoadAsset<GameObject>(attr.PrefabPath);
                     if (prefab == null)
                     {
-                        throw new Exception($"error: {type.Name}预制体不存在{attr.PrefabPath}");
+                        throw new Exception($"{type.Name} prefab does not exists {attr.PrefabPath}");
                     }
                     root = GameObject.Instantiate(prefab);
                 }

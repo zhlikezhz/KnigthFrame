@@ -1,0 +1,168 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Common
+  serializedVersion: 2
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: Server
+      m_MaxTextureSize: 2048
+      m_MaxPlaceholderSize: 32
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 12
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: WebGL
+      m_MaxTextureSize: 2048
+      m_MaxPlaceholderSize: 32
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 51
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: Standalone
+      m_MaxTextureSize: 2048
+      m_MaxPlaceholderSize: 32
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 12
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    transparentPlaceholder: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: f54ea2af0ed3deb419a6e55d032bb8bc, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 1a8d84305b009cc4290881f0f23e8323, type: 3}
+  - {fileID: 21300000, guid: 4a33d4e08943c1b4685a032130e8a914, type: 3}
+  - {fileID: 21300000, guid: 7db105e06a9ea5643909557b233bb67f, type: 3}
+  - {fileID: 21300000, guid: 48c43e21d73d3d544bab2c61ec7b9537, type: 3}
+  - {fileID: 21300000, guid: 26b91b412ffd1fb44b526eb55884b964, type: 3}
+  - {fileID: 21300000, guid: ff375051a075c2a45b340369cd90e57f, type: 3}
+  - {fileID: 21300000, guid: f80b1d51eac8d924eb7b64f4377d7555, type: 3}
+  - {fileID: 21300000, guid: 6ba09b91fabbd6b40bb5e7fe48b30593, type: 3}
+  - {fileID: 21300000, guid: ed6d4ca1e6066194190275c676878f41, type: 3}
+  - {fileID: 21300000, guid: 28c51ec1ff4c6ef4e9dc2c4db1c8084e, type: 3}
+  - {fileID: 21300000, guid: d4c828f1dcb065e46bc0f3b96e775387, type: 3}
+  - {fileID: 21300000, guid: 3e664502fb722aa4b990306f9068a5c6, type: 3}
+  - {fileID: 21300000, guid: 280e2522f5c02a7479ac483632d2f917, type: 3}
+  - {fileID: 21300000, guid: cde9c8421c33dc64db3c24bc8439f928, type: 3}
+  - {fileID: 21300000, guid: 9d25b79276ae2294abff4cb28103d763, type: 3}
+  - {fileID: 21300000, guid: af3c97d2e5d66b2449badba37ae86fbd, type: 3}
+  - {fileID: 21300000, guid: 3fb2d543072ff6545a113d23c417fdd3, type: 3}
+  - {fileID: 21300000, guid: 11b39534099ad66469a3dadfefefda70, type: 3}
+  - {fileID: 21300000, guid: acc5ff846d8925f419bc1b1bebf06891, type: 3}
+  - {fileID: 21300000, guid: 8e9de535f2e12aa47be7c909a7ac2fa7, type: 3}
+  - {fileID: 21300000, guid: 4b3ef7355e45fe1479b99abebbcfd870, type: 3}
+  - {fileID: 21300000, guid: 63bd9df5b0f4db54bbe78ffbf92aadf5, type: 3}
+  - {fileID: 21300000, guid: a5591ab6bfb939b4b96675aafd81b062, type: 3}
+  - {fileID: 21300000, guid: 90cab1d6aee13b9419fd407299eb251e, type: 3}
+  - {fileID: 21300000, guid: 42cb9f176a5b85d4c812bc77f83d7893, type: 3}
+  - {fileID: 21300000, guid: 38f3b2886fa667c489159bbb4a072296, type: 3}
+  - {fileID: 21300000, guid: 3f0b3988170b09d40822d6325b4b8e1a, type: 3}
+  - {fileID: 21300000, guid: c38dda093e1ad8c4aa4a238312e1baac, type: 3}
+  - {fileID: 21300000, guid: 11ac67d9a0177cb4984c7a23e3f8452d, type: 3}
+  - {fileID: 21300000, guid: 57e06e5acb7706a479919bc25f46de67, type: 3}
+  - {fileID: 21300000, guid: 6c59730b7ead7bf41bb63dba2cb1c436, type: 3}
+  - {fileID: 21300000, guid: 1d36844b1652a764d97438b49189d0c2, type: 3}
+  - {fileID: 21300000, guid: 4f524e5c175807840ad80e563dc2810f, type: 3}
+  - {fileID: 21300000, guid: 766b86cc362a891418574cfd7cc6bdfc, type: 3}
+  - {fileID: 21300000, guid: 23a9571d48b12f445bc9aefab592ad68, type: 3}
+  - {fileID: 21300000, guid: f83f5a1d66edfbc4a8c7af6a669489ba, type: 3}
+  - {fileID: 21300000, guid: 071f834da2193fc43ab6f97bba4635bd, type: 3}
+  - {fileID: 21300000, guid: a59ec29ebdc95ff43aa8f677d34f0726, type: 3}
+  - {fileID: 21300000, guid: a664f0bebad68e34e8018672ee1ec1a6, type: 3}
+  - {fileID: 21300000, guid: f9831b5fc845b6e4fb72986896d58e31, type: 3}
+  - {fileID: 21300000, guid: 5571ddff4d11f2b4dab3aea1d4aa3029, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - btn_m06_Normal
+  - Background2
+  - NpcHead_bg02
+  - btn_tab02_dis
+  - Background1_Bg
+  - btn_tab01_sel
+  - Close01_normal
+  - btn_m05_Normal
+  - Background1
+  - js_board_zl
+  - add05
+  - btn_m05_NotDlickable
+  - btn01_Normal
+  - btn_tab01_dis
+  - add02
+  - zjm_board_touxiang_02
+  - btn_l05_Normal
+  - zjm_board_touxiang_01
+  - List07_a
+  - zd_board_top_huode
+  - add06
+  - network_Icon01
+  - icon_bcs08
+  - List07_b
+  - btn_m02_Normal
+  - GreenBar_FullFill_l
+  - NpcHead_bg01
+  - GreenBar_Fill
+  - add04
+  - GreenBar_FullFill_s
+  - btn_tab01_nml
+  - btn_m07_Normal
+  - btn_m08_Normal
+  - btn_l02_Normal
+  - btn05_Normal
+  - list05_a
+  - btn_m01_Normal
+  - btn02_Normal
+  - btn_m04_Normal
+  - GreenBar_Fill_s
+  - btn_l01_Normal
+  m_RenderDataMap: {}
+  m_Tag: Common
+  m_IsVariant: 0
+  m_IsPlaceholder: 0

@@ -39,7 +39,7 @@ namespace Huge.MVVM.Editor
         }
         */
 
-        const string c_ScriptDirPath = "AvatarCore/Scripts/View/AutoGenerate";
+        public static string s_ScriptDirPath = "Scripts/HotUpdate/Runtime/UI/AutoGenerate";
         static string m_strPrefabPath = "";
         static string m_strScriptName = "";
         static string m_strScriptFullPath = "";
@@ -49,7 +49,7 @@ namespace Huge.MVVM.Editor
             m_strPrefabPath = AssetDatabase.GetAssetPath(obj);
             m_strScriptName = Path.GetFileNameWithoutExtension(m_strPrefabPath);
             string dirPath = Path.GetDirectoryName(m_strPrefabPath);
-            m_strScriptFullPath = $"{c_ScriptDirPath}/{m_strScriptName}Generate.cs";
+            m_strScriptFullPath = $"{s_ScriptDirPath}/{m_strScriptName}Generate.cs";
             m_strScriptFullPath = Path.Combine(Application.dataPath, m_strScriptFullPath);
             UnityEngine.Debug.LogError(m_strScriptFullPath);
             
@@ -85,7 +85,7 @@ namespace Huge.MVVM.Editor
             m_DstText.AppendLine("using UnityEngine;");
             m_DstText.AppendLine("using UnityEngine.UI;");
             m_DstText.AppendLine();
-            m_DstText.AppendLine($"[Component(\"{m_strPrefabPath}\")]");
+            m_DstText.AppendLine($"[PrefabSettingAttribute(\"{m_strPrefabPath}\")]");
             m_DstText.AppendLine($"public class {m_strScriptName}Generate : Prefab");
             m_DstText.AppendLine("{");
             tree.GenerateCode(m_DstText, "");

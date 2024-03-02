@@ -6,7 +6,8 @@ using Cysharp.Threading.Tasks;
 using Huge;
 using Huge.Pool;
 using Huge.Asset;
-using Unity.VisualScripting;
+using UnityEditor.PackageManager.Requests;
+using UnityEngine.PlayerLoop;
 
 namespace Huge.MVVM
 {
@@ -22,18 +23,51 @@ namespace Huge.MVVM
 
     public class UIManager : Singleton<UIManager>
     {
+        Camera m_UICamera;
         GameObject m_MaskObject;
         GameObject m_UIRootObject;
         List<View> m_StackView = new List<View>();
         Dictionary<System.Type, View> m_ViewPools = new Dictionary<System.Type, View>();
         Dictionary<LayerType, GameObject> m_LayerObjects = new Dictionary<LayerType, GameObject>();
 
-        static readonly string CanvasPrefabPath = "Art/Prefab/Canvas.prefab";
-        internal async UniTask InitAsync()
+        internal void Init()
         {
-            GameObject prefab = await AssetManager.Instance.LoadAssetAsync<GameObject>(CanvasPrefabPath);
+            GameObject prefab = Resources.Load<GameObject>("UIRoot");
             m_UIRootObject = GameObject.Instantiate(prefab);
             GameObject.DontDestroyOnLoad(m_UIRootObject);
+            m_UIRootObject.name = "uiRoot";
+            InternalInit(GameObject.Instantiate(prefab));
+        }
+
+        internal async UniTask InitAsync()
+        {
+            var prefab = await Resources.LoadAsync<GameObject>("UIRoot");
+            m_UIRootObject = GameObject.Instantiate(prefab as GameObject);
+            GameObject.DontDestroyOnLoad(m_UIRootObject);
+            m_UIRootObject.name = "uiRoot";
+            InternalInit(m_UIRootObject);
+        }
+
+        void InternalInit(GameObject uiRoot)
+        {
+            Transform uiTrans = uiRoot.transform;
+            m_MaskObject = uiTrans.Find("UI/UIMask").gameObject;
+            m_UICamera = uiTrans.Find("UICamera").GetComponent<Camera>();
+            m_LayerObjects.Add(LayerType.BackLayer, uiTrans.Find("UI/BackLayer").gameObject);
+            m_LayerObjects.Add(LayerType.NormalLayer, uiTrans.Find("UI/NormalLayer").gameObject);
+            m_LayerObjects.Add(LayerType.PopupLayer, uiTrans.Find("UI/PopupLayer").gameObject);
+            m_LayerObjects.Add(LayerType.GuideLayer, uiTrans.Find("UI/GuideLayer").gameObject);
+            m_LayerObjects.Add(LayerType.TopLayer, uiTrans.Find("UI/TopLayer").gameObject);
+        }
+
+        internal void Destroy()
+        {
+            GameObject.Destroy(m_UIRootObject);
+        }
+
+        public Camera GetCamera()
+        {
+            return m_UICamera;
         }
 
         public T OpenView<T>(params object[] args) where T : View

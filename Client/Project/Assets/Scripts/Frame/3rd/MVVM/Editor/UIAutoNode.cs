@@ -222,7 +222,7 @@ namespace Huge.MVVM
                 node.GenerateFull(data, true, prefix);
             }
             data.AppendLine();
-            data.AppendLine($"\t{prefix}public override void OnCreate()");
+            data.AppendLine($"\t{prefix}protected override void OnInit()");
             data.AppendLine($"\t{prefix}{{");
             foreach(var node in ObjectNodeList)
             {

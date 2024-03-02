@@ -3,7 +3,7 @@ using System;
 namespace Huge
 {
     /// <summary>
-    /// 泛用单例实现
+    /// 娉涚敤鍗曚緥瀹炵幇
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Singleton<T> where T : new()
