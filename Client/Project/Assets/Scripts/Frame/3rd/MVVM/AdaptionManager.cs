@@ -1,8 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Huge;
 
-namespace Huge.MVVM
+namespace HQ.MVVM
 {
     //屏幕适配管理
     public class AdaptionManager : Singleton<AdaptionManager>
@@ -24,7 +25,7 @@ namespace Huge.MVVM
         {
             bool isPad = false;
             float iphoneScreenRate = 9.0f / 16.0f;
-            float screenRate = Screen.width / Screen.height;
+            float screenRate = Screen.width * 1.0f / Screen.height;
             if (screenRate > iphoneScreenRate + 0.00001f)
             {
                 isPad = true;
@@ -82,24 +83,23 @@ namespace Huge.MVVM
             }
             else
             {
-                Huge.Debug.LogError($"screen orientation is ScreenOrientation.AutoRotation, ui adapter not supportted.");
+                UnityEngine.Debug.LogError($"screen orientation is ScreenOrientation.AutoRotation, ui adapter not supportted.");
             }
         }
 
-        public void AdapteCanvas(CanvasScaler canvasScaler, RectTransform uiRoot)
+        public void AdapteCanvas(CanvasScaler canvasScaler)
         {
-            Huge.Debug.Assert(canvasScaler != null, "param canvasScaler is null");
-            Huge.Debug.Assert(uiRoot != null, "param uiRoot is null");
-             
-            RefreshScreenSafeArea();
-            RefreshScreenMatchMode();
+            UnityEngine.Debug.Assert(canvasScaler != null, "param canvasScaler is null");
+            canvasScaler.matchWidthOrHeight = IsMatchHeight ? 1 : 0;
+        }
 
-            canvasScaler.matchWidthOrHeight = IsMatchHeight ? 0 : 1;
-
-            uiRoot.anchorMin = Vector2.zero;
-            uiRoot.anchorMax = Vector2.one;
-            uiRoot.offsetMin = new Vector2(ScreenLeft, ScreenDown);
-            uiRoot.offsetMax = new Vector2(-ScreenRight, -ScreenUp);
+        public void AdapteSafeArea(RectTransform rt)
+        {
+            UnityEngine.Debug.Assert(rt != null, "param rt is null");
+            rt.offsetMin = new Vector2(ScreenLeft, ScreenDown);
+            rt.offsetMax = new Vector2(-ScreenRight, -ScreenUp);
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
         }
 
         public void AdapteBG(RectTransform uiRoot, RectTransform rt)
