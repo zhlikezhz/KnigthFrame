@@ -229,6 +229,18 @@ namespace Huge.Utils
             return data;
         }
 
+        public static async UniTask SavePresistentFileAsync(string text, string fileName)
+        {
+            string fullPath = PathUtility.GetPresistentDataFullPath(fileName);
+            await File.WriteAllTextAsync(fullPath, text);
+        }
+
+        public static async UniTask SavePresistentFileAsync(byte[] bytes, string fileName)
+        {
+            string fullPath = PathUtility.GetPresistentDataFullPath(fileName);
+            await File.WriteAllBytesAsync(fullPath, bytes);
+        }
+
         public static async UniTask<byte[]> LoadStreamingFile(string fileName)
         {
             byte[] data = null;

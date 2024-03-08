@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Huge.FSM;
+using System.IO;
 
 namespace Huge.HotFix
 {
@@ -16,8 +17,6 @@ namespace Huge.HotFix
 
     internal class PrepareFirstGameState : FSMState
     {
-        TinkerVersion m_CacheConfig;
-        TinkerVersion m_StreamConfig;
         public override void OnEnter(FSMContent content)
         {
             ResetGame(content).Forget();
@@ -43,13 +42,13 @@ namespace Huge.HotFix
                 }
                 else
                 {
-                    TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, "无法进入游戏");
+                    TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, "enter game error");
                 }
             }
             catch (Exception ex)
             {
                 TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, ex.Message);
-                Huge.Debug.LogException(ex);
+                Huge.Debug.LogError(ex.Message);
             }
         }
 
@@ -60,31 +59,16 @@ namespace Huge.HotFix
         async UniTask<FirstGameState> CheckFirstGameState(FSMContent content)
         {
             FirstGameState state = FirstGameState.None;
-            if (Huge.Utils.FileUtility.IsPresistentFileExists(TinkerConst.VersionFile))
+            if (Huge.Utils.FileUtility.IsPresistentFileExists(TinkerConst.AppFootPrintFile))
             {
-                string localJson = await Huge.Utils.FileUtility.LoadStreamingFileByText(TinkerConst.VersionFile);
-                if (localJson != null)
+                string footPrint = await Huge.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.AppFootPrintFile);
+                if (Application.buildGUID == footPrint)
                 {
-                    m_StreamConfig = new TinkerVersion(localJson);
-
-                    string cacheJson = await Huge.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.VersionFile);
-                    m_CacheConfig = new TinkerVersion(cacheJson);
-
-                    //覆盖安装的时候，如果本地版本更大则进入首次安装逻辑
-                    if (IsCleanPresistent(m_StreamConfig, m_CacheConfig))
-                    {
-                        state = FirstGameState.FirstEnterGame;
-                    }
-                    else
-                    {
-                        state = FirstGameState.EnterGame;
-                    }
+                    state = FirstGameState.EnterGame;
                 }
                 else
                 {
-                    string message = $"load local config file error: fileName = {TinkerConst.VersionFile}";
-                    TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, message);
-                    Huge.Debug.LogError(message);
+                    state = FirstGameState.FirstEnterGame;
                 }
             }
             else
@@ -94,25 +78,10 @@ namespace Huge.HotFix
             return state;
         }
 
-        bool IsCleanPresistent(TinkerVersion streamConfig, TinkerVersion cacheConfig)
-        {
-            if (cacheConfig.BigVersion >= streamConfig.BigVersion)
-            {
-                if (cacheConfig.ForceUpdateVersion >= streamConfig.ForceUpdateVersion)
-                {
-                    if (cacheConfig.HotUpdateVersion >= streamConfig.HotUpdateVersion)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
         void EnterGame(FSMContent content)
         {
             TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, "success");
-            if (m_StreamConfig != null && m_StreamConfig.Config.IsOpenHotFix)
+            if (Frame.Instance.Settings.IsHotUpdatePackage)
             {
                 content.ChangeState<CheckRemoteState>();
             }
@@ -124,29 +93,39 @@ namespace Huge.HotFix
 
         async UniTask FirstEnterGame(FSMContent content)
         {
+            //写入footprint
+            await Huge.Utils.FileUtility.SavePresistentFileAsync(TinkerConst.AppFootPrintFile, Application.buildGUID);
+            
             //首次进入游戏清理缓存
             ClearPresistentCache();
 
             //首次进入游戏解包
             await CopyStreamingAssetsToPresistentCache();
+
+            EnterGame(content);
         }
 
         void ClearPresistentCache()
         {
             string resDir = Huge.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.ResDir);
             Huge.Utils.FileUtility.DeleteExistDirectory(resDir);
+            string scriptDir = Huge.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.ScriptDir);
+            Huge.Utils.FileUtility.DeleteExistDirectory(scriptDir);
             string downloadDir = Huge.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.DownloadDir);
             Huge.Utils.FileUtility.DeleteExistDirectory(downloadDir);
             string versionFullPath = Huge.Utils.PathUtility.GetStreamingDataFullPath(TinkerConst.VersionFile);
             Huge.Utils.FileUtility.DeleteExistDirectory(versionFullPath);
 
             Huge.Utils.FileUtility.CreateDirectoryIfNotExist(resDir);
+            Huge.Utils.FileUtility.CreateDirectoryIfNotExist(scriptDir);
             Huge.Utils.FileUtility.CreateDirectoryIfNotExist(downloadDir);
         }
 
         async UniTask CopyStreamingAssetsToPresistentCache()
         {
             await Huge.Utils.FileUtility.CopyStreamingFileToPresistentDir(TinkerConst.VersionFile, TinkerConst.VersionFile);
+            string hybridCLRFile = Path.Combine(TinkerConst.ScriptDir, TinkerConst.HybridCLRFile);
+            await Huge.Utils.FileUtility.CopyStreamingFileToPresistentDir(TinkerConst.HybridCLRFile, hybridCLRFile);
         }
     }
 }

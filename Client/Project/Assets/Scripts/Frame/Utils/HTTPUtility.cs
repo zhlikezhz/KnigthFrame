@@ -34,12 +34,11 @@ namespace Huge.Utils
 
     public static class HTTPUtility
     {
-        static readonly double HttpTimeout = 60.0f;
         static readonly double HttpConnectTimeout = 15.0f;
 
         public delegate void HttpCallback(HTTPHandler handler);
 
-        public static void Get(string url, HttpCallback callback)
+        public static void Get(string url, HttpCallback callback, int timeout = 30)
         {
             HTTPRequest request = new HTTPRequest(new Uri(url), (req, resp) =>
             {
@@ -55,18 +54,18 @@ namespace Huge.Utils
                 }
             });
             request.ConnectTimeout = TimeSpan.FromSeconds(HttpConnectTimeout);
-            request.Timeout = TimeSpan.FromSeconds(HttpTimeout);
+            request.Timeout = TimeSpan.FromSeconds(timeout);
             request.Send();
         }
 
-        public static async UniTask<HTTPHandler> Get(string url)
+        public static async UniTask<HTTPHandler> Get(string url, int timeout = 30)
         {
             HTTPHandler handler = new HTTPHandler();
             try
             {
                 HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Get);
                 request.ConnectTimeout = TimeSpan.FromSeconds(HttpConnectTimeout);
-                request.Timeout = TimeSpan.FromSeconds(HttpTimeout);
+                request.Timeout = TimeSpan.FromSeconds(timeout);
                 await request.Send();
                 if (request.State == HTTPRequestStates.Finished)
                 {
@@ -87,7 +86,7 @@ namespace Huge.Utils
             return handler;
         }
 
-        public static void Post(string url, HTTPFormBase form, HttpCallback callback)
+        public static void Post(string url, HTTPFormBase form, HttpCallback callback, int timeout)
         {
             HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Post, (req, resp) =>
             {
@@ -103,19 +102,19 @@ namespace Huge.Utils
                 }
             });
             request.ConnectTimeout = TimeSpan.FromSeconds(HttpConnectTimeout);
-            request.Timeout = TimeSpan.FromSeconds(HttpTimeout);
+            request.Timeout = TimeSpan.FromSeconds(timeout);
             request.SetForm(form);
             request.Send();
         }
 
-        public static async UniTask<HTTPHandler> Post(string url, HTTPFormBase form)
+        public static async UniTask<HTTPHandler> Post(string url, HTTPFormBase form, int timeout)
         {
             HTTPHandler handler = new HTTPHandler();
             try
             {
                 HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Post);
                 request.ConnectTimeout = TimeSpan.FromSeconds(HttpConnectTimeout);
-                request.Timeout = TimeSpan.FromSeconds(HttpTimeout);
+                request.Timeout = TimeSpan.FromSeconds(timeout);
                 request.SetForm(form);
                 await request.Send();
                 if (request.State == HTTPRequestStates.Finished)

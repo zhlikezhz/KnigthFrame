@@ -9,7 +9,8 @@ namespace Huge.HotFix
     {
         public override void OnEnter(FSMContent content)
         {
-
+            var tinker = content as TinkerManager;
+            tinker.IsCompleted = true;
         }
 
         public override void OnLeave(FSMContent content)

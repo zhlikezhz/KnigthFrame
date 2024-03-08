@@ -53,8 +53,8 @@ namespace Huge.HotFix
 
         async UniTask<string> UpdateVersionFile(FSMContent content)
         {
-            string versionURL = $"{TinkerConst.RemoteURL}{TinkerConst.VersionFile}";
-            var handler = await HTTPUtility.Get(versionURL);
+            string versionURL = $"{Frame.Instance.Settings.ResCDN}{TinkerConst.VersionFile}";
+            var handler = await HTTPUtility.Get(versionURL, 30);
             if (!handler.isError)
             {
                 return handler.text;

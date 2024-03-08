@@ -1,12 +1,7 @@
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Networking;
 using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using BestHTTP;
-using BestHTTP.Forms;
 using Cysharp.Threading.Tasks;
 
 namespace Huge.Utils
@@ -33,9 +28,14 @@ namespace Huge.Utils
 
     public static class DownloadUtility
     {
-        public static void Download(string url, HTTPUtility.HttpCallback callback)
+        public static async UniTask Download(string url, string filePath, int timeout = 60)
         {
-            HTTPUtility.Get(url, callback);
+            var handler = await HTTPUtility.Get(url);
+            if (handler.isError)
+            {
+                throw new Exception(handler.msg);
+            }
+            await File.WriteAllBytesAsync(filePath, handler.buffer);
         }
     }
 }
