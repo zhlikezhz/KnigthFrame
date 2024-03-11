@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Huge;
 
-namespace HQ.MVVM
+namespace Huge.MVVM
 {
     //屏幕适配管理
     public class AdaptionManager : Singleton<AdaptionManager>
@@ -14,6 +14,8 @@ namespace HQ.MVVM
         public float ScreenRight {get; set;}
         public float ScreenUp {get; set;}
         public float ScreenDown {get; set;}
+        public float CanvasWidth {get; set;}
+        public float CanvasHeight {get; set;}
 
         public AdaptionManager()
         {
@@ -87,10 +89,20 @@ namespace HQ.MVVM
             }
         }
 
+        /// <summary>
+        /// 适配UI Canvas
+        /// </summary>
+        /// <param name="canvasScaler"></param> <summary>
         public void AdapteCanvas(CanvasScaler canvasScaler)
         {
             UnityEngine.Debug.Assert(canvasScaler != null, "param canvasScaler is null");
             canvasScaler.matchWidthOrHeight = IsMatchHeight ? 1 : 0;
+            //调用CanvasScaler.OnEnable才能适配新的matchWidthOrHeight
+            canvasScaler.enabled = false;
+            canvasScaler.enabled = true;
+            Vector2 size = canvasScaler.GetComponent<RectTransform>().sizeDelta;
+            CanvasWidth = size.x;
+            CanvasHeight = size.y;
         }
 
         public void AdapteSafeArea(RectTransform rt)
@@ -102,25 +114,39 @@ namespace HQ.MVVM
             rt.anchorMax = Vector2.one;
         }
 
-        public void AdapteBG(RectTransform uiRoot, RectTransform rt)
+        public void AdapteBG(RectTransform rt, CanvasScaler uiScaler = null)
         {
-            var size = uiRoot.sizeDelta;
+            Vector2 size = Vector2.zero;
+            bool isMatchHeight = IsMatchHeight;
+            Vector2 uiSize = new Vector2(CanvasWidth, CanvasHeight);
+            if (uiScaler != null) {
+                uiSize = uiScaler.GetComponent<RectTransform>().sizeDelta;
+                isMatchHeight = uiScaler.matchWidthOrHeight > 0.5f ? true : false;
+            }
 
-            float scale     = 1.0f;
-            Vector2 sizeDelta = rt.sizeDelta;
-            scale = Mathf.Max(scale, size.x / sizeDelta.x);
-            scale = Mathf.Max(scale, size.y / sizeDelta.y);
-            float width  = sizeDelta.x * scale;
-            float height = sizeDelta.y * scale;
+            if (isMatchHeight)
+            {
+                size.x = (uiSize.y / rt.sizeDelta.y) * rt.sizeDelta.x; 
+                size.y = uiSize.y;
+                if (size.x < uiSize.x)
+                {
+                    size.x = uiSize.x;
+                    size.y = (uiSize.x / rt.sizeDelta.x) * rt.sizeDelta.y;
+                }
+            }
+            else
+            {
+                size.x = uiSize.x;
+                size.y = (uiSize.x / rt.sizeDelta.x) * rt.sizeDelta.y;
+                if (size.y < uiSize.y)
+                {
+                    size.x = (uiSize.y / rt.sizeDelta.y) * rt.sizeDelta.x; 
+                    size.y = uiSize.y;
+                }
+            }
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(width, height);
-            if (IsLandscape)
-            {
-                float offsetX = -((uiRoot.offsetMin.x + uiRoot.offsetMax.x) * 0.5f);
-                float offsetY = -((uiRoot.offsetMin.y + uiRoot.offsetMax.y) * 0.5f);
-                rt.anchoredPosition = new Vector2(offsetX, offsetY);
-            }
+            rt.sizeDelta = size;
         }
 
         public void AdapteLeft(RectTransform rt)
