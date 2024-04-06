@@ -24,13 +24,29 @@ MonoBehaviour:
     IgnoreDefaultType: 1
     AutoCollectShaders: 0
     Groups:
-    - GroupName: ui
-      GroupDesc: "\u754C\u9762\u8D44\u6E90"
-      AssetTags: ui
+    - GroupName: Main
+      GroupDesc: 
+      AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
       - CollectPath: Assets/Art/UI
         CollectorGUID: 783cd4ec61a87a0478674baf90666ce9
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/Art/FantasyTileset/Palettes
+        CollectorGUID: 7a20eb41b013a2c439398415f5363bfe
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/Art/FantasyTileset/Sprites
+        CollectorGUID: 91213fd9587bd5d49999e57095fc52ee
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory

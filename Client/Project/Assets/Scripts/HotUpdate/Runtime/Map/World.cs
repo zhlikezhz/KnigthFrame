@@ -8,7 +8,9 @@ public class World
     public int Width {get; set;}
     public int Height {get; set;}
 
-    async public static UniTask<World> GenerateAsync(int width, int height)
+    MapRenderSystem m_MapRenderSystem;
+
+    public async static UniTask<World> CreateAsync(int width, int height)
     {
         World map = new World();
         map.Height = height;
@@ -17,8 +19,8 @@ public class World
         return map;
     }
 
-    async public UniTask InitAsync()
+    public async UniTask InitAsync()
     {
-
+        m_MapRenderSystem = await MapRenderSystem.CreateAsync(Width, Height);
     }
 }
