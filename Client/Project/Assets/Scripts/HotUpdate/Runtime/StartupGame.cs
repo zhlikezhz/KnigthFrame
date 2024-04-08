@@ -15,6 +15,6 @@ public class StartupGame : MonoBehaviour
         await AssetManager.Instance.InitAsync();
         await UIManager.Instance.InitAsync();
         //UIManager.Instance.OpenView<LoadingPage>();
-        await World.CreateAsync(100, 100);
+        await Map.CreateAsync(100, 100, 100);
     }
 }
