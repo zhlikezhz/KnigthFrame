@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using Unity.Entities;
 
 public class Map
 {
@@ -9,7 +8,7 @@ public class Map
     public int Width {get; set;}
     public int Height {get; set;}
 
-    MapRenderSystem m_MapRenderSystem;
+    MapRenderer m_MapRenderer;
 
     public async static UniTask<Map> CreateAsync(int width, int height, int seed)
     {
@@ -23,6 +22,6 @@ public class Map
 
     public async UniTask InitAsync()
     {
-        m_MapRenderSystem = await MapRenderSystem.CreateAsync(Width, Height);
+        m_MapRenderer = await MapRenderer.CreateAsync(Width, Height);
     }
 }
