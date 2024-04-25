@@ -13,20 +13,18 @@ namespace Huge.MVVM
     /// </summary> <summary>
     /// 
     /// </summary>
-    public class Page : View
+    public class Page : Window
     {
         internal override void AfterCreate()
         {
-            base.AfterCreate();
-
             //找到当前Page的位置
             //找到相同层(和当前Page相同层)或者更高层(比当前Page更高层)中位置最高的Page
             int curViewPagePos = -1;
             int topViewPagePos = -1;
-            List<View> viewStack = UIManager.Instance.GetViewStack();
+            List<Window> viewStack = UIManager.Instance.GetWindowStack();
             for(int i = viewStack.Count - 1; i >= 0; i--)
             {
-                View view = viewStack[i];
+                Window view = viewStack[i];
                 if (topViewPagePos != -1 && view.GetLayerType() >= GetLayerType() && (view as Page == null))
                 {
                     topViewPagePos = i;
@@ -43,7 +41,7 @@ namespace Huge.MVVM
             {
                 for(int i = 0; i < curViewPagePos; i++)
                 {
-                    View view = viewStack[i];
+                    Window view = viewStack[i];
                     LayerType layerType = view.GetLayerType();
                     if (layerType == GetLayerType())
                     {
@@ -60,12 +58,10 @@ namespace Huge.MVVM
 
         internal override void BeforeDestroy()
         {
-            base.BeforeDestroy();
-
             int curViewPagePos = -1;
             int preViewPagePos = -1;
             int nextViewPagePos = -1;
-            List<View> viewStack = UIManager.Instance.GetViewStack();
+            List<Window> viewStack = UIManager.Instance.GetWindowStack();
             for (int i = viewStack.Count - 1; i >= 0; i--)
             {
                 if (viewStack[i] == this)
@@ -108,7 +104,7 @@ namespace Huge.MVVM
                 }
 
                 //销毁Page及其在同一层的子Popup
-                var viewList = ListPool<View>.Get();
+                var viewList = ListPool<Window>.Get();
                 try
                 {
                     nextViewPagePos = (nextViewPagePos == -1) ? viewStack.Count : nextViewPagePos;
@@ -118,7 +114,7 @@ namespace Huge.MVVM
                     }
                     foreach (var view in viewList)
                     {
-                        UIManager.Instance.CloseView(view);
+                        UIManager.Instance.CloseWindow(view);
                     }
                 }
                 catch(Exception ex)
@@ -127,7 +123,7 @@ namespace Huge.MVVM
                 }
                 finally
                 {
-                    ListPool<View>.Release(viewList);
+                    ListPool<Window>.Release(viewList);
                 }
             }
         }

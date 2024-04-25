@@ -25,8 +25,8 @@ namespace Huge.MVVM
         Camera m_UICamera;
         GameObject m_MaskObject;
         GameObject m_UIRootObject;
-        List<View> m_StackView = new List<View>();
-        Dictionary<System.Type, View> m_ViewPools = new Dictionary<System.Type, View>();
+        List<Window> m_StackWindow = new List<Window>();
+        Dictionary<System.Type, Window> m_WindowPools = new Dictionary<System.Type, Window>();
         Dictionary<LayerType, GameObject> m_LayerObjects = new Dictionary<LayerType, GameObject>();
 
         internal async UniTask InitAsync()
@@ -60,78 +60,101 @@ namespace Huge.MVVM
             return m_UICamera;
         }
 
-        public T OpenView<T>(params object[] args) where T : View
+        public T OpenWindow<T>(params object[] args) where T : Window
         {
             var t = typeof(T);
-            View view = Activator.CreateInstance(t) as View;
-            m_StackView.Add(view);
+            Window Window = Activator.CreateInstance(t) as Window;
+            m_StackWindow.Add(Window);
             try
             {
-                view.Init(args);
-                return view as T;
+                Window.Init(null, args);
+                return Window as T;
             }
             catch(Exception ex)
             {
-                Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.");
-                m_StackView.Remove(view);
+                Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.\n{ex.StackTrace}.");
+                m_StackWindow.Remove(Window);
                 return null;
             }
         }
 
-        public async UniTask<T> OpenViewAsync<T>(params object[] args) where T : View
+        public async UniTask<T> OpenWindowAsync<T>(params object[] args) where T : Window
         {
             var t = typeof(T);
-            View view = Activator.CreateInstance(t) as View;
-            m_StackView.Add(view);
+            Window Window = Activator.CreateInstance(t) as Window;
+            m_StackWindow.Add(Window);
             try
             {
-                await view.InitAsync(args);
-                return view as T;
+                await Window.InitAsync(null, args);
+                return Window as T;
             }
             catch(Exception ex)
             {
-                Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.");
-                if (m_StackView.Contains(view)) m_StackView.Remove(view);
+                Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.\n{ex.StackTrace}");
+                if (m_StackWindow.Contains(Window)) m_StackWindow.Remove(Window);
                 return null;
             }
         }
 
-        public void CloseView(View view)
+        public void CloseWindow(Window Window)
         {
-            if (view != null && m_StackView.Contains(view) && view.IsDestoried())
+            if (Window != null && m_StackWindow.Contains(Window) && Window.IsDestroied())
             {
                 try
                 {
-                    m_StackView.Remove(view);
-                    view.Destroy().Forget();
+                    m_StackWindow.Remove(Window);
+                    Window.Destroy();
                 }
                 catch (Exception ex)
                 {
-                    Huge.Debug.LogError($"UI: close {view.GetType().Name} error: {ex.Message}.");
-                    if (m_StackView.Contains(view)) m_StackView.Remove(view);
+                    Huge.Debug.LogError($"UI: close {Window.GetType().Name} error: {ex.Message}.\n{ex.StackTrace}");
+                    if (m_StackWindow.Contains(Window)) m_StackWindow.Remove(Window);
                     throw ex;
                 }
             }
         }
 
-        public void CloseView<T>() where T : View
+        public void CloseWindowAndPlayAnimation(Window Window)
         {
-            View view = GetView<T>();
-            if (view != null)
+            CloseWindowAsync(Window);
+        }
+
+        public void CloseWindowAsync(Window Window)
+        {
+            if (Window != null && m_StackWindow.Contains(Window) && Window.IsDestroied())
             {
-                CloseView(view);
+                try
+                {
+                    m_StackWindow.Remove(Window);
+                    Window.DestroyAsync().Forget();
+                }
+                catch (Exception ex)
+                {
+                    Huge.Debug.LogError($"UI: close {Window.GetType().Name} error: {ex.Message}.\n{ex.StackTrace}");
+                    if (m_StackWindow.Contains(Window)) m_StackWindow.Remove(Window);
+                    throw ex;
+                }
             }
         }
 
-        public View GetView<T>() where T : View
+        public void CloseWindow<T>() where T : Window
+        {
+            Window Window = GetWindow<T>();
+            if (Window != null)
+            {
+                CloseWindow(Window);
+            }
+        }
+
+        public Window GetWindow<T>() where T : Window
         {
             var t = typeof(T);
-            for(int i = 0; i < m_StackView.Count; i++)
+            for(int i = 0; i < m_StackWindow.Count; i++)
             {
-                View view = m_StackView[i];
-                if (view.GetType() == t)
+                Window Window = m_StackWindow[i];
+                if (Window.GetType() == t)
                 {
-                    return view;
+                    return Window;
                 }
             }
             return null;
@@ -151,9 +174,9 @@ namespace Huge.MVVM
             return null;
         }
 
-        internal List<View> GetViewStack()
+        internal List<Window> GetWindowStack()
         {
-            return m_StackView;
+            return m_StackWindow;
         }
     }
 }

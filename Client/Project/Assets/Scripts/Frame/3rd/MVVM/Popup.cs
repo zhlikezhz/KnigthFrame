@@ -5,24 +5,22 @@ using UnityEngine.UI;
 
 namespace Huge.MVVM
 {
-    public class Popup : View
+    public class Popup : Window
     {
         internal override void AfterCreate()
         {
-            base.AfterCreate();
             RefreshPopupMask();
         }
 
         internal override void BeforeDestroy()
         {
-            base.BeforeDestroy();
             RefreshPopupMask();
         }
 
         internal void RefreshPopupMask()
         {
             Popup topPopup = null;
-            List<View> viewStack = UIManager.Instance.GetViewStack();
+            List<Window> viewStack = UIManager.Instance.GetWindowStack();
             for (int i = 0; i < viewStack.Count; i++)
             {
                 View view = viewStack[i];

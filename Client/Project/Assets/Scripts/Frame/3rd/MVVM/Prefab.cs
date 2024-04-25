@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 using Huge.Asset;
+using System.Threading;
+using System.Drawing.Text;
 
 namespace Huge.MVVM
 {
@@ -12,7 +14,10 @@ namespace Huge.MVVM
     {
         public Transform transform;
         public GameObject gameObject;
+
         private bool m_bIsDestoried = false;
+        public bool IsDestoried { get { return m_bIsDestoried;}}
+        public CancellationToken Token { get; private set;}
 
         protected Prefab()
         {
@@ -31,33 +36,32 @@ namespace Huge.MVVM
 
         internal static async UniTask<Prefab> CreateAsync(System.Type type, GameObject root = null)
         {
-            var attr = type.GetAttribute<PrefabSettingAttribute>();
-            if (attr == null) 
+            Prefab instance = Activator.CreateInstance(type) as Prefab;
+            if (instance == null)
             {
-                throw new Exception($"error: {type.Name}需指定预制体路径");
+                throw new Exception($"error: {type.Name}必须继承于Prefab");
             }
-            else
+
+            if (root == null)
             {
-                Prefab instance = Activator.CreateInstance(type) as Prefab;
-                if (instance == null)
+                var attr = type.GetAttribute<PrefabSettingAttribute>();
+                if (attr == null) 
                 {
-                    throw new Exception($"error: {type.Name}必须继承于Prefab");
+                    throw new Exception($"error: {type.Name}需指定预制体路径");
                 }
 
-                if (root == null)
+                var prefab = await AssetManager.Instance.LoadAssetAsync<GameObject>(attr.PrefabPath);
+                if (prefab == null)
                 {
-                    var prefab = await AssetManager.Instance.LoadAssetAsync<GameObject>(attr.PrefabPath);
-                    if (prefab == null)
-                    {
-                        throw new Exception($"error: {type.Name}预制体不存在{attr.PrefabPath}");
-                    }
-                    root = GameObject.Instantiate(prefab);
+                    throw new Exception($"error: {type.Name}预制体不存在{attr.PrefabPath}");
                 }
-                instance.gameObject = root;
-                instance.transform = root.transform;
-                instance.OnInit();
-                return instance;
+                root = GameObject.Instantiate(prefab);
             }
+            instance.gameObject = root;
+            instance.transform = root.transform;
+            instance.Token = root.GetCancellationTokenOnDestroy();
+            instance.OnInit();
+            return instance;
         }
 
         internal static async UniTask<T> CreateAsync<T>(GameObject root = null) where T : Prefab
@@ -68,33 +72,32 @@ namespace Huge.MVVM
 
         internal static Prefab Create(System.Type type, GameObject root = null)
         {
-            var attr = type.GetAttribute<PrefabSettingAttribute>();
-            if (attr == null) 
+            Prefab instance = Activator.CreateInstance(type) as Prefab;
+            if (instance == null)
             {
-                throw new Exception($"{type.Name} need prefab load path");
+                throw new Exception($"{type.Name} need inherit Prefab");
             }
-            else
+
+            if (root == null)
             {
-                Prefab instance = Activator.CreateInstance(type) as Prefab;
-                if (instance == null)
+                var attr = type.GetAttribute<PrefabSettingAttribute>();
+                if (attr == null) 
                 {
-                    throw new Exception($"{type.Name} need inherit Prefab");
+                    throw new Exception($"{type.Name} need prefab load path");
                 }
 
-                if (root == null)
+                var prefab = AssetManager.Instance.LoadAsset<GameObject>(attr.PrefabPath);
+                if (prefab == null)
                 {
-                    var prefab = AssetManager.Instance.LoadAsset<GameObject>(attr.PrefabPath);
-                    if (prefab == null)
-                    {
-                        throw new Exception($"{type.Name} prefab does not exists {attr.PrefabPath}");
-                    }
-                    root = GameObject.Instantiate(prefab);
+                    throw new Exception($"{type.Name} prefab does not exists {attr.PrefabPath}");
                 }
-                instance.gameObject = root;
-                instance.transform = root.transform;
-                instance.OnInit();
-                return instance;
+                root = GameObject.Instantiate(prefab);
             }
+            instance.gameObject = root;
+            instance.transform = root.transform;
+            instance.Token = root.GetCancellationTokenOnDestroy();
+            instance.OnInit();
+            return instance;
         }
 
         internal static T Create<T>(GameObject root = null) where T : Prefab

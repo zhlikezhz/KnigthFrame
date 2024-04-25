@@ -14,6 +14,6 @@ public class StartupGame : MonoBehaviour
     {
         await AssetManager.Instance.InitAsync();
         await UIManager.Instance.InitAsync();
-        UIManager.Instance.OpenView<LoadingPage>();
+        UIManager.Instance.OpenWindow<LoadingPage>();
     }
 }
