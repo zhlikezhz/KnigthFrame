@@ -31,15 +31,15 @@ namespace Huge.Editor.Build
             };
         }
 
-        protected virtual string GetBuildLocation()
+        protected virtual string GetBuildLocation(BuildConfig buildConfig)
         {
             string packagePath = Path.Combine(BuildPackage.ProjectRootDir, BuildConst.OutputPath);
             return $"{packagePath}/{m_BuildConfig.PackageName}.apk";
         }
 
-        protected virtual BuildOptions GetBuildOptions()
+        protected virtual BuildOptions GetBuildOptions(BuildConfig buildConfig)
         {
-            BuildOptions buildOptions = BuildOptions.StrictMode;
+            BuildOptions buildOptions = BuildOptions.StrictMode | BuildOptions.CompressWithLz4HC;
 
             if (IsDevelopmentBuild())
             {
@@ -63,6 +63,9 @@ namespace Huge.Editor.Build
                 "hq_ads_ta_event",
                 "hq_iap_v2",
                 "hq_ta_event",
+                "hq_af_event",
+                "hq_launcher_auto",
+                "UNITASK_DOTWEEN_SUPPORT"
             };
         }
 
@@ -70,13 +73,13 @@ namespace Huge.Editor.Build
         {
             m_BuildConfig = buildConfig;
 
+            PlayerSettings.companyName = buildConfig.CompanyName;
             PlayerSettings.productName = buildConfig.PackageName;
-            PlayerSettings.bundleVersion = m_BuildConfig.Version;
+            PlayerSettings.bundleVersion = buildConfig.Version;
             BuildTargetGroup buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
             if (buildConfig.UseIL2CPP)
             {
                 PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
-                PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.ARMv7 | AndroidArchitecture.X86;
             }
             else
             {
@@ -84,10 +87,9 @@ namespace Huge.Editor.Build
             }
             SetScriptingSymbols();
 
-            string buildLocation = GetBuildLocation();
+            string buildLocation = GetBuildLocation(buildConfig);
             BuildTarget buildTarget = EditorUserBuildSettings.activeBuildTarget;
-            BuildReport buildReport = BuildPipeline.BuildPlayer(GetScenePaths(), buildLocation, buildTarget, GetBuildOptions());
-
+            BuildReport buildReport = BuildPipeline.BuildPlayer(GetScenePaths(), buildLocation, buildTarget, GetBuildOptions(buildConfig));
             if (buildReport.summary.result != BuildResult.Succeeded)
             {
                 string errorInfo = ParseBuildReportErrorMessage(buildReport);

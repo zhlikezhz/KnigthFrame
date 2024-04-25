@@ -11,25 +11,47 @@ namespace Huge.Editor.Build
         public static string ProjectRootDir = Application.dataPath.Replace("\\", "/").Replace("/Assets", "");
 
         [MenuItem("Build/BuildiOS", false, 1)]
-        public static void BuildiOSAssetBundle()
+        public static void BuildiOS()
         {
             BuildConfig buildConfig = new BuildConfig();
             buildConfig.IsDevelopment = true;
             buildConfig.IsForceRebuild = true;
             buildConfig.UseIL2CPP = false;
+            buildConfig.Version = "1.0.0";
+            buildConfig.IsUploadBundle = false;
             buildConfig.Platform = "iOS";
+            buildConfig.IsForceRebuild = true;
             BuildPackagetTarget(BuildTarget.iOS, buildConfig);
         }
 
         [MenuItem("Build/BuildAndroid", false, 2)]
-        public static void BuildAndroidAssetBunlde()
+        public static void BuildAndroid()
         {
             BuildConfig buildConfig = new BuildConfig();
             buildConfig.IsDevelopment = true;
             buildConfig.IsForceRebuild = true;
             buildConfig.UseIL2CPP = false;
+            buildConfig.Version = "1.0.0";
+            buildConfig.IsUploadBundle = false;
             buildConfig.Platform = "Android";
-            BuildPackagetTarget(BuildTarget.iOS, buildConfig);
+            buildConfig.ChannelID = BuildChannel.Dev;
+            buildConfig.IsForceRebuild = true;
+            BuildPackagetTarget(BuildTarget.Android, buildConfig);
+        }
+
+        [MenuItem("Build/BuildAndroid(GooglePlay)", false, 3)]
+        public static void BuildAndroid_GooglePay()
+        {
+            BuildConfig buildConfig = new BuildConfig();
+            buildConfig.IsDevelopment = true;
+            buildConfig.IsForceRebuild = true;
+            buildConfig.UseIL2CPP = true;
+            buildConfig.Version = "1.0.0";
+            buildConfig.IsUploadBundle = false;
+            buildConfig.Platform = "Android";
+            buildConfig.ChannelID = BuildChannel.GooglePlay;
+            buildConfig.IsForceRebuild = true;
+            BuildPackagetTarget(BuildTarget.Android, buildConfig);
         }
 
         public static void Build()

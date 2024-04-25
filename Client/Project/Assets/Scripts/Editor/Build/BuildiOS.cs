@@ -7,7 +7,7 @@ namespace Huge.Editor.Build
 {
     public class BuildiOS : Builder
     {
-        protected override string GetBuildLocation()
+        protected override string GetBuildLocation(BuildConfig buildConfig)
         {
             return $"{BuildPackage.ProjectRootDir}/xcode";
         }

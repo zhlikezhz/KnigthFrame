@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Huge
 {
-    public class Tick
+    public class TickManager : Singleton<TickManager>
     {
         private const int TICK_STEP = 66;
         private const int TICK_ITEM_GROUP_NUM = 60;
@@ -25,11 +25,6 @@ namespace Huge
 
         // tickItem存储容器
         private static Dictionary<int, TickItemBase> s_TickItems = new Dictionary<int, TickItemBase>();
-
-        private Tick()
-        {
-
-        }
 
         public static void Init(uint interval)
         {
