@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using UnityEngine.Tilemaps;
 
 public class Map
 {
@@ -23,5 +24,13 @@ public class Map
     public async UniTask InitAsync()
     {
         m_MapRenderer = await MapRenderer.CreateAsync(Width, Height);
+        TileLayerData layerData = m_MapRenderer.GetTileLayerData(MapLayer.Object);
+        GameObject root = layerData.tilemap.gameObject;
+        var tileCollider = root.AddComponent<TilemapCollider2D>();
+        var rigidbody =  root.AddComponent<Rigidbody2D>();
+        var compositeCollider = root.AddComponent<CompositeCollider2D>();
+        compositeCollider.offset = new Vector2(0.06f, 0.13f);
+        rigidbody.bodyType = RigidbodyType2D.Static;
+        tileCollider.usedByComposite = true;
     }
 }

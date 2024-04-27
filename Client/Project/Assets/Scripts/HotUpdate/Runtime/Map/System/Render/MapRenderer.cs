@@ -19,15 +19,15 @@ public enum MapLayer : int
     All,
 }
 
+public class TileLayerData
+{
+    public Tilemap tilemap;
+    public TilemapRenderer renderer;
+    public GameObject gameObject;
+}
+
 public class MapRenderer
 {
-    class TileLayerData
-    {
-        public Tilemap tilemap;
-        public TilemapRenderer renderer;
-        public GameObject gameObject;
-    }
-
     public int Seed;
     public int Width;
     public int Height;
@@ -44,6 +44,15 @@ public class MapRenderer
         mapRender.Seed = seed;
         await mapRender.RandomGenerate(seed);
         return mapRender;
+    }
+
+    public TileLayerData GetTileLayerData(MapLayer layer)
+    {
+        if (TileMaps.TryGetValue(layer, out var layerData))
+        {
+            return layerData;
+        }
+        return null;
     }
 
     async UniTask RandomGenerate(int seed)

@@ -15,23 +15,23 @@ public class HeroController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.W))
         {
-            spineRenderer.PlayAnimtion("walk", true);
+            spineRenderer.PlayAnimtion("run", true);
             transform.localPosition = transform.localPosition + new Vector3(0, moveSpeed, 0);
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            spineRenderer.PlayAnimtion("walk", true);
+            spineRenderer.PlayAnimtion("run", true);
             transform.localPosition = transform.localPosition + new Vector3(0, -moveSpeed, 0);
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            spineRenderer.PlayAnimtion("walk", true);
+            spineRenderer.PlayAnimtion("run", true);
             transform.localPosition = transform.localPosition + new Vector3(-moveSpeed, 0.0f, 0);
             transform.localScale = new Vector3(-0.2f, 0.2f, 0.2f);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            spineRenderer.PlayAnimtion("walk", true);
+            spineRenderer.PlayAnimtion("run", true);
             transform.localPosition = transform.localPosition + new Vector3(moveSpeed, 0.0f, 0);
             transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         }
