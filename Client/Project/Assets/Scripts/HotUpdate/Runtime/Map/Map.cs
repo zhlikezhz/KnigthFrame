@@ -26,11 +26,11 @@ public class Map
         m_MapRenderer = await MapRenderer.CreateAsync(Width, Height);
         TileLayerData layerData = m_MapRenderer.GetTileLayerData(MapLayer.Object);
         GameObject root = layerData.tilemap.gameObject;
-        var tileCollider = root.AddComponent<TilemapCollider2D>();
-        var rigidbody =  root.AddComponent<Rigidbody2D>();
-        var compositeCollider = root.AddComponent<CompositeCollider2D>();
-        compositeCollider.offset = new Vector2(0.06f, 0.13f);
-        rigidbody.bodyType = RigidbodyType2D.Static;
-        tileCollider.usedByComposite = true;
+        // var tileCollider = root.AddComponent<TilemapCollider2D>();
+        // var rigidbody =  root.AddComponent<Rigidbody2D>();
+        // var compositeCollider = root.AddComponent<CompositeCollider2D>();
+        // compositeCollider.offset = new Vector2(0.06f, 0.13f);
+        // rigidbody.bodyType = RigidbodyType2D.Static;
+        // tileCollider.usedByComposite = true;
     }
 }

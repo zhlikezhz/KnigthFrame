@@ -37,32 +37,40 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-      - CollectPath: Assets/Art/FantasyTileset/Palettes
-        CollectorGUID: 7a20eb41b013a2c439398415f5363bfe
+      - CollectPath: Assets/Art/Spine
+        CollectorGUID: d3c74f8f229388f43964abf696b5e8b5
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-      - CollectPath: Assets/Art/FantasyTileset/Sprites
-        CollectorGUID: 91213fd9587bd5d49999e57095fc52ee
-        CollectorType: 0
-        AddressRuleName: AddressByFileName
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: 
-        UserData: 
-      - CollectPath: Assets/Art/FantasyTileset/Atlas
-        CollectorGUID: 2ccb01e57ea29b9428aaebe325620ada
-        CollectorType: 0
-        AddressRuleName: AddressByFileName
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: 
-        UserData: 
-      - CollectPath: Assets/Art/Prefab
+      - CollectPath: Assets/Art/Prefabs
         CollectorGUID: 3c6450caf1214f84db665ccfed3c3d73
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/Art/Tileset
+        CollectorGUID: fa6b020f579beed4a9daae803b302de3
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/Art/Textures
+        CollectorGUID: e308afdeeaf0af14caef4db1c7855514
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/Art/Shaders
+        CollectorGUID: e0a22ceb082713a40944c05e00817789
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
