@@ -11,7 +11,7 @@ namespace Huge.FSM
 
         public FSMContent()
         {
-            Huge.Tick.RegisterUpdateTick((delta, tickID) => { m_iTickID = tickID; Update(delta); }, Huge.TickType.Loop);
+            Huge.TickManager.RegisterUpdateTick((delta, tickID) => { m_iTickID = tickID; Update(delta); }, Huge.TickType.Loop);
         }
 
         public void Destroy()
@@ -24,7 +24,7 @@ namespace Huge.FSM
 
             if (m_iTickID != -1)
             {
-                Huge.Tick.RemoveUpdateTick(m_iTickID);
+                Huge.TickManager.RemoveUpdateTick(m_iTickID);
                 m_iTickID = -1;
             }
         }

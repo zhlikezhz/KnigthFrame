@@ -270,8 +270,8 @@ namespace Huge.Pool
 
     public interface ICObject
     {
-        void _Reinit_();
-        void _Release_();
+        void OnReset();
+        void OnRelease();
     }
 
     /// <summary>
@@ -290,7 +290,7 @@ namespace Huge.Pool
         static public T Get() 
         {
             T obj = s_Pool.Get(); 
-            obj._Reinit_();
+            obj.OnReset();
             return obj;
         }
 
@@ -302,7 +302,7 @@ namespace Huge.Pool
         {
             if (toRelease != null)
             {
-                toRelease._Release_();
+                toRelease.OnRelease();
             }
             s_Pool.Release(toRelease); 
         }

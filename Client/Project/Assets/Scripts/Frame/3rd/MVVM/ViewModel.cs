@@ -9,8 +9,8 @@ namespace Huge.MVVM
 {
     public class ViewModel
     {
-        internal protected View m_View;
-        internal protected Prefab m_Prefab;
+        internal protected View view;
+        internal protected Prefab prefab;
         public CancellationToken Token { get; internal set; }
 
         internal void Destroy()
@@ -20,7 +20,7 @@ namespace Huge.MVVM
 
         public bool IsDestroied()
         {
-            return m_View.IsDestroied();
+            return view.IsDestroied();
         }
 
         internal protected virtual void Start(params object[] args)

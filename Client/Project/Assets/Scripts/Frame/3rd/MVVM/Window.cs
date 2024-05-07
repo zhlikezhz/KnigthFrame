@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Huge.MVVM
 {
-    public class Window : View
+    public abstract class Window : View
     {
         public T AddSection<T>(GameObject parent, params object[] args) where T : Section
         {
@@ -54,9 +54,9 @@ namespace Huge.MVVM
             UIManager.Instance.CloseWindow(this);
         }
 
-        public void CloseAndPlayAnimation()
+        public async UniTask CloseAndPlayAnimation()
         {
-            UIManager.Instance.CloseWindowAndPlayAnimation(this);
+            await UIManager.Instance.CloseWindowAsync(this);
         }
     }
 }

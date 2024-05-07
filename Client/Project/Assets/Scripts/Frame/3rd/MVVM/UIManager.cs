@@ -29,12 +29,25 @@ namespace Huge.MVVM
         Dictionary<System.Type, Window> m_WindowPools = new Dictionary<System.Type, Window>();
         Dictionary<LayerType, GameObject> m_LayerObjects = new Dictionary<LayerType, GameObject>();
 
-        internal async UniTask InitAsync()
+        public void Init()
+        {
+            var prefab = Resources.Load<GameObject>("UIRoot");
+            m_UIRootObject = GameObject.Instantiate(prefab as GameObject);
+            GameObject.DontDestroyOnLoad(m_UIRootObject);
+            InternalInit(m_UIRootObject);
+        }
+
+        public async UniTask InitAsync()
         {
             var prefab = await Resources.LoadAsync<GameObject>("UIRoot");
             m_UIRootObject = GameObject.Instantiate(prefab as GameObject);
             GameObject.DontDestroyOnLoad(m_UIRootObject);
             InternalInit(m_UIRootObject);
+        }
+
+        public void Destroy()
+        {
+            GameObject.Destroy(m_UIRootObject);
         }
 
         void InternalInit(GameObject uiRoot)
@@ -50,11 +63,6 @@ namespace Huge.MVVM
             m_LayerObjects.Add(LayerType.TopLayer, uiTrans.Find("UI/TopLayer").gameObject);
         }
 
-        internal void Destroy()
-        {
-            GameObject.Destroy(m_UIRootObject);
-        }
-
         public Camera GetCamera()
         {
             return m_UICamera;
@@ -63,17 +71,17 @@ namespace Huge.MVVM
         public T OpenWindow<T>(params object[] args) where T : Window
         {
             var t = typeof(T);
-            Window Window = Activator.CreateInstance(t) as Window;
-            m_StackWindow.Add(Window);
+            Window window = Activator.CreateInstance(t) as Window;
+            m_StackWindow.Add(window);
             try
             {
-                Window.Init(null, args);
-                return Window as T;
+                window.Init(null, args);
+                return window as T;
             }
             catch(Exception ex)
             {
                 Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.\n{ex.StackTrace}.");
-                m_StackWindow.Remove(Window);
+                m_StackWindow.Remove(window);
                 return null;
             }
         }
@@ -81,17 +89,17 @@ namespace Huge.MVVM
         public async UniTask<T> OpenWindowAsync<T>(params object[] args) where T : Window
         {
             var t = typeof(T);
-            Window Window = Activator.CreateInstance(t) as Window;
-            m_StackWindow.Add(Window);
+            Window window = Activator.CreateInstance(t) as Window;
+            m_StackWindow.Add(window);
             try
             {
-                await Window.InitAsync(null, args);
-                return Window as T;
+                await window.InitAsync(null, args);
+                return window as T;
             }
             catch(Exception ex)
             {
                 Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.\n{ex.StackTrace}");
-                if (m_StackWindow.Contains(Window)) m_StackWindow.Remove(Window);
+                if (m_StackWindow.Contains(window)) m_StackWindow.Remove(window);
                 return null;
             }
         }
@@ -114,19 +122,14 @@ namespace Huge.MVVM
             }
         }
 
-        public void CloseWindowAndPlayAnimation(Window Window)
-        {
-            CloseWindowAsync(Window);
-        }
-
-        public void CloseWindowAsync(Window Window)
+        public async UniTask CloseWindowAsync(Window Window)
         {
             if (Window != null && m_StackWindow.Contains(Window) && Window.IsDestroied())
             {
                 try
                 {
                     m_StackWindow.Remove(Window);
-                    Window.DestroyAsync().Forget();
+                    await Window.DestroyAsync();
                 }
                 catch (Exception ex)
                 {

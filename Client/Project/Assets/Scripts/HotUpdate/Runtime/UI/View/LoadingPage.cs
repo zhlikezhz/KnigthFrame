@@ -6,7 +6,7 @@ using Huge.MVVM;
 [ViewSettingAttribute(typeof(LoadingPageGenerate))]
 public class LoadingPage : Page
 {
-    protected override void Start(params object[] args)
+    protected override void OnStart(params object[] args)
     {
 
     }

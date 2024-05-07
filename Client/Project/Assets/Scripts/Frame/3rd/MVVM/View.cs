@@ -13,11 +13,9 @@ namespace Huge.MVVM
         bool m_bIsActived = false;
         bool m_bIsDestroied = false;
         CancellationTokenSource m_Source;
+        internal List<Section> m_SectionList = new List<Section>();
 
-        protected Prefab m_Prefab;
-        protected ViewModel m_ViewModel;
-        protected List<Section> m_SectionList = new List<Section>();
-
+        protected Prefab Prefab;
         public CancellationToken Token { get; private set; }
 
         /// <summary>
@@ -38,23 +36,15 @@ namespace Huge.MVVM
                 {
                     throw new Exception("view need set prefab, please add ViewSettingAttribute to view and set ViewSettingAttribute.Prefab");
                 }
-                m_Prefab = Prefab.Create(viewSetting.Prefab, root);
-                m_Source = CancellationTokenSource.CreateLinkedTokenSource(m_Prefab.Token);
+                Prefab = Prefab.Create(viewSetting.Prefab, root);
+                m_Source = CancellationTokenSource.CreateLinkedTokenSource(Prefab.Token);
                 Token = m_Source.Token;
-
-                if (viewSetting.ViewModel != null)
-                {
-                    m_ViewModel = Activator.CreateInstance(viewSetting.ViewModel) as ViewModel;
-                    m_ViewModel.Token = m_Source.Token;
-                }
-                m_Prefab.SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+                Prefab.SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
 
                 SetActive(true);
                 AfterCreate();
-
                 //调用用户接口,此时框架层都处理完成
-                m_ViewModel?.Start(args);
-                Start(args);
+                OnStart(args);
             }
         }
 
@@ -77,27 +67,20 @@ namespace Huge.MVVM
                 {
                     throw new Exception("view need set prefab, please add ViewSettingAttribute to view and set ViewSettingAttribute.Prefab");
                 }
-                m_Prefab = await Prefab.CreateAsync(viewSetting.Prefab, root);
-                m_Source = CancellationTokenSource.CreateLinkedTokenSource(m_Prefab.Token);
+                Prefab = await Prefab.CreateAsync(viewSetting.Prefab, root);
+                Prefab.SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+                m_Source = CancellationTokenSource.CreateLinkedTokenSource(Prefab.Token);
                 Token = m_Source.Token;
-
-                if (viewSetting.ViewModel != null)
-                {
-                    m_ViewModel = Activator.CreateInstance(viewSetting.ViewModel) as ViewModel;
-                    m_ViewModel.Token = m_Source.Token;
-                    m_ViewModel.m_Prefab = m_Prefab;
-                    m_ViewModel.m_View = this;
-                }
-                m_Prefab.SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
-
-                SetActive(true);
                 AfterCreate();
 
-                await DoOpenAnimation();
-
+                SetActive(true);
                 //调用用户接口,此时框架层都处理完成
-                m_ViewModel?.Start(args);
-                Start(args);
+                OnStart(args);
+
+                if (this is IViewEnterAnimation view)
+                {
+                    await view.OnPlayEnterAnimation();
+                }
             }
         }
 
@@ -114,8 +97,7 @@ namespace Huge.MVVM
                 BeforeDestroy();
                 SetActive(false);
                 OnDestroy();
-                m_ViewModel?.Destroy();
-                m_Prefab?.Destroy();
+                Prefab?.Destroy();
                 m_Source.Cancel();
             }
         }
@@ -138,15 +120,19 @@ namespace Huge.MVVM
                 }
 
                 BeforeDestroy();
-                await DoCloseAnimation();
+                if (this is IViewExitAnimation view)
+                {
+                    await view.OnPlayExitAnimation();
+                }
+
                 SetActive(false);
                 OnDestroy();
-                m_ViewModel?.Destroy();
-                m_Prefab?.Destroy();
+                Prefab?.Destroy();
                 m_Source.Cancel();
             }
         }
 
+#region internal override
         /// <summary>
         /// 在View初始化之后被调用
         /// </summary>
@@ -168,6 +154,7 @@ namespace Huge.MVVM
         {
 
         }
+#endregion
 
 #region override
         public virtual LayerType GetLayerType()
@@ -175,12 +162,7 @@ namespace Huge.MVVM
             return LayerType.NormalLayer;
         }
 
-        protected virtual async UniTask DoOpenAnimation()
-        {
-
-        }
-
-        protected virtual void Start(params object[] args)
+        protected virtual void OnStart(params object[] args)
         {
 
         }
@@ -195,11 +177,6 @@ namespace Huge.MVVM
 
         }
 
-        protected virtual async UniTask DoCloseAnimation()
-        {
-
-        }
-
         protected virtual void OnDestroy()
         {
 
@@ -209,7 +186,7 @@ namespace Huge.MVVM
 #region public method
         public void SetParent(GameObject parent, bool worldPositionStays = false)
         {
-            m_Prefab.SetParent(parent, worldPositionStays);
+            Prefab.SetParent(parent, worldPositionStays);
         }
 
         public void SetActive(bool isActived)
@@ -217,15 +194,13 @@ namespace Huge.MVVM
             if (m_bIsActived != isActived)
             {
                 m_bIsActived = isActived;
-                m_Prefab?.SetActive(isActived);
+                Prefab?.SetActive(isActived);
                 if (isActived)
                 {
-                    m_ViewModel?.OnEnable();
                     OnEnable();
                 }
                 else
                 {
-                    m_ViewModel?.OnDisable();
                     OnDisable();
                 }
             }
@@ -240,8 +215,6 @@ namespace Huge.MVVM
         {
             return m_bIsActived;
         }
-
-        
 #endregion
     }
 }

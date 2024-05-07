@@ -19,9 +19,9 @@ namespace Huge.MVVM
             Destroy();
         }
 
-        public void CloseAndPlayAnimation()
+        public async UniTask CloseAndPlayAnimation()
         {
-            DestroyAsync().Forget();
+            await DestroyAsync();
         }
     }
 }

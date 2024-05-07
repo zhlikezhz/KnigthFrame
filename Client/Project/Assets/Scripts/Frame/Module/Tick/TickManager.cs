@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Huge
 {
-    public class TickManager : Singleton<TickManager>
+    public class TickManager
     {
         private const int TICK_STEP = 66;
         private const int TICK_ITEM_GROUP_NUM = 60;
