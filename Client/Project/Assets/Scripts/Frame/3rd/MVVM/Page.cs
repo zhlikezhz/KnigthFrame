@@ -92,7 +92,8 @@ namespace Huge.MVVM
                     }
                 }
 
-                if (nextViewPagePos != -1)
+                UnityEngine.Debug.LogError($"pre = {preViewPagePos}, nex = {nextViewPagePos}, cur = {curViewPagePos}");
+                if (nextViewPagePos == -1)
                 {
                     //如果Page是顶层Page，显示其下的Page及其子界面
                     preViewPagePos = (preViewPagePos == -1) ? 0 : preViewPagePos;

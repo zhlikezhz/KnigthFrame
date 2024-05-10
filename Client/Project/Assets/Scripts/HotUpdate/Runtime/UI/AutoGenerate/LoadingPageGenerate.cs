@@ -10,12 +10,12 @@ using Huge.MVVM;
 using UnityEngine;
 using UnityEngine.UI;
 
-[PrefabSettingAttribute("Assets/Art/UI/Prefab/Common/LoadingPage.prefab")]
-public class LoadingPageGenerate : Prefab
+[ViewSettingAttribute("Assets/Art/UI/Prefab/Common/LoadingPage.prefab")]
+public class LoadingPageGenerate : Page
 {
-	public Slider _SldBar;
 	public Text _TxtNum;
 	public Text _TxtSpeed;
+	public Slider _SldBar;
 	public Transform _BGObj;
 
 	protected override void OnInit()

@@ -268,43 +268,33 @@ namespace Huge.Pool
         public static void Release(Dictionary<TKey, TValue> toRelease) => s_Pool.Release(toRelease);
     }
 
-    public interface ICObject
+    public abstract class ReuseObject
     {
-        void OnReset();
-        void OnRelease();
+        internal void _Reset()
+        {
+            OnInit();
+        }
+
+        internal void _Release()
+        {
+            OnRelease();
+        }
+
+        protected virtual void OnInit()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual void OnRelease()
+        {
+            throw new NotImplementedException();
+        }
     }
 
-    /// <summary>
-    /// Class pool.
-    /// </summary>
-    /// <typeparam name="T">Type of the objects in the pull.</typeparam>
-    public abstract class CObjectPool<T> where T : ICObject, new()
+    public abstract class ReuseObject<T> : ReuseObject where T : ReuseObject, new()
     {
-        // Object pool to avoid allocations.
-        static readonly ObjectPool<T> s_Pool = new ObjectPool<T>(null, null, true);
-
-        /// <summary>
-        /// Get a new object.
-        /// </summary>
-        /// <returns>A new object from the pool.</returns>
-        static public T Get() 
-        {
-            T obj = s_Pool.Get(); 
-            obj.OnReset();
-            return obj;
-        }
-
-        /// <summary>
-        /// Release an object to the pool.
-        /// </summary>
-        /// <param name="toRelease">Object to release.</param>
-        static public void Release(T toRelease) 
-        {
-            if (toRelease != null)
-            {
-                toRelease.OnRelease();
-            }
-            s_Pool.Release(toRelease); 
-        }
+        static readonly ObjectPool<T> s_Pool = new ObjectPool<T>(l => l._Reset(), l => l._Release(), false);
+        public static void Release(T toRelease) => s_Pool.Release(toRelease);
+        public static T Get() => s_Pool.Get();
     }
 }

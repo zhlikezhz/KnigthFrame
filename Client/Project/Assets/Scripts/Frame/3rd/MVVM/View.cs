@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using System.Threading;
+using Huge.Asset;
 
 namespace Huge.MVVM
 {
@@ -15,7 +16,8 @@ namespace Huge.MVVM
         CancellationTokenSource m_Source;
         internal List<Section> m_SectionList = new List<Section>();
 
-        protected Prefab Prefab;
+        protected Transform transform;
+        public GameObject gameObject;
         public CancellationToken Token { get; private set; }
 
         /// <summary>
@@ -30,22 +32,31 @@ namespace Huge.MVVM
             {
                 throw new Exception("view need ViewSettingAttribute, please add ViewSettingAttribute to view");
             }
-            else
+            if (string.IsNullOrEmpty(viewSetting.PrefabPath))
             {
-                if (viewSetting.Prefab == null)
-                {
-                    throw new Exception("view need set prefab, please add ViewSettingAttribute to view and set ViewSettingAttribute.Prefab");
-                }
-                Prefab = Prefab.Create(viewSetting.Prefab, root);
-                m_Source = CancellationTokenSource.CreateLinkedTokenSource(Prefab.Token);
-                Token = m_Source.Token;
-                Prefab.SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
-
-                SetActive(true);
-                AfterCreate();
-                //调用用户接口,此时框架层都处理完成
-                OnStart(args);
+                throw new Exception("view need set PrefabPath, please add ViewSettingAttribute to view and set ViewSettingAttribute.PrefabPath");
             }
+
+            if (root == null)
+            {
+                var prefab = AssetManager.Instance.LoadAsset<GameObject>(viewSetting.PrefabPath);
+                if (prefab == null)
+                {
+                    throw new Exception($"{t.Name} prefab does not exists {viewSetting.PrefabPath}");
+                }
+                root = GameObject.Instantiate(prefab);
+            }
+            gameObject = root;
+            transform = root.transform;
+            m_Source = CancellationTokenSource.CreateLinkedTokenSource(root.GetCancellationTokenOnDestroy());
+            Token = m_Source.Token;
+            SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+
+            AfterCreate();
+            SetActive(true);
+            //调用用户接口,此时框架层都处理完成
+            OnInit();
+            OnStart(args);
         }
 
         /// <summary>
@@ -61,26 +72,35 @@ namespace Huge.MVVM
             {
                 throw new Exception("view need ViewSettingAttribute, please add ViewSettingAttribute to view");
             }
-            else
+            if (string.IsNullOrEmpty(viewSetting.PrefabPath))
             {
-                if (viewSetting.Prefab == null)
-                {
-                    throw new Exception("view need set prefab, please add ViewSettingAttribute to view and set ViewSettingAttribute.Prefab");
-                }
-                Prefab = await Prefab.CreateAsync(viewSetting.Prefab, root);
-                Prefab.SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
-                m_Source = CancellationTokenSource.CreateLinkedTokenSource(Prefab.Token);
-                Token = m_Source.Token;
-                AfterCreate();
+                throw new Exception("view need set PrefabPath, please add ViewSettingAttribute to view and set ViewSettingAttribute.PrefabPath");
+            }
 
-                SetActive(true);
-                //调用用户接口,此时框架层都处理完成
-                OnStart(args);
-
-                if (this is IViewEnterAnimation view)
+            if (root == null)
+            {
+                var prefab = await AssetManager.Instance.LoadAssetAsync<GameObject>(viewSetting.PrefabPath);
+                if (prefab == null)
                 {
-                    await view.OnPlayEnterAnimation();
+                    throw new Exception($"{t.Name} prefab does not exists {viewSetting.PrefabPath}");
                 }
+                root = GameObject.Instantiate(prefab);
+            }
+            gameObject = root;
+            transform = root.transform;
+            m_Source = CancellationTokenSource.CreateLinkedTokenSource(root.GetCancellationTokenOnDestroy());
+            Token = m_Source.Token;
+            SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+
+            AfterCreate();
+            SetActive(true);
+            //调用用户接口,此时框架层都处理完成
+            OnInit();
+            OnStart(args);
+
+            if (this is IViewEnterAnimation view)
+            {
+                await view.OnPlayEnterAnimation();
             }
         }
 
@@ -97,7 +117,7 @@ namespace Huge.MVVM
                 BeforeDestroy();
                 SetActive(false);
                 OnDestroy();
-                Prefab?.Destroy();
+                GameObject.Destroy(gameObject);
                 m_Source.Cancel();
             }
         }
@@ -127,7 +147,7 @@ namespace Huge.MVVM
 
                 SetActive(false);
                 OnDestroy();
-                Prefab?.Destroy();
+                GameObject.Destroy(gameObject);
                 m_Source.Cancel();
             }
         }
@@ -162,6 +182,11 @@ namespace Huge.MVVM
             return LayerType.NormalLayer;
         }
 
+        protected virtual void OnInit()
+        {
+
+        }
+
         protected virtual void OnStart(params object[] args)
         {
 
@@ -184,9 +209,31 @@ namespace Huge.MVVM
 #endregion
 
 #region public method
+        public void SetParent(View view, bool worldPositionStays = false)
+        {
+            if (view == null)
+            {
+                throw new ArgumentNullException("view");
+            }
+            transform.SetParent(view.transform, worldPositionStays);
+        }
+
         public void SetParent(GameObject parent, bool worldPositionStays = false)
         {
-            Prefab.SetParent(parent, worldPositionStays);
+            if (parent == null)
+            {
+                throw new ArgumentNullException("parent");
+            }
+            transform.SetParent(parent.transform, worldPositionStays);
+        }
+
+        public void SetParent(Transform parent, bool worldPositionStays = false)
+        {
+            if (parent == null)
+            {
+                throw new ArgumentNullException("parent");
+            }
+            transform.SetParent(parent, worldPositionStays);
         }
 
         public void SetActive(bool isActived)
@@ -194,7 +241,7 @@ namespace Huge.MVVM
             if (m_bIsActived != isActived)
             {
                 m_bIsActived = isActived;
-                Prefab?.SetActive(isActived);
+                gameObject.SetActive(isActived);
                 if (isActived)
                 {
                     OnEnable();

@@ -104,37 +104,37 @@ namespace Huge.MVVM
             }
         }
 
-        public void CloseWindow(Window Window)
+        public void CloseWindow(Window window)
         {
-            if (Window != null && m_StackWindow.Contains(Window) && Window.IsDestroied())
+            if (window != null && m_StackWindow.Contains(window) && !window.IsDestroied())
             {
                 try
                 {
-                    m_StackWindow.Remove(Window);
-                    Window.Destroy();
+                    window.Destroy();
+                    m_StackWindow.Remove(window);
                 }
                 catch (Exception ex)
                 {
-                    Huge.Debug.LogError($"UI: close {Window.GetType().Name} error: {ex.Message}.\n{ex.StackTrace}");
-                    if (m_StackWindow.Contains(Window)) m_StackWindow.Remove(Window);
+                    Huge.Debug.LogError($"UI: close {window.GetType().Name} error: {ex.Message}.\n{ex.StackTrace}");
+                    if (m_StackWindow.Contains(window)) m_StackWindow.Remove(window);
                     throw ex;
                 }
             }
         }
 
-        public async UniTask CloseWindowAsync(Window Window)
+        public async UniTask CloseWindowAsync(Window window)
         {
-            if (Window != null && m_StackWindow.Contains(Window) && Window.IsDestroied())
+            if (window != null && m_StackWindow.Contains(window) && !window.IsDestroied())
             {
                 try
                 {
-                    m_StackWindow.Remove(Window);
-                    await Window.DestroyAsync();
+                    await window.DestroyAsync();
+                    m_StackWindow.Remove(window);
                 }
                 catch (Exception ex)
                 {
-                    Huge.Debug.LogError($"UI: close {Window.GetType().Name} error: {ex.Message}.\n{ex.StackTrace}");
-                    if (m_StackWindow.Contains(Window)) m_StackWindow.Remove(Window);
+                    Huge.Debug.LogError($"UI: close {window.GetType().Name} error: {ex.Message}.\n{ex.StackTrace}");
+                    if (m_StackWindow.Contains(window)) m_StackWindow.Remove(window);
                     throw ex;
                 }
             }
@@ -142,10 +142,10 @@ namespace Huge.MVVM
 
         public void CloseWindow<T>() where T : Window
         {
-            Window Window = GetWindow<T>();
-            if (Window != null)
+            Window window = GetWindow<T>();
+            if (window != null)
             {
-                CloseWindow(Window);
+                CloseWindow(window);
             }
         }
 
@@ -154,10 +154,10 @@ namespace Huge.MVVM
             var t = typeof(T);
             for(int i = 0; i < m_StackWindow.Count; i++)
             {
-                Window Window = m_StackWindow[i];
-                if (Window.GetType() == t)
+                Window window = m_StackWindow[i];
+                if (window.GetType() == t)
                 {
-                    return Window;
+                    return window;
                 }
             }
             return null;

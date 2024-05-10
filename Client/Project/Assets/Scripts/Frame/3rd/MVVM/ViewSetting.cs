@@ -4,11 +4,11 @@ namespace Huge.MVVM
 {
     public sealed class ViewSettingAttribute : Attribute
     {
-        public readonly Type Prefab;
+        public readonly string PrefabPath;
 
-        public ViewSettingAttribute(Type prefab)
+        public ViewSettingAttribute(string path)
         {
-            Prefab = prefab;
+            PrefabPath = path;
         }
     }
 }

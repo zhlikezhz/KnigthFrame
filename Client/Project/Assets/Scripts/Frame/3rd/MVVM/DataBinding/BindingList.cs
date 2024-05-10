@@ -1,14 +1,12 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using Huge.Pool;
 
-namespace Huge.MVVM
+namespace Huge.MVVM.DataBinding
 {
-    [Serializable]
-    public class BindingList : BindingBase
+    public class BindingList 
     {
-        public List<GameObject> m_ScrollCells;
 
     }
 }
