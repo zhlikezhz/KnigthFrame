@@ -52,6 +52,16 @@ public static class TransformEx
         return result;
     }
 
+    public static void RemoveChildren(this Transform tr)
+    {
+        int childCount = tr.childCount;
+        for (int i = childCount - 1; i >= 0; i--)
+        {
+            Transform child = tr.GetChild(i);
+            GameObject.Destroy(child.gameObject);
+        }
+    }
+
     public static List<Transform> GetChildrenExcept(this Transform tr, Func<Transform, bool> except)
     {
         int childCount = tr.childCount;

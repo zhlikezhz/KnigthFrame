@@ -7,44 +7,49 @@ namespace Huge.MVVM
 {
     public abstract class Window : View
     {
-        public T AddSection<T>(GameObject parent, params object[] args) where T : Section
+        internal Window()
+        {
+
+        }
+
+        public T AddSection<T>(GameObject parent, params object[] args) where T : SubView
         {
             return AddSection<T>(null, parent, args);
         }
 
-        public T AddSection<T>(GameObject root, GameObject parent, params object[] args) where T : Section
+        public T AddSection<T>(GameObject root, GameObject parent, params object[] args) where T : SubView
         {
             var t = typeof(T);
-            Section section = Activator.CreateInstance(t) as Section;
-            m_SectionList.Add(section);
+            SubView subView = Activator.CreateInstance(t) as SubView;
+            m_SubViewList.Add(subView);
             try
             {
-                section.Init(root, args);
-                section.SetParent(parent, false);
-                section.SetView(this);
-                section.SetActive(true);
-                return section as T;
+                subView.Init(root, args);
+                subView.SetParent(parent, false);
+                subView.SetView(this);
+                subView.SetActive(true);
+                return subView as T;
             }
             catch (Exception ex)
             {
                 Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.\n{ex.StackTrace}");
-                m_SectionList.Remove(section);
+                m_SubViewList.Remove(subView);
                 return null;
             }
         }
 
-        public void RemoveSection(Section section)
+        public void RemoveSection(SubView subView)
         {
-            if (section != null && m_SectionList.Contains(section))
+            if (subView != null && m_SubViewList.Contains(subView))
             {
-                m_SectionList.Remove(section);
+                m_SubViewList.Remove(subView);
                 try
                 {
-                    section.Destroy();
+                    subView.Destroy();
                 }
                 catch (Exception ex)
                 {
-                    Huge.Debug.LogError($"UI: remove {section.GetType().Name} error: {ex.Message}.\n{ex.StackTrace}");
+                    Huge.Debug.LogError($"UI: remove {subView.GetType().Name} error: {ex.Message}.\n{ex.StackTrace}");
                 }
             }
         }

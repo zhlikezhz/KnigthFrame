@@ -14,7 +14,7 @@ namespace Huge.MVVM
         bool m_bIsActived = false;
         bool m_bIsDestroied = false;
         CancellationTokenSource m_Source;
-        internal List<Section> m_SectionList = new List<Section>();
+        internal List<SubView> m_SubViewList = new List<SubView>();
 
         protected Transform transform;
         public GameObject gameObject;
@@ -109,9 +109,9 @@ namespace Huge.MVVM
             if (!m_bIsDestroied)
             {
                 m_bIsDestroied = true;
-                foreach(Section section in m_SectionList)
+                foreach(SubView subView in m_SubViewList)
                 {
-                    section.Destroy();
+                    subView.Destroy();
                 }
 
                 BeforeDestroy();
@@ -134,9 +134,9 @@ namespace Huge.MVVM
             if (!m_bIsDestroied)
             {
                 m_bIsDestroied = true;
-                foreach(Section section in m_SectionList)
+                foreach(SubView subView in m_SubViewList)
                 {
-                    await section.DestroyAsync();
+                    await subView.DestroyAsync();
                 }
 
                 BeforeDestroy();

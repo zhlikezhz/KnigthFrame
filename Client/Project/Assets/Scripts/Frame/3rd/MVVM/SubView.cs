@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Huge.MVVM
 {
-    public abstract class Section : View
+    public abstract class SubView : View
     {
         View m_ViewParent;
         internal void SetView(View parent)

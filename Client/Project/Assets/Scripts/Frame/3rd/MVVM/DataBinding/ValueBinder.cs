@@ -4,8 +4,6 @@ using UnityEditor;
 using UnityEngine;
 using Huge.MVVM;
 using System.ComponentModel;
-using Microsoft.SqlServer.Server;
-using JetBrains.Annotations;
 
 namespace Huge.MVVM.DataBinding
 {
