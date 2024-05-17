@@ -267,34 +267,4 @@ namespace Huge.Pool
         /// <param name="toRelease">Dictionary to release.</param>
         public static void Release(Dictionary<TKey, TValue> toRelease) => s_Pool.Release(toRelease);
     }
-
-    public abstract class ReuseObject
-    {
-        internal void _Reset()
-        {
-            OnInit();
-        }
-
-        internal void _Release()
-        {
-            OnRelease();
-        }
-
-        protected virtual void OnInit()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected virtual void OnRelease()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public abstract class ReuseObject<T> : ReuseObject where T : ReuseObject, new()
-    {
-        static readonly ObjectPool<T> s_Pool = new ObjectPool<T>(l => l._Reset(), l => l._Release(), false);
-        public static void Release(T toRelease) => s_Pool.Release(toRelease);
-        public static T Get() => s_Pool.Get();
-    }
 }

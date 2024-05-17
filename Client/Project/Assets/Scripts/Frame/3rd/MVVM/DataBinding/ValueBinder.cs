@@ -7,30 +7,50 @@ using System.ComponentModel;
 
 namespace Huge.MVVM.DataBinding
 {
-    public class ValueBinder<TSource, TTarget> : IBinder
-        where TSource : INotifyPropertyChanged
+    public class ValueBinder : IBinder, IReuseObject
     {
+        static readonly ObjectPool<ValueBinder> s_Pool = new ObjectPool<ValueBinder>(l => l.OnReinit(), l => l.OnRelease(), false);
+        public static void Release(ValueBinder toRelease) => s_Pool.Release(toRelease);
+        public static ValueBinder Get() => s_Pool.Get();
+
         bool m_bIsDirty = true;
         bool m_bIsBuilded = false;
-        public string PropertyName { get; set; }
-        public TTarget Target {get;set;}
-        public TSource Source {get;set;}
-        public IProxy Proxy {get;set;}
+        IProxy Proxy {get;set;}
+        string PropertyName { get; set; }
+        public INotifyPropertyChanged Source {get; set;}
 
-        public ValueBinder(TSource source, TTarget target)
+        public ValueBinder()
         {
-            Source = source;
-            Target = target;
+
         }
 
-        public PropertyProxy<TSource, TTarget, TValue> For<TValue>(Func<TSource, TValue> func, string propertyName)
+        void OnReinit()
+        {
+
+        }
+
+        void OnRelease()
+        {
+            UnBuild();
+            Source = null;
+            PropertyName = null;
+            if (Proxy is IReuseObject reuseObject)
+            {
+                reuseObject.Release();
+            }
+            Release(this);
+        }
+
+        public void Release()
+        {
+            Release(this);
+        }
+
+        public PropertyProxy<TValue> For<TValue>(Func<TValue> func, string propertyName)
         {
             PropertyName = propertyName;
-            var proxy = new PropertyProxy<TSource, TTarget, TValue>();
-            proxy.PropertyName = propertyName;
+            var proxy = PropertyProxy<TValue>.Get();
             proxy.GetValue = func;
-            proxy.Source = Source;
-            proxy.Target = Target;
             Proxy = proxy;
             return proxy;
         }

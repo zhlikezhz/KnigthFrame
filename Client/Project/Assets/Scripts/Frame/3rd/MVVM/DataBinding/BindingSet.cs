@@ -5,49 +5,58 @@ using Huge.Pool;
 using Huge.MVVM;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 
 namespace Huge.MVVM.DataBinding
 {
-    public sealed class BindingSet<TView, TViewModel> : IBinder
-        where TViewModel : INotifyPropertyChanged
+    public sealed class BindingSet : IBinder, IReuseObject
     {
-        TView m_View;
-        TViewModel m_ViewModel;
+        static readonly ObjectPool<BindingSet> s_Pool = new ObjectPool<BindingSet>(l => l.OnReinit(), l => l.OnRelease(), false);
+        public static void Release(BindingSet toRelease) => s_Pool.Release(toRelease);
+        public static BindingSet Get() => s_Pool.Get();
         List<IBinder> m_BinderList = new List<IBinder>();
 
-        public BindingSet(TView view, TViewModel viewModel)
+        public BindingSet()
         {
-            m_ViewModel = viewModel;
-            m_View = view;
+
         }
 
-        public void SetViewModel(TViewModel viewModel)
+        void OnReinit()
         {
-            m_ViewModel = viewModel;
+
         }
 
-        public void SetView(TView view)
+        void OnRelease()
         {
-            m_View = view;
+            UnBuild();
+            foreach(var binder in m_BinderList)
+            {
+                binder.UnBuild();
+                if (binder is IReuseObject reuseObject)
+                {
+                    reuseObject.Release();
+                }
+            }
+            m_BinderList.Clear();
         }
 
-        public ValueBinder<TViewModel, GameObject> Bind(GameObject target) 
+        public void Release()
         {
-            var binder = new ValueBinder<TViewModel, GameObject>(m_ViewModel, target);
+            Release(this);
+        }
+
+        public ValueBinder Bind(INotifyPropertyChanged source) 
+        {
+            var binder = ValueBinder.Get();
+            binder.Source = source;
             m_BinderList.Add(binder);
             return binder;
         }
 
-        public ValueBinder<TViewModel, TTarget> Bind<TTarget>(TTarget target) where TTarget : UnityEngine.Component
+        public ValueListBinder BindList(INotifyPropertyChanged source)
         {
-            var binder = new ValueBinder<TViewModel, TTarget>(m_ViewModel, target);
-            m_BinderList.Add(binder);
-            return binder;
-        }
-
-        public ValueBinder<TViewModel, TTarget> BindList<TTarget>(TTarget target) where TTarget : IListView
-        {
-            var binder = new ValueBinder<TViewModel, TTarget>(m_ViewModel, target);
+            var binder = ValueListBinder.Get();
+            binder.Source = source;
             m_BinderList.Add(binder);
             return binder;
         }

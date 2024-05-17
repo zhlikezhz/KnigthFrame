@@ -1,16 +1,18 @@
 using System;
+using Huge.Pool;
 
 namespace Huge.MVVM.DataBinding
 {
-    public class PropertyProxy<TSource, TTarget, TValue> : IProxy
+    public class PropertyProxy<TValue> : IProxy, IReuseObject
     {
-        public TSource Source {get;set;}
-        public TTarget Target {get;set;}
-        public string PropertyName {get;set;}
-        public Func<TSource, TValue> GetValue {get;set;}
-        public Action<TTarget, TValue> SetValue {get;set;}
+        static readonly ObjectPool<PropertyProxy<TValue>> s_Pool = new ObjectPool<PropertyProxy<TValue>>(l => l.OnReinit(), l => l.OnRelease(), false);
+        public static void Release(PropertyProxy<TValue> toRelease) => s_Pool.Release(toRelease);
+        public static PropertyProxy<TValue> Get() => s_Pool.Get();
 
-        public void To(Action<TTarget, TValue> action)
+        public Func<TValue> GetValue {get;set;}
+        public Action<TValue> SetValue {get;set;}
+
+        public void To(Action<TValue> action)
         {
             SetValue = action;
         }
@@ -19,8 +21,24 @@ namespace Huge.MVVM.DataBinding
         {
             if (GetValue != null && SetValue != null)
             {
-                SetValue(Target, GetValue(Source));
+                SetValue(GetValue());
             }
+        }
+
+        void OnReinit()
+        {
+
+        }
+
+        void OnRelease()
+        {
+            GetValue = null;
+            SetValue = null;
+        }
+
+        public void Release()
+        {
+            Release(this);
         }
     }
 }
