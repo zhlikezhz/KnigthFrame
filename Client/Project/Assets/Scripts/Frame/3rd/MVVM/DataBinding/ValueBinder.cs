@@ -13,7 +13,7 @@ namespace Huge.MVVM.DataBinding
         public static void Release(ValueBinder toRelease) => s_Pool.Release(toRelease);
         public static ValueBinder Get() => s_Pool.Get();
 
-        bool m_bIsDirty = true;
+        bool m_bIsDirty = false;
         bool m_bIsBuilded = false;
         IProxy Proxy {get;set;}
         string PropertyName { get; set; }
@@ -38,7 +38,9 @@ namespace Huge.MVVM.DataBinding
             {
                 reuseObject.Release();
             }
-            Release(this);
+            Proxy = null;
+            m_bIsBuilded = false;
+            m_bIsBuilded = false;
         }
 
         public void Release()
@@ -60,7 +62,7 @@ namespace Huge.MVVM.DataBinding
             if (m_bIsDirty && m_bIsBuilded)
             {
                 m_bIsDirty = false;
-                Proxy.Update();
+                Proxy?.Update();
             }
         }
 
@@ -70,6 +72,7 @@ namespace Huge.MVVM.DataBinding
             {
                 m_bIsBuilded = true;
                 Source.PropertyChanged += OnPropertyChanged;
+                Proxy?.Update();
             }
         }
 

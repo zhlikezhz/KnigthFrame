@@ -53,9 +53,9 @@ namespace Huge.MVVM.DataBinding
             return binder;
         }
 
-        public ValueListBinder BindList(INotifyPropertyChanged source)
+        public ListBinder BindList(INotifyPropertyChanged source)
         {
-            var binder = ValueListBinder.Get();
+            var binder = ListBinder.Get();
             binder.Source = source;
             m_BinderList.Add(binder);
             return binder;

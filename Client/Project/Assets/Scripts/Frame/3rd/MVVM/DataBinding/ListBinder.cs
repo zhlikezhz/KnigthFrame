@@ -8,23 +8,19 @@ using System.Collections.Specialized;
 
 namespace Huge.MVVM.DataBinding
 {
-    public class ValueListBinder : IBinder, IReuseObject
+    public class ListBinder : IBinder, IReuseObject
     {
-        static readonly ObjectPool<ValueListBinder> s_Pool = new ObjectPool<ValueListBinder>(null, l => l.OnRelease(), false);
-        public static void Release(ValueListBinder toRelease) => s_Pool.Release(toRelease);
-        public static ValueListBinder Get() => s_Pool.Get();
+        static readonly ObjectPool<ListBinder> s_Pool = new ObjectPool<ListBinder>(null, l => l.OnRelease(), false);
+        public static void Release(ListBinder toRelease) => s_Pool.Release(toRelease);
+        public static ListBinder Get() => s_Pool.Get();
 
-        bool m_bIsDirty = true;
+        bool m_bIsDirty = false;
         bool m_bIsBuilded = false;
         IProxy Proxy {get;set;}
         string PropertyName { get; set; }
         public INotifyPropertyChanged Source {get; set;}
 
-        INotifyCollectionChanged List {get; set;}
-        Func<INotifyCollectionChanged> Action {get; set;}
-        NotifyCollectionChangedEventHandler Handler {get; set;}
-
-        public ValueListBinder()
+        public ListBinder()
         {
 
         }
@@ -38,7 +34,9 @@ namespace Huge.MVVM.DataBinding
             {
                 reuseObject.Release();
             }
-            Release(this);
+            Proxy = null;
+            m_bIsBuilded = false;
+            m_bIsBuilded = false;
         }
 
         public void Release()
@@ -46,16 +44,13 @@ namespace Huge.MVVM.DataBinding
             Release(this);
         }
 
-        public ValueListBinder For(Func<INotifyCollectionChanged> func, string propertyName)
+        public ListPropertyProxy<TTarget> For<TTarget>(Func<ObservableList<TTarget>> func, string propertyName) where TTarget : ViewModel
         {
             PropertyName = propertyName;
-            Action = func;
-            return this;
-        }
-
-        public void To(NotifyCollectionChangedEventHandler handler)
-        {
-            Handler = handler;
+            var proxy = ListPropertyProxy<TTarget>.Get();
+            proxy.GetSourceDelegate = func;
+            Proxy = proxy;
+            return proxy;
         }
 
         public void Update()
@@ -63,6 +58,7 @@ namespace Huge.MVVM.DataBinding
             if (m_bIsDirty && m_bIsBuilded)
             {
                 m_bIsDirty = false;
+                Proxy?.Update();
             }
         }
 
@@ -72,12 +68,7 @@ namespace Huge.MVVM.DataBinding
             {
                 m_bIsBuilded = true;
                 Source.PropertyChanged += OnPropertyChanged;
-                var list = Action();
-                if (list != null)
-                {
-                    list.CollectionChanged += Handler;
-                }
-                List = list;
+                Proxy?.Update();
             }
         }
 
@@ -87,11 +78,6 @@ namespace Huge.MVVM.DataBinding
             {
                 m_bIsBuilded = false;
                 Source.PropertyChanged -= OnPropertyChanged;
-                if (List != null)
-                {
-                    List.CollectionChanged -= Handler;
-                }
-                List = null;
             }
         }
 
@@ -100,16 +86,6 @@ namespace Huge.MVVM.DataBinding
             if (evt.PropertyName == PropertyName)
             {
                 m_bIsDirty = true;
-                var list = Action();
-                if (List != null)
-                {
-                    List.CollectionChanged -= Handler;
-                }
-                if (list != null)
-                {
-                    list.CollectionChanged += Handler;
-                }
-                List = list;
             }
         }
     }
