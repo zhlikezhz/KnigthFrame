@@ -24,7 +24,7 @@ namespace Huge.MVVM
         /// 同步创建
         /// /// </summary>
         /// <param name="args"></param>
-        internal void Init(GameObject root, params object[] args)
+        internal void Init(GameObject root)
         {
             Type t = GetType();
             ViewSettingAttribute viewSetting = t.GetAttribute<ViewSettingAttribute>();
@@ -56,7 +56,7 @@ namespace Huge.MVVM
             SetActive(true);
             //调用用户接口,此时框架层都处理完成
             OnInit();
-            OnStart(args);
+            OnStart();
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Huge.MVVM
         /// </summary>
         /// <param name="viewInfo"></param>
         /// <returns></returns>
-        internal async UniTask InitAsync(GameObject root, params object[] args)
+        internal async UniTask InitAsync(GameObject root)
         {
             Type t = GetType();
             ViewSettingAttribute viewSetting = t.GetAttribute<ViewSettingAttribute>();
@@ -96,7 +96,7 @@ namespace Huge.MVVM
             SetActive(true);
             //调用用户接口,此时框架层都处理完成
             OnInit();
-            OnStart(args);
+            OnStart();
 
             if (this is IViewEnterAnimation view)
             {
@@ -187,7 +187,7 @@ namespace Huge.MVVM
 
         }
 
-        protected virtual void OnStart(params object[] args)
+        protected virtual void OnStart()
         {
 
         }

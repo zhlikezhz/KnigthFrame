@@ -68,14 +68,14 @@ namespace Huge.MVVM
             return m_UICamera;
         }
 
-        public T OpenWindow<T>(params object[] args) where T : Window
+        public T OpenWindow<T>() where T : Window
         {
             var t = typeof(T);
             Window window = Activator.CreateInstance(t) as Window;
             m_StackWindow.Add(window);
             try
             {
-                window.Init(null, args);
+                window.Init(null);
                 return window as T;
             }
             catch(Exception ex)
@@ -86,14 +86,14 @@ namespace Huge.MVVM
             }
         }
 
-        public async UniTask<T> OpenWindowAsync<T>(params object[] args) where T : Window
+        public async UniTask<T> OpenWindowAsync<T>() where T : Window
         {
             var t = typeof(T);
             Window window = Activator.CreateInstance(t) as Window;
             m_StackWindow.Add(window);
             try
             {
-                await window.InitAsync(null, args);
+                await window.InitAsync(null);
                 return window as T;
             }
             catch(Exception ex)

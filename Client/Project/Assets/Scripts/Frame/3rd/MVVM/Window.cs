@@ -12,19 +12,19 @@ namespace Huge.MVVM
 
         }
 
-        public T AddSection<T>(GameObject parent, params object[] args) where T : SubView
+        public T AddSection<T>(GameObject parent) where T : SubView
         {
-            return AddSection<T>(null, parent, args);
+            return AddSection<T>(null, parent);
         }
 
-        public T AddSection<T>(GameObject root, GameObject parent, params object[] args) where T : SubView
+        public T AddSection<T>(GameObject root, GameObject parent) where T : SubView
         {
             var t = typeof(T);
             SubView subView = Activator.CreateInstance(t) as SubView;
             m_SubViewList.Add(subView);
             try
             {
-                subView.Init(root, args);
+                subView.Init(root);
                 subView.SetParent(parent, false);
                 subView.SetView(this);
                 subView.SetActive(true);
