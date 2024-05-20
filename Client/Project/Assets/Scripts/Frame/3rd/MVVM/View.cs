@@ -54,8 +54,11 @@ namespace Huge.MVVM
 
             AfterCreate();
             SetActive(true);
+            if (this is IViewGenerator viewGenerator)
+            {
+                viewGenerator.BindGameObject(transform);
+            }
             //调用用户接口,此时框架层都处理完成
-            OnInit();
             OnStart();
         }
 
@@ -94,8 +97,11 @@ namespace Huge.MVVM
 
             AfterCreate();
             SetActive(true);
+            if (this is IViewGenerator viewGenerator)
+            {
+                viewGenerator.BindGameObject(transform);
+            }
             //调用用户接口,此时框架层都处理完成
-            OnInit();
             OnStart();
 
             if (this is IViewEnterAnimation view)
@@ -180,11 +186,6 @@ namespace Huge.MVVM
         public virtual LayerType GetLayerType()
         {
             return LayerType.NormalLayer;
-        }
-
-        protected virtual void OnInit()
-        {
-
         }
 
         protected virtual void OnStart()
