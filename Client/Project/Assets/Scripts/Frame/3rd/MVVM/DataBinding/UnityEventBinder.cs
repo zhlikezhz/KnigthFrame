@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -10,9 +11,10 @@ namespace Huge.MVVM.DataBinding
         public UnityEvent OnEvent {get; set;}
         public UnityAction OnAction {get; set;}
 
-        public void For(UnityEvent evt)
+        public UnityEventBinder For(UnityEvent evt)
         {
             OnEvent = evt;
+            return this;
         }
 
         public void To(UnityAction action)
@@ -50,9 +52,10 @@ namespace Huge.MVVM.DataBinding
         public UnityEvent<T0> OnEvent {get; set;}
         public UnityAction<T0> OnAction {get; set;}
 
-        public void For(UnityEvent<T0> evt)
+        public UnityEventBinder<T0> For(UnityEvent<T0> evt)
         {
             OnEvent = evt;
+            return this;
         }
 
         public void To(UnityAction<T0> action)
@@ -90,9 +93,10 @@ namespace Huge.MVVM.DataBinding
         public UnityEvent<T0, T1> OnEvent {get; set;}
         public UnityAction<T0, T1> OnAction {get; set;}
 
-        public void For(UnityEvent<T0, T1> evt)
+        public UnityEventBinder<T0, T1> For(UnityEvent<T0, T1> evt)
         {
             OnEvent = evt;
+            return this;
         }
 
         public void To(UnityAction<T0, T1> action)
@@ -130,9 +134,10 @@ namespace Huge.MVVM.DataBinding
         public UnityEvent<T0, T1, T2> OnEvent {get; set;}
         public UnityAction<T0, T1, T2> OnAction {get; set;}
 
-        public void For(UnityEvent<T0, T1, T2> evt)
+        public UnityEventBinder<T0, T1, T2> For(UnityEvent<T0, T1, T2> evt)
         {
             OnEvent = evt;
+            return this;
         }
 
         public void To(UnityAction<T0, T1, T2> action)

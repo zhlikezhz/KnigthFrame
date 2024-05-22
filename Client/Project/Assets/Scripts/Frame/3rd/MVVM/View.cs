@@ -11,12 +11,14 @@ namespace Huge.MVVM
 {
     public abstract class View
     {
+        LayerType m_LayerType;
+        WindowType m_WindowType;
         bool m_bIsActived = false;
         bool m_bIsDestroied = false;
         CancellationTokenSource m_Source;
         internal List<SubView> m_SubViewList = new List<SubView>();
 
-        protected Transform transform;
+        public Transform transform;
         public GameObject gameObject;
         public CancellationToken Token { get; private set; }
 
@@ -24,21 +26,23 @@ namespace Huge.MVVM
         /// 同步创建
         /// /// </summary>
         /// <param name="args"></param>
-        internal void Init(GameObject root)
+        internal void Init(GameObject root, WindowType windowType = WindowType.None, LayerType layerType = LayerType.None)
         {
-            Type t = GetType();
-            ViewSettingAttribute viewSetting = t.GetAttribute<ViewSettingAttribute>();
-            if (viewSetting == null)
-            {
-                throw new Exception("view need ViewSettingAttribute, please add ViewSettingAttribute to view");
-            }
-            if (string.IsNullOrEmpty(viewSetting.PrefabPath))
-            {
-                throw new Exception("view need set PrefabPath, please add ViewSettingAttribute to view and set ViewSettingAttribute.PrefabPath");
-            }
+            m_LayerType = layerType;
+            m_WindowType = windowType;
 
+            Type t = GetType();
             if (root == null)
             {
+                ViewSettingAttribute viewSetting = t.GetAttribute<ViewSettingAttribute>();
+                if (viewSetting == null)
+                {
+                    throw new Exception("view need ViewSettingAttribute, please add ViewSettingAttribute to view");
+                }
+                if (string.IsNullOrEmpty(viewSetting.PrefabPath))
+                {
+                    throw new Exception("view need set PrefabPath, please add ViewSettingAttribute to view and set ViewSettingAttribute.PrefabPath");
+                }
                 var prefab = AssetManager.Instance.LoadAsset<GameObject>(viewSetting.PrefabPath);
                 if (prefab == null)
                 {
@@ -50,15 +54,15 @@ namespace Huge.MVVM
             transform = root.transform;
             m_Source = CancellationTokenSource.CreateLinkedTokenSource(root.GetCancellationTokenOnDestroy());
             Token = m_Source.Token;
-            SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+            if (windowType != WindowType.None && layerType != LayerType.None)
+            {
+                SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+            }
 
             AfterCreate();
             SetActive(true);
-            if (this is IViewGenerator viewGenerator)
-            {
-                viewGenerator.BindGameObject(transform);
-            }
             //调用用户接口,此时框架层都处理完成
+            OnGenerate();
             OnStart();
         }
 
@@ -67,21 +71,23 @@ namespace Huge.MVVM
         /// </summary>
         /// <param name="viewInfo"></param>
         /// <returns></returns>
-        internal async UniTask InitAsync(GameObject root)
+        internal async UniTask InitAsync(GameObject root, WindowType windowType = WindowType.None, LayerType layerType = LayerType.None)
         {
-            Type t = GetType();
-            ViewSettingAttribute viewSetting = t.GetAttribute<ViewSettingAttribute>();
-            if (viewSetting == null)
-            {
-                throw new Exception("view need ViewSettingAttribute, please add ViewSettingAttribute to view");
-            }
-            if (string.IsNullOrEmpty(viewSetting.PrefabPath))
-            {
-                throw new Exception("view need set PrefabPath, please add ViewSettingAttribute to view and set ViewSettingAttribute.PrefabPath");
-            }
+            m_LayerType = layerType;
+            m_WindowType = windowType;
 
+            Type t = GetType();
             if (root == null)
             {
+                ViewSettingAttribute viewSetting = t.GetAttribute<ViewSettingAttribute>();
+                if (viewSetting == null)
+                {
+                    throw new Exception("view need ViewSettingAttribute, please add ViewSettingAttribute to view");
+                }
+                if (string.IsNullOrEmpty(viewSetting.PrefabPath))
+                {
+                    throw new Exception("view need set PrefabPath, please add ViewSettingAttribute to view and set ViewSettingAttribute.PrefabPath");
+                }
                 var prefab = await AssetManager.Instance.LoadAssetAsync<GameObject>(viewSetting.PrefabPath);
                 if (prefab == null)
                 {
@@ -93,15 +99,15 @@ namespace Huge.MVVM
             transform = root.transform;
             m_Source = CancellationTokenSource.CreateLinkedTokenSource(root.GetCancellationTokenOnDestroy());
             Token = m_Source.Token;
-            SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+            if (windowType != WindowType.None && layerType != LayerType.None)
+            {
+                SetParent(UIManager.Instance.GetLayerObject(GetLayerType()));
+            }
 
             AfterCreate();
             SetActive(true);
-            if (this is IViewGenerator viewGenerator)
-            {
-                viewGenerator.BindGameObject(transform);
-            }
             //调用用户接口,此时框架层都处理完成
+            OnGenerate();
             OnStart();
 
             if (this is IViewEnterAnimation view)
@@ -158,34 +164,46 @@ namespace Huge.MVVM
             }
         }
 
-#region internal override
         /// <summary>
         /// 在View初始化之后被调用
         /// </summary>
-        /// <param name="args"></param> <summary>
-        /// 
-        /// </summary>
-        /// <param name="args"></param>
-        internal virtual void AfterCreate()
+        protected virtual void AfterCreate()
         {
-
+            if (this is Window window)
+            {
+                if(m_WindowType == WindowType.Page)
+                {
+                    Page.AfterCreate(window);
+                }
+                else if (m_WindowType == WindowType.Popup)
+                {
+                    Popup.AfterCreate(window);
+                }
+            }
         }
 
         /// <summary>
         /// 在View销毁销毁之前被调用
-        /// </summary> <summary>
-        /// 
-        /// </summary>
-        internal virtual void BeforeDestroy()
+        /// </summary> 
+        protected virtual void BeforeDestroy()
         {
-
+            if (this is Window window)
+            {
+                if(m_WindowType == WindowType.Page)
+                {
+                    Page.BeforeDestroy(window);
+                }
+                else if (m_WindowType == WindowType.Popup)
+                {
+                    Popup.BeforeDestroy(window);
+                }
+            }
         }
-#endregion
 
 #region override
-        public virtual LayerType GetLayerType()
+        protected virtual void OnGenerate()
         {
-            return LayerType.NormalLayer;
+
         }
 
         protected virtual void OnStart()
@@ -252,6 +270,16 @@ namespace Huge.MVVM
                     OnDisable();
                 }
             }
+        }
+
+        public LayerType GetLayerType()
+        {
+            return m_LayerType;
+        }
+
+        public WindowType GetWindowLayer()
+        {
+            return m_WindowType;
         }
 
         public bool IsDestroied()

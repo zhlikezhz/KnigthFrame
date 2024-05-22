@@ -15,6 +15,7 @@ namespace Huge.MVVM.DataBinding
         public static void Release(BindingSet toRelease) => s_Pool.Release(toRelease);
         public static BindingSet Get() => s_Pool.Get();
         List<IBinder> m_BinderList = new List<IBinder>();
+        public int m_iTickID = -1;
 
         public BindingSet()
         {
@@ -23,21 +24,19 @@ namespace Huge.MVVM.DataBinding
 
         void OnReinit()
         {
-
+            m_iTickID = Huge.TickManager.RegisterUpdateTick((deltaTime, tickID) => {
+                Update();
+            }, TickType.Loop);
         }
 
         void OnRelease()
         {
-            UnBuild();
-            foreach(var binder in m_BinderList)
+            if (m_iTickID != -1)
             {
-                binder.UnBuild();
-                if (binder is IReuseObject reuseObject)
-                {
-                    reuseObject.Release();
-                }
+                Huge.TickManager.RemoveUpdateTick(m_iTickID);
+                m_iTickID = -1;
             }
-            m_BinderList.Clear();
+            Clear();
         }
 
         public void Release()
@@ -97,6 +96,19 @@ namespace Huge.MVVM.DataBinding
             {
                 binder.UnBuild();
             }
+        }
+
+        public void Clear()
+        {
+            foreach(var binder in m_BinderList)
+            {
+                binder.UnBuild();
+                if (binder is IReuseObject reuseObject)
+                {
+                    reuseObject.Release();
+                }
+            }
+            m_BinderList.Clear();
         }
     }
 }

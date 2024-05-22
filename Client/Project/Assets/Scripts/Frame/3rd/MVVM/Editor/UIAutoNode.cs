@@ -11,10 +11,19 @@ using System.IO;
 
 namespace Huge.MVVM
 {
+    public enum UIGenType
+    {
+        MemberDefine,
+        FindObject,
+        BindObject,
+        DataMemberDefine,
+    }
+
     public delegate void NodeGenerateFunc(StringBuilder data);
     public class UIAutoNode
     {
         public string Name;
+        public string PropertyName;
         public string Path;
         public string ClassName;
         public Transform Trans;
@@ -28,148 +37,301 @@ namespace Huge.MVVM
         public static string s_ScrollPrefix = "_Scl";
         public static string s_LoopScrollPrefix = "_LScl";
         public static string s_ButtonPrefix = "_Btn";
+        public static string s_TextPrefix = "_Txt";
+        public static string s_ImagePrefix = "_Img";
+        public static string s_RawImagePrefix = "_RImg";
+        public static string s_SliderPrefix = "_Sld";
         public static string[] s_PrefixList = 
         {
-            "_Txt", 
-            "_Img", 
+            s_TextPrefix,
+            s_ImagePrefix,
             "_Tran",
             "_RTran",
             s_ButtonPrefix,
-            "_Sld", 
+            s_SliderPrefix,
             "_Ifd", 
             "_Tgl", 
             "_LBtn", 
-            "_RImg",
-            s_ScrollPrefix,
-            s_LoopScrollPrefix,
+            s_RawImagePrefix,
         };
 
         public static Dictionary<string, string> s_Prefix2TypeName = new Dictionary<string, string> {
-            {"_Txt", "Text"},
-            {"_Img", "Image"},
             {"_Tran", "Transform"},
             {"_RTran", "RectTransform"},
-            {"_Sld", "Slider"},
             {"_Ifd", "InputField"},
             {"_Tgl", "Toggle"},
             {"_LBtn", "LongButton"},
-            {"_RImg", "RawImage"},
         };
 
-        public void GenerateCode(StringBuilder data, bool isInit, string prefix)
+        public void GenerateCode(StringBuilder data, UIGenType genType, string prefix)
         {
             foreach(var item in s_Prefix2TypeName)
             {
                 if (Name.StartsWith(item.Key))
                 {
-                    GenerateComponent(data, isInit, prefix, item.Value);
+                    GenerateComponent(data, genType, prefix, item.Value);
                     return;
                 }
             }
 
-            if (Name.StartsWith(s_ButtonPrefix))
+            if (Name.StartsWith(s_TextPrefix))
             {
-                GenerateButton(data, isInit, prefix);
+                GenerateText(data, genType, prefix);
             }
-            if (Name.StartsWith(s_ScrollPrefix))
+            else if (Name.StartsWith(s_ImagePrefix))
             {
-                GenerateScroll(data, isInit, prefix);
+                GenerateImage(data, genType, prefix);
             }
-            if (Name.StartsWith(s_LoopScrollPrefix))
+            else if (Name.StartsWith(s_RawImagePrefix))
             {
-                GenerateLoopScroll(data, isInit, prefix);
+                GenerateRawImage(data, genType, prefix);
             }
-            if (Name.StartsWith(s_TemplatePrefix))
+            else if (Name.StartsWith(s_SliderPrefix))
             {
-                GenerateObject(data, isInit, prefix);
+                GenerateSlider(data, genType, prefix);
+            }
+            else if (Name.StartsWith(s_ButtonPrefix))
+            {
+                GenerateButton(data, genType, prefix);
+            }
+            else if (Name.StartsWith(s_ScrollPrefix))
+            {
+                GenerateScroll(data, genType, prefix);
+            }
+            else if (Name.StartsWith(s_LoopScrollPrefix))
+            {
+                GenerateLoopScroll(data, genType, prefix);
+            }
+            else if (Name.StartsWith(s_TemplatePrefix))
+            {
+                GenerateObject(data, genType, prefix);
             }
         }
         
-        public void GenerateObject(StringBuilder data, bool isInit, string prefix)
+        public void GenerateObject(StringBuilder data, UIGenType genType, string prefix)
         {
-            if (isInit)
+            if (genType == UIGenType.MemberDefine)
             {
                 data.AppendLine($"\t{prefix}public GameObject {Name};");
             }
-            else
+            else if (genType == UIGenType.FindObject)
             {
                 data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").gameObject;");
             }
         }
 
-        public void GenerateComponent(StringBuilder data, bool isInit, string prefix, string compName)
+        public void GenerateComponent(StringBuilder data, UIGenType genType, string prefix, string compName)
         {
-            if (isInit)
+            if (genType == UIGenType.MemberDefine)
             {
                 data.AppendLine($"\t{prefix}public {compName} {Name};");
             }
-            else
+            else if (genType == UIGenType.FindObject)
             {
                 data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<{compName}>();");
             }
         }
 
-        public void GenerateButton(StringBuilder data, bool isInit, string prefix)
+        public void GenerateText(StringBuilder data, UIGenType genType, string prefix)
         {
-            if (isInit)
+            if (genType == UIGenType.MemberDefine)
+            {
+                data.AppendLine($"\t{prefix}public Text {Name};");
+            }
+            else if (genType == UIGenType.FindObject)
+            {
+                data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<Text>();");
+            }
+            else if (genType == UIGenType.BindObject)
+            {
+                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(value => {Name}.text = value);");
+            }
+            else if (genType == UIGenType.DataMemberDefine)
+            {
+                data.AppendLine($"\t{prefix}string {Name};");
+                data.AppendLine($"\t{prefix}public string {PropertyName}");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}get {{ return {Name}; }}");
+                data.AppendLine($"\t\t{prefix}set {{ Set(ref {Name}, value); }}");
+                data.AppendLine($"\t{prefix}}}");
+            }
+        }
+
+        public void GenerateImage(StringBuilder data, UIGenType genType, string prefix)
+        {
+            if (genType == UIGenType.MemberDefine)
+            {
+                data.AppendLine($"\t{prefix}public Image {Name};");
+            }
+            else if (genType == UIGenType.FindObject)
+            {
+                data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<Image>();");
+            }
+            else if (genType == UIGenType.BindObject)
+            {
+                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(value => {Name}.sprite = value);");
+            }
+            else if (genType == UIGenType.DataMemberDefine)
+            {
+                data.AppendLine($"\t{prefix}Sprite {Name};");
+                data.AppendLine($"\t{prefix}public Sprite {PropertyName}");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}get {{ return {Name}; }}");
+                data.AppendLine($"\t\t{prefix}set {{ Set(ref {Name}, value); }}");
+                data.AppendLine($"\t{prefix}}}");
+            }
+        }
+
+        public void GenerateRawImage(StringBuilder data, UIGenType genType, string prefix)
+        {
+            if (genType == UIGenType.MemberDefine)
+            {
+                data.AppendLine($"\t{prefix}public RawImage {Name};");
+            }
+            else if (genType == UIGenType.FindObject)
+            {
+                data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<RawImage>();");
+            }
+            else if (genType == UIGenType.BindObject)
+            {
+                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(value => {Name}.texture = value);");
+            }
+            else if (genType == UIGenType.DataMemberDefine)
+            {
+                data.AppendLine($"\t{prefix}Texture {Name};");
+                data.AppendLine($"\t{prefix}public Texture {PropertyName}");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}get {{ return {Name}; }}");
+                data.AppendLine($"\t\t{prefix}set {{ Set(ref {Name}, value); }}");
+                data.AppendLine($"\t{prefix}}}");
+            }
+        }
+
+        public void GenerateSlider(StringBuilder data, UIGenType genType, string prefix)
+        {
+            if (genType == UIGenType.MemberDefine)
+            {
+                data.AppendLine($"\t{prefix}public Slider {Name};");
+            }
+            else if (genType == UIGenType.FindObject)
+            {
+                data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<Slider>();");
+            }
+            else if (genType == UIGenType.BindObject)
+            {
+                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(value => {Name}.value = value);");
+            }
+            else if (genType == UIGenType.DataMemberDefine)
+            {
+                data.AppendLine($"\t{prefix}float {Name};");
+                data.AppendLine($"\t{prefix}public float {PropertyName}");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}get {{ return {Name}; }}");
+                data.AppendLine($"\t\t{prefix}set {{ Set(ref {Name}, value); }}");
+                data.AppendLine($"\t{prefix}}}");
+            }      
+        }
+
+        public void GenerateButton(StringBuilder data, UIGenType genType, string prefix)
+        {
+            if (genType == UIGenType.MemberDefine)
             {
                 data.AppendLine($"\t{prefix}public Button {Name};");
             }
-            else
+            else if (genType == UIGenType.FindObject)
+            {
+                data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<Button>();");
+            }
+            else if (genType == UIGenType.BindObject)
             {
                 string name = Name.Substring(UIAutoNode.s_ButtonPrefix.Length);
-                data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<Button>();");
-                data.AppendLine($"\t\t{prefix}{Name}.onClick.AddListener(OnClick{name});");
+                data.AppendLine($"\t\t{prefix}bindSet.BindButton({Name}).For({Name}.onClick).To(vm.OnClick{name});");
+            }
+            else if (genType == UIGenType.DataMemberDefine)
+            {
+                string name = Name.Substring(UIAutoNode.s_ButtonPrefix.Length);
+                data.AppendLine($"\t{prefix}public virtual void OnClick{name}() {{ Huge.Debug.Log(\"click {Name}\"); }}");
             }
         }
 
-        public void GenerateScroll(StringBuilder data, bool isInit, string prefix)
+        public void GenerateScroll(StringBuilder data, UIGenType genType, string prefix)
         {
-            if (isInit)
+            string name = Name.Substring(UIAutoNode.s_ScrollPrefix.Length);
+            string itemClassName = $"Item{ClassName}{name}";
+            if (genType == UIGenType.MemberDefine)
             {
                 data.AppendLine($"\t{prefix}public ScrollRect {Name};");
                 data.AppendLine($"\t{prefix}public GameObject {Name}Content;");
+                data.AppendLine($"\t{prefix}public GameObject {Name}Template;");
+                data.AppendLine($"\t{prefix}public ListView<{itemClassName}Generate, {itemClassName}ViewModelGenerate> _{name};");
             }
-            else
+            else if (genType == UIGenType.FindObject)
             {
                 data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<ScrollRect>();");
-                data.AppendLine($"\t\t{prefix}{Name}Content = {Name}.content.gameObject;");
+                data.AppendLine($"\t\t{prefix}{Name}Content = {Name}.transform.Find(\"Content\").gameObject;");
+                data.AppendLine($"\t\t{prefix}{Name}Template = {Name}.transform.Find(\"Template\").gameObject;");
+                data.AppendLine($"\t\t{prefix}_{name} = new ListView<{itemClassName}Generate, {itemClassName}ViewModelGenerate>();");
+                data.AppendLine($"\t\t{prefix}_{name}.Template = {Name}Template;");
+                data.AppendLine($"\t\t{prefix}_{name}.Content = {Name}Content;");
+                data.AppendLine($"\t\t{prefix}_{name}.Scroll = {Name};");
+                data.AppendLine($"\t\t{prefix}_{name}.Parent = this;");
+            }
+            else if (genType == UIGenType.BindObject)
+            {
+                data.AppendLine($"\t\t{prefix}bindSet.BindList(vm).For(() => vm.{name}, nameof(vm.{name})).To(_{name});");
+            }
+            else if (genType == UIGenType.DataMemberDefine)
+            {
+                data.AppendLine($"\t{prefix}ObservableList<{itemClassName}ViewModelGenerate> _{name} = new ObservableList<{itemClassName}ViewModelGenerate>();");
+                data.AppendLine($"\t{prefix}public ObservableList<{itemClassName}ViewModelGenerate> {name}");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}get {{ return _{name}; }}");
+                data.AppendLine($"\t\t{prefix}set {{ Set(ref _{name}, value); }}");
+                data.AppendLine($"\t{prefix}}}");
             }
         }
 
-        public void GenerateLoopScroll(StringBuilder data, bool isInit, string prefix)
+        public void GenerateLoopScroll(StringBuilder data, UIGenType genType, string prefix)
         {
-            if (isInit)
+            if (genType == UIGenType.MemberDefine)
             {
                 data.AppendLine($"\t{prefix}public ScrollView {Name};");
                 data.AppendLine($"\t{prefix}public GameObject {Name}Content;");
             }
-            else
+            else if (genType == UIGenType.FindObject)
             {
                 data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<ScrollView>();");
                 data.AppendLine($"\t\t{prefix}{Name}Content = {Name}.content.gameObject;");
             }
+            else if (genType == UIGenType.BindObject)
+            {
+
+            }
+            else if (genType == UIGenType.DataMemberDefine)
+            {
+
+            }
         }
 
-        public void GenerateBG(StringBuilder data, bool isInit, string prefix)
+        public void GenerateBG(StringBuilder data, UIGenType genType, string prefix)
         {
-            if (isInit)
+            if (genType == UIGenType.MemberDefine)
             {
                 data.AppendLine($"\t{prefix}public Transform {Name};");
             }
-            else
+            else if (genType == UIGenType.FindObject)
             {
                 data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\");");
             }
         }
 
-        public void GenerateFull(StringBuilder data, bool isInit, string prefix)
+        public void GenerateFull(StringBuilder data, UIGenType genType, string prefix)
         {
-            if (isInit)
+            if (genType == UIGenType.MemberDefine)
             {
                 data.AppendLine($"\t{prefix}public Transform {Name};");
             }
-            else
+            else if (genType == UIGenType.FindObject)
             {
                 data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\")();");
             }
@@ -177,21 +339,14 @@ namespace Huge.MVVM
 
         public void GenerateTemplate(StringBuilder data)
         {
-            string name = Name.Substring(Name.IndexOf("_Stc"));
-            data.AppendLine($"\tpublic class {ClassName}{name}Prefab : Prefab");
-            data.AppendLine("\t{");
-            data.AppendLine($"\t\tpublic {ClassName}{name}Prefab(GameObject gameObj) : base(gameObj) {{}}");
-            data.AppendLine();
-            Tree.GenerateCode(data, "\t");
-            data.AppendLine("\t}");
-            data.AppendLine();
-            data.AppendLine($"\tpublic {ClassName}{name}Prefab Generate{name}Prefab(GameObject gameObj = null, Transform parent = null)");
-            data.AppendLine("\t{");
-            data.AppendLine($"\t\tif (gameObj == null) gameObj = UnityEngine.GameObject.Instantiate({Name});");
-            data.AppendLine($"\t\tvar inst = new {ClassName}{name}Prefab(gameObj);");
-            data.AppendLine("\t\tif (parent != null) inst.transform.SetParent(parent);");
-            data.AppendLine("\t\treturn inst;");
-            data.AppendLine("\t}");
+            Tree.GenerateTemplate(ClassName, data, "");
+            Tree.GenerateViewModel(ClassName, data, "");
+        }
+
+        public void GenerateScrollItemView(StringBuilder data)
+        {
+            Tree.GenerateScrollItemView(ClassName, data, "");
+            Tree.GenerateViewModel(ClassName, data, "");
         }
     }
 
@@ -202,56 +357,239 @@ namespace Huge.MVVM
         public List<UIAutoNode> FullNodeList = new List<UIAutoNode>();
         public List<UIAutoNode> ObjectNodeList = new List<UIAutoNode>();
         public List<UIAutoNode> TemplateNodeList = new List<UIAutoNode>();
+        public List<UIAutoNode> ScrollNodeList = new List<UIAutoNode>();
 
-        public void GenerateCode(StringBuilder data, string prefix)
+        public void GenerateView(string viewName, StringBuilder data, string prefix)
         {
+            data.AppendLine($"{prefix}public class {viewName}Generate : Window");
+            data.AppendLine($"{prefix}{{");
+
             foreach(var node in ObjectNodeList)
             {
-                node.GenerateObject(data, true, prefix);
+                node.GenerateObject(data, UIGenType.MemberDefine, prefix);
             }
             foreach(var node in NodeList)
             {
-                node.GenerateCode(data, true, prefix);
+                node.GenerateCode(data, UIGenType.MemberDefine, prefix);
             }
             foreach(var node in BGNodeList)
             {
-                node.GenerateBG(data, true, prefix);
+                node.GenerateBG(data, UIGenType.MemberDefine, prefix);
             }
             foreach(var node in FullNodeList)
             {
-                node.GenerateFull(data, true, prefix);
+                node.GenerateFull(data, UIGenType.MemberDefine, prefix);
             }
             data.AppendLine();
-            data.AppendLine($"\t{prefix}protected override void OnInit()");
+
+            data.AppendLine($"\t{prefix}protected override void OnGenerate()");
             data.AppendLine($"\t{prefix}{{");
             foreach(var node in ObjectNodeList)
             {
-                node.GenerateObject(data, false, prefix);
+                node.GenerateObject(data, UIGenType.FindObject, prefix);
             }
             foreach(var node in NodeList)
             {
-                node.GenerateCode(data, false, prefix);
+                node.GenerateCode(data, UIGenType.FindObject, prefix);
             }
             foreach(var node in BGNodeList)
             {
-                node.GenerateBG(data, false, prefix);
+                node.GenerateBG(data, UIGenType.FindObject, prefix);
             }
             foreach(var node in FullNodeList)
             {
-                node.GenerateFull(data, false, prefix);
+                node.GenerateFull(data, UIGenType.FindObject, prefix);
             }
             data.AppendLine($"\t{prefix}}}");
             data.AppendLine();
 
+            data.AppendLine($"\t{prefix}public virtual void BindViewModel(BindingSet bindSet, {viewName}ViewModelGenerate vm)");
+            data.AppendLine($"\t{prefix}{{");
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.BindObject, prefix);
+            }
             foreach(var node in NodeList)
             {
-                if (node.Name.StartsWith(UIAutoNode.s_ButtonPrefix))
-                {
-                    string name = node.Name.Substring(UIAutoNode.s_ButtonPrefix.Length);
-                    data.AppendLine($"\t{prefix}protected virtual void OnClick{name}() {{}}");
-                    data.AppendLine();
-                }
+                node.GenerateCode(data, UIGenType.BindObject, prefix);
             }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.BindObject, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.BindObject, prefix);
+            }
+            data.AppendLine($"\t{prefix}}}");
+            data.AppendLine();
+
+            data.AppendLine($"{prefix}}}");
+            data.AppendLine();
+        }
+
+        public void GenerateViewModel(string viewName, StringBuilder data, string prefix)
+        {
+            data.AppendLine($"{prefix}public class {viewName}ViewModelGenerate : ViewModel");
+            data.AppendLine($"{prefix}{{");
+
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.DataMemberDefine, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.DataMemberDefine, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.DataMemberDefine, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.DataMemberDefine, prefix);
+            }
+
+            data.AppendLine($"{prefix}}}");
+            data.AppendLine();
+        }
+
+        public void GenerateTemplate(string viewName, StringBuilder data, string prefix)
+        {
+            data.AppendLine($"{prefix}public class {viewName}Generate : SubView");
+            data.AppendLine($"{prefix}{{");
+
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.MemberDefine, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.MemberDefine, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.MemberDefine, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.MemberDefine, prefix);
+            }
+            data.AppendLine();
+
+            data.AppendLine($"\t{prefix}protected override void OnGenerate()");
+            data.AppendLine($"\t{prefix}{{");
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.FindObject, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.FindObject, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.FindObject, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.FindObject, prefix);
+            }
+            data.AppendLine($"\t{prefix}}}");
+            data.AppendLine();
+
+            data.AppendLine($"\t{prefix}public virtual void BindViewModel(BindingSet bindSet, {viewName}ViewModelGenerate vm)");
+            data.AppendLine($"\t{prefix}{{");
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.BindObject, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.BindObject, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.BindObject, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.BindObject, prefix);
+            }
+            data.AppendLine($"\t{prefix}}}");
+            data.AppendLine();
+
+            data.AppendLine($"{prefix}}}");
+            data.AppendLine();
+        }
+
+        public void GenerateScrollItemView(string viewName, StringBuilder data, string prefix)
+        {
+            data.AppendLine($"{prefix}public class {viewName}Generate : ItemView<{viewName}ViewModelGenerate>");
+            data.AppendLine($"{prefix}{{");
+
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.MemberDefine, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.MemberDefine, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.MemberDefine, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.MemberDefine, prefix);
+            }
+            data.AppendLine();
+
+            data.AppendLine($"\t{prefix}protected override void OnGenerate()");
+            data.AppendLine($"\t{prefix}{{");
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.FindObject, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.FindObject, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.FindObject, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.FindObject, prefix);
+            }
+            data.AppendLine($"\t{prefix}}}");
+            data.AppendLine();
+
+            data.AppendLine($"\t{prefix}public override void BindViewModel(BindingSet bindSet, {viewName}ViewModelGenerate vm)");
+            data.AppendLine($"\t{prefix}{{");
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.BindObject, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.BindObject, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.BindObject, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.BindObject, prefix);
+            }
+            data.AppendLine($"\t{prefix}}}");
+            data.AppendLine();
+
+            data.AppendLine($"{prefix}}}");
+            data.AppendLine();
         }
     }
 }

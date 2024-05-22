@@ -20,6 +20,13 @@ namespace Huge.MVVM
         TopLayer = 5,
     }
 
+    public enum WindowType
+    {
+        None    = 0,
+        Page    = 1,
+        Popup   = 2,
+    }
+
     public class UIManager : Singleton<UIManager>
     {
         Camera m_UICamera;
@@ -68,14 +75,20 @@ namespace Huge.MVVM
             return m_UICamera;
         }
 
-        public T OpenWindow<T>() where T : Window
+        public T OpenWindow<T>(WindowType windowType, LayerType layerType = LayerType.NormalLayer) where T : Window
         {
+            if (windowType == WindowType.None)
+            {
+                UnityEngine.Debug.LogError("WindowType is None");
+                return null;
+            }
+
             var t = typeof(T);
             Window window = Activator.CreateInstance(t) as Window;
             m_StackWindow.Add(window);
             try
             {
-                window.Init(null);
+                window.Init(null, windowType, layerType);
                 return window as T;
             }
             catch(Exception ex)
@@ -86,14 +99,20 @@ namespace Huge.MVVM
             }
         }
 
-        public async UniTask<T> OpenWindowAsync<T>() where T : Window
+        public async UniTask<T> OpenWindowAsync<T>(WindowType windowType, LayerType layerType = LayerType.NormalLayer) where T : Window
         {
+            if (windowType == WindowType.None)
+            {
+                UnityEngine.Debug.LogError("WindowType is None");
+                return null;
+            }
+
             var t = typeof(T);
             Window window = Activator.CreateInstance(t) as Window;
             m_StackWindow.Add(window);
             try
             {
-                await window.InitAsync(null);
+                await window.InitAsync(null, windowType, layerType);
                 return window as T;
             }
             catch(Exception ex)

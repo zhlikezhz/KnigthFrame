@@ -13,9 +13,9 @@ namespace Huge.MVVM
     /// </summary> <summary>
     /// 
     /// </summary>
-    public class Page : Window
+    internal static class Page
     {
-        internal override void AfterCreate()
+        internal static void AfterCreate(Window self)
         {
             //找到当前Page的位置
             //找到相同层(和当前Page相同层)或者更高层(比当前Page更高层)中位置最高的Page
@@ -25,12 +25,12 @@ namespace Huge.MVVM
             for(int i = viewStack.Count - 1; i >= 0; i--)
             {
                 Window view = viewStack[i];
-                if (topViewPagePos != -1 && view.GetLayerType() >= GetLayerType() && (view as Page == null))
+                if (topViewPagePos != -1 && view.GetLayerType() >= self.GetLayerType() && (view.GetWindowLayer() != WindowType.Page))
                 {
                     topViewPagePos = i;
                 }
 
-                if (view == this)
+                if (view == self)
                 {
                     curViewPagePos = i;
                     break;
@@ -43,20 +43,20 @@ namespace Huge.MVVM
                 {
                     Window view = viewStack[i];
                     LayerType layerType = view.GetLayerType();
-                    if (layerType == GetLayerType())
+                    if (layerType == self.GetLayerType())
                     {
                         view.SetActive(false);
                     }
                 }
-                SetActive(true);
+                self.SetActive(true);
             }
             else
             {
-                SetActive(false);
+                self.SetActive(false);
             }
         }
 
-        internal override void BeforeDestroy()
+        internal static void BeforeDestroy(Window self)
         {
             int curViewPagePos = -1;
             int preViewPagePos = -1;
@@ -64,7 +64,7 @@ namespace Huge.MVVM
             List<Window> viewStack = UIManager.Instance.GetWindowStack();
             for (int i = viewStack.Count - 1; i >= 0; i--)
             {
-                if (viewStack[i] == this)
+                if (viewStack[i] == self)
                 {
                     curViewPagePos = i;
                     break;
@@ -76,7 +76,7 @@ namespace Huge.MVVM
                 for (int i = curViewPagePos - 1; i >= 0; i--)
                 {
                     View view = viewStack[i];
-                    if ((view as Page) != null)
+                    if (view.GetWindowLayer() == WindowType.Page)
                     {
                         preViewPagePos = i;
                         break;
@@ -85,7 +85,7 @@ namespace Huge.MVVM
                 for (int i = curViewPagePos + 1; i < viewStack.Count; i++)
                 {
                     View view = viewStack[i];
-                    if ((view as Page) != null)
+                    if (view.GetWindowLayer() == WindowType.Page)
                     {
                         nextViewPagePos = i;
                         break;
@@ -120,7 +120,7 @@ namespace Huge.MVVM
                 }
                 catch(Exception ex)
                 {
-                    Huge.Debug.LogError($"UI: close page {GetType().Name} error: {ex.Message}.");
+                    Huge.Debug.LogError($"UI: close page {self.GetType().Name} error: {ex.Message}.");
                 }
                 finally
                 {

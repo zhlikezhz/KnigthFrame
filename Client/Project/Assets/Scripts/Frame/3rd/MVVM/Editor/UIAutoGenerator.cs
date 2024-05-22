@@ -10,34 +10,12 @@ namespace Huge.MVVM.Editor
 {
     public class UIAutoGenerator
     {
-        [MenuItem("UI/Generate Prefab Code")]
+        [MenuItem("Assets/UI Prefab Code Generater")]
         public static void GeneratePrefabCode()
         {
             GenerateCode(Selection.activeObject);
             EditorUtility.DisplayDialog("完成", "生成代码成功", "确定");
         }
-
-        /*
-        static object GetGenerateObjects()
-        {
-            List<object> genObjs = new List<object>();
-            if (Selection.activeObject.GetType() == typeof(DefaultAsset))
-            {
-                string path = AssetDatabase.GetAssetPath(Selection.activeObject);
-                string[] files = Directory.GetFiles(path, "*.prefab", SearchOption.AllDirectories);
-                foreach (var file in files)
-                {
-                    UnityEngine.Debug.LogError(file);
-                    genObjs.Add(AssetDatabase.LoadAssetAtPath<GameObject>(file));
-                }
-            }
-            else if (Selection.activeObject.GetType() == typeof(GameObject))
-            {
-                genObjs.Add(Selection.activeObject);
-            }
-            return genObjs;
-        }
-        */
 
         public static string s_ScriptDirPath = "Scripts/HotUpdate/Runtime/UI/AutoGenerate";
         static string m_strPrefabPath = "";
@@ -51,7 +29,6 @@ namespace Huge.MVVM.Editor
             string dirPath = Path.GetDirectoryName(m_strPrefabPath);
             m_strScriptFullPath = $"{s_ScriptDirPath}/{m_strScriptName}Generate.cs";
             m_strScriptFullPath = Path.Combine(Application.dataPath, m_strScriptFullPath);
-            UnityEngine.Debug.LogError(m_strScriptFullPath);
             
             try
             {
@@ -82,22 +59,21 @@ namespace Huge.MVVM.Editor
             m_DstText.AppendLine("//------------------------------------------------------------------------------");
             m_DstText.AppendLine();
             m_DstText.AppendLine("using Huge.MVVM;");
+            m_DstText.AppendLine("using Huge.MVVM.DataBinding;");
             m_DstText.AppendLine("using UnityEngine;");
             m_DstText.AppendLine("using UnityEngine.UI;");
             m_DstText.AppendLine();
-            m_DstText.AppendLine($"[PrefabSettingAttribute(\"{m_strPrefabPath}\")]");
-            m_DstText.AppendLine($"public class {m_strScriptName}Generate : Prefab");
-            m_DstText.AppendLine("{");
-            tree.GenerateCode(m_DstText, "");
-            m_DstText.AppendLine();
-
+            m_DstText.AppendLine($"[ViewSettingAttribute(\"{m_strPrefabPath}\")]");
+            tree.GenerateView(m_strScriptName, m_DstText, "");
+            tree.GenerateViewModel(m_strScriptName, m_DstText, "");
             foreach(var template in tree.TemplateNodeList)
             {
                 template.GenerateTemplate(m_DstText);
-                m_DstText.AppendLine();
             }
-
-            m_DstText.AppendLine("}");
+            foreach(var template in tree.ScrollNodeList)
+            {
+                template.GenerateScrollItemView(m_DstText);
+            }
             File.WriteAllText(m_strScriptFullPath, m_DstText.ToString());
         }
 
@@ -116,6 +92,16 @@ namespace Huge.MVVM.Editor
                 node.ClassName = m_strScriptName;
                 node.Trans = child;
                 node.Name = name;
+                int index = name.IndexOf(UIAutoNode.s_ObjectPrefix);
+                if (0 <= index && index < name.Length)
+                {
+                    node.PropertyName = name.Substring(index+1);
+                }
+                else
+                {
+                    node.PropertyName = name;
+                }
+
                 if (path.Length > 0)
                 {
                     node.Path = $"{path}/{name}";
@@ -151,10 +137,24 @@ namespace Huge.MVVM.Editor
                     }
                     else if (name.StartsWith(UIAutoNode.s_TemplatePrefix))
                     {
+                        node.ClassName = $"{m_strScriptName}{name.Substring(UIAutoNode.s_TemplatePrefix.Length)}";
                         tree.NodeList.Add(node);
                         tree.TemplateNodeList.Add(node);
                         node.Tree = new UIAutoTree();
                         CheckChild("", node.Tree, child);
+                    }
+                    else if (name.StartsWith(UIAutoNode.s_ScrollPrefix))
+                    {
+                        tree.NodeList.Add(node);
+
+                        UIAutoNode templateNode = new UIAutoNode();
+                        templateNode.Tree = new UIAutoTree();
+                        templateNode.ClassName = $"Item{m_strScriptName}{name.Substring(UIAutoNode.s_ScrollPrefix.Length)}";
+                        templateNode.Trans = child.Find("Template");
+                        templateNode.Name = name;
+                        templateNode.Path = "";
+                        tree.ScrollNodeList.Add(templateNode);
+                        CheckChild("", templateNode.Tree, templateNode.Trans);
                     }
                     else if (name.StartsWith(UIAutoNode.s_ObjectPrefix))
                     {

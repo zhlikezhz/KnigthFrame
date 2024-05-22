@@ -5,27 +5,34 @@ using UnityEngine.UI;
 
 namespace Huge.MVVM
 {
-    public class Popup : Window
+    // public interface IPopup
+    // {
+    //     bool IsUseMask();
+    //     void OnClickMask();
+    //     float GetMaskAlpha();
+    // }
+
+    internal static class Popup
     {
-        internal override void AfterCreate()
+        internal static void AfterCreate(Window self)
         {
-            RefreshPopupMask();
+            RefreshPopupMask(self);
         }
 
-        internal override void BeforeDestroy()
+        internal static void BeforeDestroy(Window self)
         {
-            RefreshPopupMask();
+            RefreshPopupMask(self);
         }
 
-        internal void RefreshPopupMask()
+        internal static void RefreshPopupMask(Window self)
         {
-            Popup topPopup = null;
+            Window topPopup = null;
             List<Window> viewStack = UIManager.Instance.GetWindowStack();
             for (int i = 0; i < viewStack.Count; i++)
             {
-                View view = viewStack[i];
-                Popup popup = view as Popup;
-                if (popup != null && popup.IsUseMask())
+                Window popup = viewStack[i];
+                WindowType window = popup.GetWindowLayer();
+                if (window == WindowType.Popup && popup.IsUseMask())
                 {
                     if (topPopup == null)
                     {
@@ -52,7 +59,7 @@ namespace Huge.MVVM
                 if (topPopup.IsClickMask())
                 {
                     button.onClick.RemoveAllListeners();
-                    button.onClick.AddListener(OnClickMask);
+                    button.onClick.AddListener(topPopup.OnClickMask);
                 }
             }
             else
@@ -61,26 +68,6 @@ namespace Huge.MVVM
                 button.onClick.RemoveAllListeners();
                 maskObj.SetActive(false);
             }
-        }
-
-        protected virtual bool IsUseMask()
-        {
-            return true;
-        }
-
-        protected virtual float GetMaskAlpha()
-        {
-            return 1.0f;
-        }
-
-        protected virtual bool IsClickMask()
-        {
-            return true;
-        }
-
-        protected virtual void OnClickMask()
-        {
-            Close();
         }
     }
 }

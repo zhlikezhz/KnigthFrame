@@ -1,19 +1,21 @@
 using System;
 using Huge.Pool;
+using System.Collections.Specialized;
 
 namespace Huge.MVVM.DataBinding
 {
-    public class ListPropertyProxy<TValue> : IProxy, IReuseObject where TValue : ViewModel
+    public class ListPropertyProxy<TViewModel> : IProxy, IReuseObject 
+        where TViewModel : ViewModel
     {
-        static readonly ObjectPool<ListPropertyProxy<TValue>> s_Pool = new ObjectPool<ListPropertyProxy<TValue>>(l => l.OnReinit(), l => l.OnRelease(), false);
-        public static void Release(ListPropertyProxy<TValue> toRelease) => s_Pool.Release(toRelease);
-        public static ListPropertyProxy<TValue> Get() => s_Pool.Get();
+        static readonly ObjectPool<ListPropertyProxy<TViewModel>> s_Pool = new ObjectPool<ListPropertyProxy<TViewModel>>(l => l.OnReinit(), l => l.OnRelease(), false);
+        public static void Release(ListPropertyProxy<TViewModel> toRelease) => s_Pool.Release(toRelease);
+        public static ListPropertyProxy<TViewModel> Get() => s_Pool.Get();
 
-        ListView<TValue> Target {get; set;}
-        ObservableList<TValue> Source {get; set;}
-        public Func<ObservableList<TValue>> GetSourceDelegate {get;set;}
+        IListView Target {get; set;}
+        ObservableList<TViewModel> Source {get; set;}
+        public Func<ObservableList<TViewModel>> GetSourceDelegate {get;set;}
 
-        public void To(ListView<TValue> view)
+        public void To(IListView view)
         {
             Target = view;
         }
@@ -31,11 +33,12 @@ namespace Huge.MVVM.DataBinding
                 {
                     source.CollectionChanged += Target.OnCollectionChanged;
 
-                    Target.Clear();
-                    for (int i = 0; i < Source.Count; i++)
+                    Target.Reset();
+                    for (int i = 0; i < source.Count; i++)
                     {
-                        TValue value = Source[i];
-                        Target.AddItem(i, value);
+                        TViewModel value = source[i];
+                        var evtArgs = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value, i);
+                        Target.OnCollectionChanged(Target, evtArgs);
                     }
                 }
                 Source = source;

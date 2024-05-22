@@ -12,12 +12,12 @@ namespace Huge.MVVM
 
         }
 
-        public T AddSection<T>(GameObject parent) where T : SubView
+        public T AddSubView<T>(GameObject parent) where T : SubView
         {
-            return AddSection<T>(null, parent);
+            return AddSubView<T>(null, parent);
         }
 
-        public T AddSection<T>(GameObject root, GameObject parent) where T : SubView
+        public T AddSubView<T>(GameObject root, GameObject parent) where T : SubView
         {
             var t = typeof(T);
             SubView subView = Activator.CreateInstance(t) as SubView;
@@ -25,8 +25,8 @@ namespace Huge.MVVM
             try
             {
                 subView.Init(root);
+                subView.SetWindow(this);
                 subView.SetParent(parent, false);
-                subView.SetView(this);
                 subView.SetActive(true);
                 return subView as T;
             }
@@ -38,19 +38,18 @@ namespace Huge.MVVM
             }
         }
 
-        public void RemoveSection(SubView subView)
+        public void AddSubView(SubView subView, GameObject parent)
+        {
+            m_SubViewList.Add(subView);
+            subView.SetParent(parent, false);
+        }
+
+        public void RemoveSubView(SubView subView, bool isDestroy = true)
         {
             if (subView != null && m_SubViewList.Contains(subView))
             {
                 m_SubViewList.Remove(subView);
-                try
-                {
-                    subView.Destroy();
-                }
-                catch (Exception ex)
-                {
-                    Huge.Debug.LogError($"UI: remove {subView.GetType().Name} error: {ex.Message}.\n{ex.StackTrace}");
-                }
+                if (isDestroy) subView.Destroy();
             }
         }
 
@@ -62,6 +61,26 @@ namespace Huge.MVVM
         public async UniTask CloseAndPlayAnimation()
         {
             await UIManager.Instance.CloseWindowAsync(this);
+        }
+
+        internal protected virtual bool IsUseMask()
+        {
+            return true;
+        }
+
+        internal protected virtual float GetMaskAlpha()
+        {
+            return 1.0f;
+        }
+
+        internal protected virtual bool IsClickMask()
+        {
+            return true;
+        }
+
+        internal protected virtual void OnClickMask()
+        {
+            Close();
         }
     }
 }
