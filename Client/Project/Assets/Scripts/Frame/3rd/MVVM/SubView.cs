@@ -8,15 +8,15 @@ namespace Huge.MVVM
 {
     public abstract class SubView : View
     {
-        Window m_winParent;
-        internal void SetWindow(Window window) 
+        View m_viewParent;
+        internal void SetView(View window) 
         {
-            m_winParent = window;
+            m_viewParent = window;
         }
 
         public void Close()
         {
-            m_winParent?.RemoveSubView(this);
+            m_viewParent?.RemoveSubView(this);
         }
     }
 }

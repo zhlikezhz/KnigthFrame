@@ -35,7 +35,7 @@ namespace Huge.MVVM.DataBinding
                 var itemView = m_ItemList[i] as ItemView<TViewModel>;
                 Parent.RemoveSubView(itemView, false);
                 itemView.SetParent(Scroll.transform, false);
-                itemView.gameObject.SetActive(false);
+                itemView.SetActive(false);
                 itemView.RemoveViewModel();
                 m_ItemCacheList.Push(itemView as TView);
             }
@@ -47,7 +47,7 @@ namespace Huge.MVVM.DataBinding
             if (m_ItemCacheList.TryPop(out var itemView))
             {
                 Parent.AddSubView(itemView, Content);
-                itemView.gameObject.SetActive(true);
+                itemView.SetActive(true);
             }
             else
             {
@@ -55,7 +55,7 @@ namespace Huge.MVVM.DataBinding
                 itemView = Parent.AddSubView<TView>(inst, Content);
                 m_ItemList.Add(itemView);
             }
-            itemView.transform.SetAsLastSibling();
+            itemView.SetAsLastSibling();
             var view = itemView as ItemView<TViewModel>;
             view.ReplaceViewModel(item);
         }
@@ -68,7 +68,7 @@ namespace Huge.MVVM.DataBinding
                 m_ItemList.RemoveAt(index);
                 Parent.RemoveSubView(itemView, false);
                 itemView.SetParent(Scroll.transform, false);
-                itemView.gameObject.SetActive(false);
+                itemView.SetActive(false);
                 itemView.RemoveViewModel();
                 m_ItemCacheList.Push(itemView);
             }
@@ -85,7 +85,7 @@ namespace Huge.MVVM.DataBinding
                 if (m_ItemCacheList.TryPop(out var itemView))
                 {
                     Parent.AddSubView(itemView, Content);
-                    itemView.gameObject.SetActive(true);
+                    itemView.SetActive(true);
                 }
                 else
                 {
@@ -93,7 +93,7 @@ namespace Huge.MVVM.DataBinding
                     itemView = Parent.AddSubView<TView>(inst, Content);
                     m_ItemList.Add(itemView);
                 }
-                itemView.transform.SetSiblingIndex(index);
+                itemView.SetSiblingIndex(index);
                 var view = itemView as ItemView<TViewModel>;
                 view.ReplaceViewModel(item);
             }

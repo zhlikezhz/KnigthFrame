@@ -9,7 +9,7 @@ using Huge.Asset;
 
 namespace Huge.MVVM
 {
-    public abstract class View
+    public abstract partial class View
     {
         LayerType m_LayerType;
         WindowType m_WindowType;
@@ -18,8 +18,8 @@ namespace Huge.MVVM
         CancellationTokenSource m_Source;
         internal List<SubView> m_SubViewList = new List<SubView>();
 
-        public Transform transform;
-        public GameObject gameObject;
+        protected GameObject gameObject;
+        protected RectTransform transform;
         public CancellationToken Token { get; private set; }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Huge.MVVM
                 root = GameObject.Instantiate(prefab);
             }
             gameObject = root;
-            transform = root.transform;
+            transform = root.transform as RectTransform;
             m_Source = CancellationTokenSource.CreateLinkedTokenSource(root.GetCancellationTokenOnDestroy());
             Token = m_Source.Token;
             if (windowType != WindowType.None && layerType != LayerType.None)
@@ -96,7 +96,7 @@ namespace Huge.MVVM
                 root = GameObject.Instantiate(prefab);
             }
             gameObject = root;
-            transform = root.transform;
+            transform = root.transform as RectTransform;
             m_Source = CancellationTokenSource.CreateLinkedTokenSource(root.GetCancellationTokenOnDestroy());
             Token = m_Source.Token;
             if (windowType != WindowType.None && layerType != LayerType.None)
@@ -292,5 +292,51 @@ namespace Huge.MVVM
             return m_bIsActived;
         }
 #endregion
+
+#region SubView
+        public T AddSubView<T>(GameObject parent) where T : SubView
+        {
+            return AddSubView<T>(null, parent);
+        }
+
+        public T AddSubView<T>(GameObject root, GameObject parent) where T : SubView
+        {
+            var t = typeof(T);
+            SubView subView = Activator.CreateInstance(t) as SubView;
+            m_SubViewList.Add(subView);
+            try
+            {
+                subView.Init(root);
+                subView.SetView(this);
+                if (parent != null)
+                {
+                    subView.SetParent(parent, false);
+                }
+                subView.SetActive(true);
+                return subView as T;
+            }
+            catch (Exception ex)
+            {
+                Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.\n{ex.StackTrace}");
+                m_SubViewList.Remove(subView);
+                return null;
+            }
+        }
+
+        public void AddSubView(SubView subView, GameObject parent)
+        {
+            m_SubViewList.Add(subView);
+            subView.SetParent(parent, false);
+        }
+
+        public void RemoveSubView(SubView subView, bool isDestroy = true)
+        {
+            if (subView != null && m_SubViewList.Contains(subView))
+            {
+                m_SubViewList.Remove(subView);
+                if (isDestroy) subView.Destroy();
+            }
+        }
+#endregion SubView
     }
 }
