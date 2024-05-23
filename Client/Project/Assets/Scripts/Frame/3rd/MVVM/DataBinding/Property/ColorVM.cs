@@ -5,40 +5,38 @@ namespace Huge.MVVM.DataBinding
 {
     public class ColorVM : ObservableObject
     {
-        float r;
-        public float R
+        float _r;
+        public float r
         {
-            get { return r; }
-            set { Set(ref r, value); }
+            get { return _r; }
+            set { Set(ref _r, value); }
         }
 
-        float g;
-        public float G
+        float _g;
+        public float g
         {
-            get { return g; }
-            set { Set(ref g, value); }
+            get { return _g; }
+            set { Set(ref _g, value); }
         }
 
-        float b;
-        public float B
+        float _b;
+        public float b
         {
-            get { return b; }
-            set { Set(ref b, value); }
+            get { return _b; }
+            set { Set(ref _b, value); }
         }
 
-        float a;
-        public float A
+        float _a;
+        public float a
         {
-            get { return a; }
-            set { Set(ref a, value); }
+            get { return _a; }
+            set { Set(ref _a, value); }
         }
 
         public ColorVM(float r, float g, float b, float a = 1f)
         {
-            this.r = r; 
-            this.g = g; 
-            this.b = b; 
-            this.a = a;
+            _r = r; _g = g; 
+            _b = b; _a = a;
         }
 
         public static ColorVM red { get { return new ColorVM(1f,0f,0f,1f); } }
@@ -83,24 +81,6 @@ namespace Huge.MVVM.DataBinding
         public static ColorVM operator /(ColorVM a, float b)
         {
             return new ColorVM(a.r / b, a.g / b, a.b / b, a.a / b);
-        }
-
-        public void Lerp(Color a, Color b, float t)
-        {
-            t = Mathf.Clamp01(t);
-            R = a.r + (b.r - a.r) * t;
-            G = a.g + (b.g - a.g) * t;
-            B = a.b + (b.b - a.b) * t;
-            A = a.a + (b.a - a.a) * t;
-        }
-
-        public void Lerp(ColorVM a, ColorVM b, float t)
-        {
-            t = Mathf.Clamp01(t);
-            R = a.r + (b.r - a.r) * t;
-            G = a.g + (b.g - a.g) * t;
-            B = a.b + (b.b - a.b) * t;
-            A = a.a + (b.a - a.a) * t;
         }
     }
 }
