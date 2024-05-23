@@ -11,10 +11,10 @@ namespace Huge.MVVM.DataBinding
         where TViewModel : ViewModel
         where TView : ItemView<TViewModel>
     {
-        public Window Parent;
-        public ScrollRect Scroll;
-        public GameObject Content;
-        public GameObject Template;
+        public Window Parent {get; set;}
+        public ScrollRect Scroll {get; set;}
+        public GameObject Content {get; set;}
+        public GameObject Template {get; set;}
         List<TView> m_ItemList = new List<TView>();
         Stack<TView> m_ItemCacheList = new Stack<TView>();
 

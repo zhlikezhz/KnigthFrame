@@ -1,0 +1,4 @@
+namespace Huge.MVVM.DataBinding
+{
+
+}

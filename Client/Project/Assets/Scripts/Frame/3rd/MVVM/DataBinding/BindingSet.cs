@@ -44,9 +44,9 @@ namespace Huge.MVVM.DataBinding
             Release(this);
         }
 
-        public ValueBinder Bind(INotifyPropertyChanged source) 
+        public PropertyBinder Bind(INotifyPropertyChanged source) 
         {
-            var binder = ValueBinder.Get();
+            var binder = PropertyBinder.Get();
             binder.Source = source;
             m_BinderList.Add(binder);
             return binder;
@@ -60,6 +60,13 @@ namespace Huge.MVVM.DataBinding
             return binder;
         }
 
+        public UnityEventBinder BindButton(Button button)
+        {
+            var binder = new UnityEventBinder();
+            m_BinderList.Add(binder);
+            return binder;
+        }
+
         public UnityEventBinder<string> BindInputField(InputField field)
         {
             var binder = new UnityEventBinder<string>();
@@ -67,9 +74,10 @@ namespace Huge.MVVM.DataBinding
             return binder;
         }
 
-        public UnityEventBinder BindButton(Button button)
+        public CustomPropertyBinder BindCustomProperty(INotifyPropertyChanged source)
         {
-            var binder = new UnityEventBinder();
+            var binder = CustomPropertyBinder.Get();
+            binder.Source = source;
             m_BinderList.Add(binder);
             return binder;
         }

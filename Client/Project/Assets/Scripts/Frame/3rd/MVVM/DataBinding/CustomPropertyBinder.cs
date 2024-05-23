@@ -1,25 +1,25 @@
 using System;
-using Huge.Pool;
-using UnityEditor;
 using UnityEngine;
-using Huge.MVVM;
 using System.ComponentModel;
+using Huge.Pool;
+using Huge.MVVM;
 
 namespace Huge.MVVM.DataBinding
 {
-    public class ValueBinder : IBinder, IReuseObject
+    public class CustomPropertyBinder : IBinder, IReuseObject
     {
-        static readonly ObjectPool<ValueBinder> s_Pool = new ObjectPool<ValueBinder>(l => l.OnReinit(), l => l.OnRelease(), false);
-        public static void Release(ValueBinder toRelease) => s_Pool.Release(toRelease);
-        public static ValueBinder Get() => s_Pool.Get();
+        static readonly ObjectPool<CustomPropertyBinder> s_Pool = new ObjectPool<CustomPropertyBinder>(l => l.OnReinit(), l => l.OnRelease(), false);
+        public static void Release(CustomPropertyBinder toRelease) => s_Pool.Release(toRelease);
+        public static CustomPropertyBinder Get() => s_Pool.Get();
 
         bool m_bIsDirty = false;
         bool m_bIsBuilded = false;
         IProxy Proxy {get;set;}
         string PropertyName { get; set; }
+        INotifyPropertyChanged Value {get; set;}
         public INotifyPropertyChanged Source {get; set;}
 
-        public ValueBinder()
+        public CustomPropertyBinder()
         {
 
         }
@@ -27,6 +27,16 @@ namespace Huge.MVVM.DataBinding
         void OnReinit()
         {
 
+        }
+
+        public CustomPropertyProxy<TValue> For<TValue>(Func<TValue> func, string propertyName) where TValue : ObservableObject
+        {
+            PropertyName = propertyName;
+            var proxy = CustomPropertyProxy<TValue>.Get();
+            proxy.Handler = OnValuePropertyChanged;
+            proxy.GetValue = func;
+            Proxy = proxy;
+            return proxy;
         }
 
         void OnRelease()
@@ -40,21 +50,11 @@ namespace Huge.MVVM.DataBinding
             }
             Proxy = null;
             m_bIsBuilded = false;
-            m_bIsBuilded = false;
         }
 
         public void Release()
         {
             Release(this);
-        }
-
-        public PropertyProxy<TValue> For<TValue>(Func<TValue> func, string propertyName)
-        {
-            PropertyName = propertyName;
-            var proxy = PropertyProxy<TValue>.Get();
-            proxy.GetValue = func;
-            Proxy = proxy;
-            return proxy;
         }
 
         public void Update()
@@ -83,6 +83,11 @@ namespace Huge.MVVM.DataBinding
                 m_bIsBuilded = false;
                 Source.PropertyChanged -= OnPropertyChanged;
             }
+        }
+
+        void OnValuePropertyChanged(object sender, PropertyChangedEventArgs evt)
+        {
+            m_bIsDirty = true;
         }
 
         void OnPropertyChanged(object sender, PropertyChangedEventArgs evt)

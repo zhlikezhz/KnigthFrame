@@ -297,7 +297,7 @@ namespace Huge.MVVM
                 data.AppendLine($"\t{prefix}public ScrollRect {Name};");
                 data.AppendLine($"\t{prefix}public GameObject {Name}Content;");
                 data.AppendLine($"\t{prefix}public GameObject {Name}Template;");
-                data.AppendLine($"\t{prefix}public {listClassName} _{name};");
+                data.AppendLine($"\t{prefix}public IListView _{name};");
             }
             else if (genType == UIGenType.FindObject)
             {
@@ -325,7 +325,7 @@ namespace Huge.MVVM
             }
             else if (genType == UIGenType.AddMethod)
             {
-                data.AppendLine($"\t{prefix}protected virtual {listClassName} Create{name}()");
+                data.AppendLine($"\t{prefix}protected virtual IListView Create{name}()");
                 data.AppendLine($"\t{prefix}{{");
                 data.AppendLine($"\t\t{prefix}return AddSubView<{listClassName}>({Name}.gameObject, null);");
                 data.AppendLine($"\t{prefix}}}");
