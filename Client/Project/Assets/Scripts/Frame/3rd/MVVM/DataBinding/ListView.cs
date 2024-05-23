@@ -7,7 +7,7 @@ using Huge.MVVM;
 
 namespace Huge.MVVM.DataBinding
 {
-    public class ListView<TView, TViewModel> : IListView
+    public class ListView<TView, TViewModel> : SubView, IListView
         where TViewModel : ViewModel
         where TView : ItemView<TViewModel>
     {
@@ -18,20 +18,7 @@ namespace Huge.MVVM.DataBinding
         List<TView> m_ItemList = new List<TView>();
         Stack<TView> m_ItemCacheList = new Stack<TView>();
 
-        public ListView()
-        {
-
-        }
-
-        public ListView(Window parent, ScrollRect scroll, GameObject content, GameObject template)
-        {
-            Parent = parent;
-            Scroll = scroll;
-            Content = content;
-            Template = template;
-        }
-
-        public virtual void Destroy()
+        protected override void OnDestroy()
         {
             Reset();
             foreach(var view in m_ItemCacheList)
@@ -112,7 +99,7 @@ namespace Huge.MVVM.DataBinding
             }
         }
 
-        public virtual void ReplaceItem(int index, TViewModel oldItem, TViewModel newItem)
+        public virtual void ReplaceItem(int index, TViewModel newItem)
         {
             if (0 <= index && index < m_ItemList.Count)
             {
@@ -139,7 +126,7 @@ namespace Huge.MVVM.DataBinding
                     InsertItem(e.NewStartingIndex, e.NewItems[0] as TViewModel);
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    ReplaceItem(e.OldStartingIndex, e.OldItems[0] as TViewModel, e.NewItems[0] as TViewModel);
+                    ReplaceItem(e.OldStartingIndex, e.NewItems[0] as TViewModel);
                     break;
             }
         }

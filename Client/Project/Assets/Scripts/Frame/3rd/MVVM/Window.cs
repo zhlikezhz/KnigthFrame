@@ -26,7 +26,10 @@ namespace Huge.MVVM
             {
                 subView.Init(root);
                 subView.SetWindow(this);
-                subView.SetParent(parent, false);
+                if (parent != null)
+                {
+                    subView.SetParent(parent, false);
+                }
                 subView.SetActive(true);
                 return subView as T;
             }

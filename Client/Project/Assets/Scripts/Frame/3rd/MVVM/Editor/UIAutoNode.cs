@@ -17,6 +17,7 @@ namespace Huge.MVVM
         FindObject,
         BindObject,
         DataMemberDefine,
+        AddMethod,
     }
 
     public delegate void NodeGenerateFunc(StringBuilder data);
@@ -144,7 +145,7 @@ namespace Huge.MVVM
             }
             else if (genType == UIGenType.BindObject)
             {
-                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(value => {Name}.text = value);");
+                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(Refresh{Name});");
             }
             else if (genType == UIGenType.DataMemberDefine)
             {
@@ -154,6 +155,14 @@ namespace Huge.MVVM
                 data.AppendLine($"\t\t{prefix}get {{ return {Name}; }}");
                 data.AppendLine($"\t\t{prefix}set {{ Set(ref {Name}, value); }}");
                 data.AppendLine($"\t{prefix}}}");
+            }
+            else if (genType == UIGenType.AddMethod)
+            {
+                data.AppendLine($"\t{prefix}protected virtual void Refresh{Name}(string value)");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}{Name}.text = value;");
+                data.AppendLine($"\t{prefix}}}");
+                data.AppendLine();
             }
         }
 
@@ -169,7 +178,7 @@ namespace Huge.MVVM
             }
             else if (genType == UIGenType.BindObject)
             {
-                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(value => {Name}.sprite = value);");
+                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(Refresh{Name});");
             }
             else if (genType == UIGenType.DataMemberDefine)
             {
@@ -179,6 +188,14 @@ namespace Huge.MVVM
                 data.AppendLine($"\t\t{prefix}get {{ return {Name}; }}");
                 data.AppendLine($"\t\t{prefix}set {{ Set(ref {Name}, value); }}");
                 data.AppendLine($"\t{prefix}}}");
+            }
+            else if (genType == UIGenType.AddMethod)
+            {
+                data.AppendLine($"\t{prefix}protected virtual void Refresh{Name}(Sprite value)");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}{Name}.sprite = value;");
+                data.AppendLine($"\t{prefix}}}");
+                data.AppendLine();
             }
         }
 
@@ -194,7 +211,7 @@ namespace Huge.MVVM
             }
             else if (genType == UIGenType.BindObject)
             {
-                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(value => {Name}.texture = value);");
+                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(Refresh{Name});");
             }
             else if (genType == UIGenType.DataMemberDefine)
             {
@@ -204,6 +221,14 @@ namespace Huge.MVVM
                 data.AppendLine($"\t\t{prefix}get {{ return {Name}; }}");
                 data.AppendLine($"\t\t{prefix}set {{ Set(ref {Name}, value); }}");
                 data.AppendLine($"\t{prefix}}}");
+            }
+            else if (genType == UIGenType.AddMethod)
+            {
+                data.AppendLine($"\t{prefix}protected virtual void Refresh{Name}(Texture value)");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}{Name}.texture = value;");
+                data.AppendLine($"\t{prefix}}}");
+                data.AppendLine();
             }
         }
 
@@ -219,7 +244,7 @@ namespace Huge.MVVM
             }
             else if (genType == UIGenType.BindObject)
             {
-                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(value => {Name}.value = value);");
+                data.AppendLine($"\t\t{prefix}bindSet.Bind(vm).For(() => vm.{PropertyName}, nameof(vm.{PropertyName})).To(Refresh{Name});");
             }
             else if (genType == UIGenType.DataMemberDefine)
             {
@@ -230,6 +255,14 @@ namespace Huge.MVVM
                 data.AppendLine($"\t\t{prefix}set {{ Set(ref {Name}, value); }}");
                 data.AppendLine($"\t{prefix}}}");
             }      
+            else if (genType == UIGenType.AddMethod)
+            {
+                data.AppendLine($"\t{prefix}protected virtual void Refresh{Name}(float value)");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}{Name}.value = value;");
+                data.AppendLine($"\t{prefix}}}");
+                data.AppendLine();
+            }
         }
 
         public void GenerateButton(StringBuilder data, UIGenType genType, string prefix)
@@ -258,19 +291,20 @@ namespace Huge.MVVM
         {
             string name = Name.Substring(UIAutoNode.s_ScrollPrefix.Length);
             string itemClassName = $"Item{ClassName}{name}";
+            string listClassName = $"List{ClassName}{name}Generate";
             if (genType == UIGenType.MemberDefine)
             {
                 data.AppendLine($"\t{prefix}public ScrollRect {Name};");
                 data.AppendLine($"\t{prefix}public GameObject {Name}Content;");
                 data.AppendLine($"\t{prefix}public GameObject {Name}Template;");
-                data.AppendLine($"\t{prefix}public ListView<{itemClassName}Generate, {itemClassName}ViewModelGenerate> _{name};");
+                data.AppendLine($"\t{prefix}public {listClassName} _{name};");
             }
             else if (genType == UIGenType.FindObject)
             {
                 data.AppendLine($"\t\t{prefix}{Name} = transform.Find(\"{Path}\").GetComponent<ScrollRect>();");
                 data.AppendLine($"\t\t{prefix}{Name}Content = {Name}.transform.Find(\"Content\").gameObject;");
                 data.AppendLine($"\t\t{prefix}{Name}Template = {Name}.transform.Find(\"Template\").gameObject;");
-                data.AppendLine($"\t\t{prefix}_{name} = new ListView<{itemClassName}Generate, {itemClassName}ViewModelGenerate>();");
+                data.AppendLine($"\t\t{prefix}_{name} = Create{name}();");
                 data.AppendLine($"\t\t{prefix}_{name}.Template = {Name}Template;");
                 data.AppendLine($"\t\t{prefix}_{name}.Content = {Name}Content;");
                 data.AppendLine($"\t\t{prefix}_{name}.Scroll = {Name};");
@@ -288,6 +322,14 @@ namespace Huge.MVVM
                 data.AppendLine($"\t\t{prefix}get {{ return _{name}; }}");
                 data.AppendLine($"\t\t{prefix}set {{ Set(ref _{name}, value); }}");
                 data.AppendLine($"\t{prefix}}}");
+            }
+            else if (genType == UIGenType.AddMethod)
+            {
+                data.AppendLine($"\t{prefix}protected virtual {listClassName} Create{name}()");
+                data.AppendLine($"\t{prefix}{{");
+                data.AppendLine($"\t\t{prefix}return AddSubView<{listClassName}>({Name}.gameObject, null);");
+                data.AppendLine($"\t{prefix}}}");
+                data.AppendLine();
             }
         }
 
@@ -345,8 +387,9 @@ namespace Huge.MVVM
 
         public void GenerateScrollItemView(StringBuilder data)
         {
-            Tree.GenerateScrollItemView(ClassName, data, "");
-            Tree.GenerateViewModel(ClassName, data, "");
+            Tree.GenerateScrollView(ClassName, data, "");
+            Tree.GenerateScrollItemView($"Item{ClassName}", data, "");
+            Tree.GenerateViewModel($"Item{ClassName}", data, "");
         }
     }
 
@@ -423,6 +466,23 @@ namespace Huge.MVVM
             }
             data.AppendLine($"\t{prefix}}}");
             data.AppendLine();
+
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.AddMethod, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.AddMethod, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.AddMethod, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.AddMethod, prefix);
+            }
 
             data.AppendLine($"{prefix}}}");
             data.AppendLine();
@@ -519,6 +579,32 @@ namespace Huge.MVVM
             data.AppendLine($"\t{prefix}}}");
             data.AppendLine();
 
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.AddMethod, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.AddMethod, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.AddMethod, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.AddMethod, prefix);
+            }
+
+            data.AppendLine($"{prefix}}}");
+            data.AppendLine();
+        }
+
+        public void GenerateScrollView(string viewName, StringBuilder data, string prefix)
+        {
+            data.AppendLine($"{prefix}public class List{viewName}Generate : ListView<Item{viewName}Generate, Item{viewName}ViewModelGenerate>");
+            data.AppendLine($"{prefix}{{");
+            data.AppendLine();
             data.AppendLine($"{prefix}}}");
             data.AppendLine();
         }
@@ -587,6 +673,23 @@ namespace Huge.MVVM
             }
             data.AppendLine($"\t{prefix}}}");
             data.AppendLine();
+
+            foreach(var node in ObjectNodeList)
+            {
+                node.GenerateObject(data, UIGenType.AddMethod, prefix);
+            }
+            foreach(var node in NodeList)
+            {
+                node.GenerateCode(data, UIGenType.AddMethod, prefix);
+            }
+            foreach(var node in BGNodeList)
+            {
+                node.GenerateBG(data, UIGenType.AddMethod, prefix);
+            }
+            foreach(var node in FullNodeList)
+            {
+                node.GenerateFull(data, UIGenType.AddMethod, prefix);
+            }
 
             data.AppendLine($"{prefix}}}");
             data.AppendLine();

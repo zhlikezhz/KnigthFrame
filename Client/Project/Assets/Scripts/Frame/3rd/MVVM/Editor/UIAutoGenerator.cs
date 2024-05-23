@@ -149,7 +149,7 @@ namespace Huge.MVVM.Editor
 
                         UIAutoNode templateNode = new UIAutoNode();
                         templateNode.Tree = new UIAutoTree();
-                        templateNode.ClassName = $"Item{m_strScriptName}{name.Substring(UIAutoNode.s_ScrollPrefix.Length)}";
+                        templateNode.ClassName = $"{m_strScriptName}{name.Substring(UIAutoNode.s_ScrollPrefix.Length)}";
                         templateNode.Trans = child.Find("Template");
                         templateNode.Name = name;
                         templateNode.Path = "";
