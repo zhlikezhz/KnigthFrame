@@ -74,7 +74,7 @@ namespace Huge.MVVM.DataBinding
             return binder;
         }
 
-        public CustomPropertyBinder BindCustomProperty(INotifyPropertyChanged source)
+        public CustomPropertyBinder BindProperty(INotifyPropertyChanged source)
         {
             var binder = CustomPropertyBinder.Get();
             binder.Source = source;

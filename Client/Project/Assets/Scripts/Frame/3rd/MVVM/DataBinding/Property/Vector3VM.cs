@@ -37,6 +37,7 @@ namespace Huge.MVVM.DataBinding
         public static Vector3VM right { get { return  new Vector3VM(1f, 0f, 0f); }}
         public static Vector3VM forward { get { return  new Vector3VM(0f, 0f, 1f); }}
         public static Vector3VM back { get { return  new Vector3VM(0f, 0f, -1f); }}
+        public static implicit operator Vector2(Vector3VM vec) => new Vector2(vec.x, vec.y);
         public static implicit operator Vector3(Vector3VM vec) => new Vector3(vec.x, vec.y, vec.z);
         public static implicit operator Vector3VM(Vector3 vec) => new Vector3VM(vec.x, vec.y, vec.z);
 
