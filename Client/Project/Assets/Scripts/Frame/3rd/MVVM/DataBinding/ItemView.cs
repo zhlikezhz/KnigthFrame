@@ -1,10 +1,9 @@
 namespace Huge.MVVM.DataBinding
 {
-    public abstract class ItemView<TViewModel> : SubView
-        where TViewModel : ViewModel
+    public abstract class ItemView : SubView
     {
         protected BindingSet bindSet;
-        public virtual void ReplaceViewModel(TViewModel vm)
+        public virtual void ReplaceViewModel(ViewModel vm)
         {
             if (!IsDestroied())
             {
@@ -23,7 +22,7 @@ namespace Huge.MVVM.DataBinding
             }
         }
 
-        public virtual void BindViewModel(BindingSet bindSet, TViewModel vm)
+        public virtual void BindViewModel(BindingSet bindSet, ViewModel vm)
         {
 
         }

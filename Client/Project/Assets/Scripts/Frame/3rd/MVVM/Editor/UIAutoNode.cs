@@ -327,7 +327,7 @@ namespace Huge.MVVM
             {
                 data.AppendLine($"\t{prefix}protected virtual IListView Create{name}()");
                 data.AppendLine($"\t{prefix}{{");
-                data.AppendLine($"\t\t{prefix}return AddSubView<{listClassName}>({Name}.gameObject, null);");
+                data.AppendLine($"\t\t{prefix}return AddSubView<ListView<{itemClassName}Generate>>({Name}.gameObject);");
                 data.AppendLine($"\t{prefix}}}");
                 data.AppendLine();
             }
@@ -387,7 +387,6 @@ namespace Huge.MVVM
 
         public void GenerateScrollItemView(StringBuilder data)
         {
-            Tree.GenerateScrollView(ClassName, data, "");
             Tree.GenerateScrollItemView($"Item{ClassName}", data, "");
             Tree.GenerateViewModel($"Item{ClassName}", data, "");
         }
@@ -600,18 +599,9 @@ namespace Huge.MVVM
             data.AppendLine();
         }
 
-        public void GenerateScrollView(string viewName, StringBuilder data, string prefix)
-        {
-            data.AppendLine($"{prefix}public class List{viewName}Generate : ListView<Item{viewName}Generate, Item{viewName}ViewModelGenerate>");
-            data.AppendLine($"{prefix}{{");
-            data.AppendLine();
-            data.AppendLine($"{prefix}}}");
-            data.AppendLine();
-        }
-
         public void GenerateScrollItemView(string viewName, StringBuilder data, string prefix)
         {
-            data.AppendLine($"{prefix}public class {viewName}Generate : ItemView<{viewName}ViewModelGenerate>");
+            data.AppendLine($"{prefix}public class {viewName}Generate : ItemView");
             data.AppendLine($"{prefix}{{");
 
             foreach(var node in ObjectNodeList)
@@ -653,8 +643,9 @@ namespace Huge.MVVM
             data.AppendLine($"\t{prefix}}}");
             data.AppendLine();
 
-            data.AppendLine($"\t{prefix}public override void BindViewModel(BindingSet bindSet, {viewName}ViewModelGenerate vm)");
+            data.AppendLine($"\t{prefix}public override void BindViewModel(BindingSet bindSet, ViewModel model)");
             data.AppendLine($"\t{prefix}{{");
+            data.AppendLine($"\t\t{prefix}var vm = model as {viewName}ViewModelGenerate;");
             foreach(var node in ObjectNodeList)
             {
                 node.GenerateObject(data, UIGenType.BindObject, prefix);

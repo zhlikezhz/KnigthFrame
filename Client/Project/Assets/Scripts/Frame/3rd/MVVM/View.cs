@@ -294,39 +294,33 @@ namespace Huge.MVVM
 #endregion
 
 #region SubView
-        public T AddSubView<T>(GameObject parent) where T : SubView
+        public SubView AddSubView(System.Type type, GameObject root = null)
         {
-            return AddSubView<T>(null, parent);
-        }
-
-        public T AddSubView<T>(GameObject root, GameObject parent) where T : SubView
-        {
-            var t = typeof(T);
-            SubView subView = Activator.CreateInstance(t) as SubView;
+            SubView subView = Activator.CreateInstance(type) as SubView;
             m_SubViewList.Add(subView);
             try
             {
                 subView.Init(root);
                 subView.SetView(this);
-                if (parent != null)
-                {
-                    subView.SetParent(parent, false);
-                }
                 subView.SetActive(true);
-                return subView as T;
+                return subView;
             }
             catch (Exception ex)
             {
-                Huge.Debug.LogError($"UI: init {t.Name} error: {ex.Message}.\n{ex.StackTrace}");
+                Huge.Debug.LogError($"UI: init {type.Name} error: {ex.Message}.\n{ex.StackTrace}");
                 m_SubViewList.Remove(subView);
                 return null;
             }
         }
 
-        public void AddSubView(SubView subView, GameObject parent)
+        public T AddSubView<T>(GameObject root = null) where T : SubView
+        {
+            return AddSubView(typeof(T), root) as T;
+        }
+
+        public void AddSubView(SubView subView)
         {
             m_SubViewList.Add(subView);
-            subView.SetParent(parent, false);
         }
 
         public void RemoveSubView(SubView subView, bool isDestroy = true)

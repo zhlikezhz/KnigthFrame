@@ -52,7 +52,8 @@ namespace Huge.MVVM.DataBinding
         public static ColorVM gray { get { return new ColorVM(0.5f,0.5f,0.5f,1f); } }
         public static ColorVM grey { get { return new ColorVM(0.5f,0.5f,0.5f,1f); } }
         public static ColorVM clear { get { return new ColorVM(0f,0f,0f,0f); } }
-        public static explicit operator ColorVM(Color color) => new ColorVM(color.r, color.g, color.b, color.a);
+        public static implicit operator Color(ColorVM color) => new Color(color.r, color.g, color.b, color.a);
+        public static implicit operator ColorVM(Color color) => new ColorVM(color.r, color.g, color.b, color.a);
 
         public static ColorVM operator +(ColorVM a, ColorVM b)
         {

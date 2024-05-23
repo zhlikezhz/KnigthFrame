@@ -7,16 +7,15 @@ using Huge.MVVM;
 
 namespace Huge.MVVM.DataBinding
 {
-    public class ListView<TView, TViewModel> : SubView, IListView
-        where TViewModel : ViewModel
-        where TView : ItemView<TViewModel>
+    public class ListView<TView> : SubView, IListView
+        where TView : ItemView
     {
         public Window Parent {get; set;}
         public ScrollRect Scroll {get; set;}
         public GameObject Content {get; set;}
         public GameObject Template {get; set;}
-        List<TView> m_ItemList = new List<TView>();
-        Stack<TView> m_ItemCacheList = new Stack<TView>();
+        List<ItemView> m_ItemList = new List<ItemView>();
+        Stack<ItemView> m_ItemCacheList = new Stack<ItemView>();
 
         protected override void OnDestroy()
         {
@@ -32,35 +31,35 @@ namespace Huge.MVVM.DataBinding
         {
             for (int i = 0; i < m_ItemList.Count; i++)
             {
-                var itemView = m_ItemList[i] as ItemView<TViewModel>;
+                var itemView = m_ItemList[i];
                 Parent.RemoveSubView(itemView, false);
                 itemView.SetParent(Scroll.transform, false);
                 itemView.SetActive(false);
                 itemView.RemoveViewModel();
-                m_ItemCacheList.Push(itemView as TView);
+                m_ItemCacheList.Push(itemView);
             }
             m_ItemList.Clear();
         }
 
-        public virtual void AddItem(TViewModel item)
+        public virtual void AddItem(ViewModel item)
         {
             if (m_ItemCacheList.TryPop(out var itemView))
             {
-                Parent.AddSubView(itemView, Content);
-                itemView.SetActive(true);
+                Parent.AddSubView(itemView);
             }
             else
             {
                 GameObject inst = GameObject.Instantiate(Template);
-                itemView = Parent.AddSubView<TView>(inst, Content);
+                itemView = Parent.AddSubView<TView>(inst);
                 m_ItemList.Add(itemView);
             }
+            itemView.SetParent(Content.transform, false);
+            itemView.SetActive(true);
             itemView.SetAsLastSibling();
-            var view = itemView as ItemView<TViewModel>;
-            view.ReplaceViewModel(item);
+            itemView.ReplaceViewModel(item);
         }
         
-        public virtual void RemoveItem(int index, TViewModel item)
+        public virtual void RemoveItem(int index, ViewModel item)
         {
             if (0 <= index && index < m_ItemList.Count)
             {
@@ -74,7 +73,7 @@ namespace Huge.MVVM.DataBinding
             }
         }
 
-        public virtual void InsertItem(int index, TViewModel item)
+        public virtual void InsertItem(int index, ViewModel item)
         {
             if (index == m_ItemList.Count)
             {
@@ -84,26 +83,27 @@ namespace Huge.MVVM.DataBinding
             {
                 if (m_ItemCacheList.TryPop(out var itemView))
                 {
-                    Parent.AddSubView(itemView, Content);
+                    Parent.AddSubView(itemView);
                     itemView.SetActive(true);
                 }
                 else
                 {
                     GameObject inst = GameObject.Instantiate(Template);
-                    itemView = Parent.AddSubView<TView>(inst, Content);
+                    itemView = Parent.AddSubView<TView>(inst);
                     m_ItemList.Add(itemView);
                 }
+                itemView.SetParent(Content.transform, false);
+                itemView.SetActive(true);
                 itemView.SetSiblingIndex(index);
-                var view = itemView as ItemView<TViewModel>;
-                view.ReplaceViewModel(item);
+                itemView.ReplaceViewModel(item);
             }
         }
 
-        public virtual void ReplaceItem(int index, TViewModel newItem)
+        public virtual void ReplaceItem(int index, ViewModel newItem)
         {
             if (0 <= index && index < m_ItemList.Count)
             {
-                var itemView = m_ItemList[index] as ItemView<TViewModel>;
+                var itemView = m_ItemList[index];
                 itemView.RemoveViewModel();
                 itemView.ReplaceViewModel(newItem);
             }
@@ -117,16 +117,16 @@ namespace Huge.MVVM.DataBinding
                     Reset();
                     break;
                 case NotifyCollectionChangedAction.Add:
-                    AddItem(e.NewItems[0] as TViewModel);
+                    AddItem(e.NewItems[0] as ViewModel);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveItem(e.NewStartingIndex, e.OldItems[0] as TViewModel);
+                    RemoveItem(e.NewStartingIndex, e.OldItems[0] as ViewModel);
                     break;
                 case NotifyCollectionChangedAction.Move:
-                    InsertItem(e.NewStartingIndex, e.NewItems[0] as TViewModel);
+                    InsertItem(e.NewStartingIndex, e.NewItems[0] as ViewModel);
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    ReplaceItem(e.OldStartingIndex, e.NewItems[0] as TViewModel);
+                    ReplaceItem(e.OldStartingIndex, e.NewItems[0] as ViewModel);
                     break;
             }
         }
