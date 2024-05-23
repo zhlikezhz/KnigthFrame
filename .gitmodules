@@ -1,0 +1,6 @@
+[submodule "Client/Project/Assets/3rd/HQMVVM"]
+	path = Client/Project/Assets/3rd/HQMVVM
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQMVVM.git
+[submodule "Client/Project/Assets/3rd/HQCommon"]
+	path = Client/Project/Assets/3rd/HQCommon
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQCommon.git
