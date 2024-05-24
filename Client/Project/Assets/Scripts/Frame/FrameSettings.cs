@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Huge
+namespace Joy
 {
     [System.Serializable]
     public class FrameSettings : ScriptableObject

@@ -2,11 +2,11 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Huge.FSM;
-using Huge;
+using Joy.FSM;
+using Joy;
 using System;
 
-namespace Huge.HotFix
+namespace Joy.HotFix
 {
     public enum TinkerState
     {
@@ -22,7 +22,7 @@ namespace Huge.HotFix
     public class TinkerManager : FSMContent
     {
         static readonly string BI_TINKER_LOG = "BITinker";
-        static readonly Huge.SDK.BIData biData = new Huge.SDK.BIData();
+        static readonly Joy.SDK.BIData biData = new Joy.SDK.BIData();
 
         float m_fProgress = 0.0f;
         public float Progress
@@ -62,10 +62,10 @@ namespace Huge.HotFix
             biData.AddData("time", System.DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
             if (isError)
             {
-                Huge.Debug.LogError(errMsg);
+                Joy.Debug.LogError(errMsg);
                 biData.AddData("error", errMsg);
             }
-            Huge.SDK.BIManager.Instance.LogGameBI(BI_TINKER_LOG, biData);
+            Joy.SDK.BIManager.Instance.LogGameBI(BI_TINKER_LOG, biData);
         }
 
         static public void ShowMessagePopup(string title, string content, string confirmTxt, string cancelTxt, System.Action confirm, System.Action cancel = null, System.Action close = null)

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using YooAsset;
-using Huge.Utils;
-using Huge.FSM;
+using Joy.Utils;
+using Joy.FSM;
 
-namespace Huge.HotFix
+namespace Joy.HotFix
 {
     public class PatchGameState : FSMState
     {
@@ -33,7 +33,7 @@ namespace Huge.HotFix
             catch (Exception ex)
             {
                 TinkerManager.LogGameBI(false, TinkerState.StartTinker, ex.Message);
-                Huge.Debug.LogError($"update game resource error: {ex.Message}");
+                Joy.Debug.LogError($"update game resource error: {ex.Message}");
             }
         }
 

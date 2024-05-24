@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 
-namespace Huge.Utils
+namespace Joy.Utils
 {
     public class DownloadHandler    
     {

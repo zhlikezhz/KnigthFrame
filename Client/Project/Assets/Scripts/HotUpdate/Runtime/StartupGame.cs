@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
-using Huge.MVVM;
-using Huge.Asset;
+using Joy.MVVM;
+using Joy.Asset;
+using Joy;
+using Cysharp.Threading.Tasks;
 
 public class StartupGame : MonoBehaviour
 {
@@ -12,8 +14,17 @@ public class StartupGame : MonoBehaviour
 
     async void Startup()
     {
+        TickManager.Init(1);
         await AssetManager.Instance.InitAsync();
         await UIManager.Instance.InitAsync();
-        UIManager.Instance.OpenWindow<LoadingPage>();
+
+        var view = Joy.MVVM.UIManager.Instance.OpenWindow<LoadingPage>(WindowType.Page);
+
+        Type t = typeof(UIManager);
+    }
+
+    void Update()
+    {
+        TickManager.OnTick(1);
     }
 }

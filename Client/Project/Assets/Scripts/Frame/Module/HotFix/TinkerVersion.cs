@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-namespace Huge.HotFix
+namespace Joy.HotFix
 {
     public class TinkerVersion
     {

@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Huge;
+using Joy;
 
-namespace Huge.SDK
+namespace Joy.SDK
 {
     public class BIData    
     {
@@ -29,7 +29,7 @@ namespace Huge.SDK
     {
         public void LogGameBI(string biType, string biJson)
         {
-            Huge.Debug.LogError($"[BI][Type = {biType}]: msg = {biJson}");
+            Joy.Debug.LogError($"[BI][Type = {biType}]: msg = {biJson}");
         }
 
         public void LogGameBI(string biType, BIData biData)

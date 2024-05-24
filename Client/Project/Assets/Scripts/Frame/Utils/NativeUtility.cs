@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Huge.Utils
+namespace Joy.Utils
 {
-    // ÍøÂçÀàÐÍ¶¨Òå
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¶ï¿½ï¿½ï¿½
     public enum EnumNetworkType
     {
         None = 0,
@@ -19,7 +19,7 @@ namespace Huge.Utils
     public static class NativeUtility
     {
         /// <summary>
-        /// ÍøÂçÊÇ·ñ¿É´ï
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½É´ï¿½
         /// </summary>
         /// <returns></returns>
         public static bool IsInternetReachability()
@@ -32,7 +32,7 @@ namespace Huge.Utils
         }
 
         /// <summary>
-        /// Ö»·µ»Ø¼òµ¥µÄÍøÂç×´Ì¬
+        /// Ö»ï¿½ï¿½ï¿½Ø¼òµ¥µï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
         /// </summary>
         /// <returns>None,Wifi,Mobile</returns>
         public static EnumNetworkType GetNetworkInfo()

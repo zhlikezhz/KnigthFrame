@@ -9,28 +9,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 185f6993d5150494d98da50e26cb1c25, type: 3}
+  m_Script: {fileID: 11500000, guid: ab9375f6aa7491546bc0830784a7c418, type: 3}
   m_Name: AssetBundleCollectorSetting
   m_EditorClassIdentifier: 
   ShowPackageView: 1
-  ShowEditorAlias: 1
-  UniqueBundleName: 0
+  EnableAddressable: 0
+  LocationToLower: 1
+  IncludeAssetGUID: 1
+  UniqueBundleName: 1
+  ShowEditorAlias: 0
   Packages:
   - PackageName: Main
-    PackageDesc: main package
-    EnableAddressable: 0
-    LocationToLower: 1
-    IncludeAssetGUID: 0
-    IgnoreDefaultType: 1
-    AutoCollectShaders: 0
+    PackageDesc: Main
     Groups:
-    - GroupName: ui
-      GroupDesc: "\u754C\u9762\u8D44\u6E90"
-      AssetTags: ui
+    - GroupName: Main
+      GroupDesc: 
+      AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Assets/Art/UI
-        CollectorGUID: 783cd4ec61a87a0478674baf90666ce9
+      - CollectPath: Assets/Art
+        CollectorGUID: 41deddf225ded8d40bb2db0abebfbfb4
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory

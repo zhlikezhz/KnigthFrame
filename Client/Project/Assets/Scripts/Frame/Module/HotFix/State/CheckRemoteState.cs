@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Huge.FSM;
-using Huge.Utils;
+using Joy.FSM;
+using Joy.Utils;
 using Cysharp.Threading.Tasks;
 using System;
 using UnityEngine.UI;
 
-namespace Huge.HotFix
+namespace Joy.HotFix
 {
     public class CheckRemoteState : FSMState
     {
@@ -17,7 +17,7 @@ namespace Huge.HotFix
             {
                 string remoteJson = await UpdateVersionFile(content);
                 TinkerVersion remoteConfig = new TinkerVersion(remoteJson);
-                string cacheJson = await Huge.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.VersionFile);
+                string cacheJson = await Joy.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.VersionFile);
                 TinkerVersion cacheConfig = new TinkerVersion(cacheJson);
 
                 if (remoteConfig.BigVersion != cacheConfig.BigVersion || remoteConfig.ForceUpdateVersion != cacheConfig.ForceUpdateVersion)
@@ -42,7 +42,7 @@ namespace Huge.HotFix
             catch(Exception ex)
             {
                 TinkerManager.LogGameBI(false, TinkerState.CheckRemoteFile, ex.ToString());
-                Huge.Debug.LogError(ex.ToString());
+                Joy.Debug.LogError(ex.ToString());
             }
         }
 
@@ -63,7 +63,7 @@ namespace Huge.HotFix
             {
                 string msg = $"download version file fail: {handler.msg}";
                 TinkerManager.LogGameBI(false, TinkerState.CheckRemoteFile, msg);
-                Huge.Debug.LogError(msg);
+                Joy.Debug.LogError(msg);
             }
             return null;
         }

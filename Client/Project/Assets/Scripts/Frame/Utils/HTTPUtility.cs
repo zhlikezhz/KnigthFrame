@@ -10,7 +10,7 @@ using BestHTTP.Forms;
 using Cysharp.Threading.Tasks;
 using System.Linq.Expressions;
 
-namespace Huge.Utils
+namespace Joy.Utils
 {
     public class HTTPHandler
     {
@@ -138,7 +138,7 @@ namespace Huge.Utils
 
         static HTTPHandler OnRequestFinished(HTTPRequest req, HTTPResponse resp)
         {
-            Huge.Debug.Log(
+            Joy.Debug.Log(
                 "Request Finished Successfully!\n" +
                 resp.DataAsText);
 
@@ -165,20 +165,20 @@ namespace Huge.Utils
                             (req.Exception.Message + "\n" +
                         req.Exception.StackTrace) :
                             "No Exception");
-                    Huge.Debug.LogError(handler.msg);
+                    Joy.Debug.LogError(handler.msg);
                     break;
                 case HTTPRequestStates.Aborted:
                     handler.msg = "Request Aborted!";
-                    Huge.Debug.LogWarning("Request Aborted!");
+                    Joy.Debug.LogWarning("Request Aborted!");
                     break;
                 case HTTPRequestStates.ConnectionTimedOut:
                     handler.isTimeout = true;
                     handler.msg = "Connection Timed Out!";
-                    Huge.Debug.LogWarning("Connection Timed Out!");
+                    Joy.Debug.LogWarning("Connection Timed Out!");
                     break;
                 case HTTPRequestStates.TimedOut:
                     handler.msg = "Processing the request Timed Out!";
-                    Huge.Debug.LogWarning("Processing the request Timed Out!");
+                    Joy.Debug.LogWarning("Processing the request Timed Out!");
                     break;
             }
 

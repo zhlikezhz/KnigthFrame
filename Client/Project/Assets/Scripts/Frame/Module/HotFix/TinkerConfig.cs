@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Huge.HotFix
+namespace Joy.HotFix
 {
     [System.Serializable]
     public class TinkerConfig

@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 using ICSharpCode.SharpZipLib.Zip;
 using Cysharp.Threading.Tasks;
 
-namespace Huge.Utils
+namespace Joy.Utils
 {
     public static class FileUtility
     {
@@ -34,7 +34,7 @@ namespace Huge.Utils
             }
             catch (Exception ex)
             {
-                Huge.Debug.LogError(ex);
+                Joy.Debug.LogError(ex);
                 return false;
             }
 
@@ -48,7 +48,7 @@ namespace Huge.Utils
                 if (checkFunc(newPath))
                 {
                     File.Delete(newPath);
-                    Huge.Debug.LogFormat("delete file:{0}", newPath);
+                    Joy.Debug.LogFormat("delete file:{0}", newPath);
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace Huge.Utils
                 if (checkFunc(topDir, false))
                 {
                     DeleteExistDirectory(topDir);
-                    Huge.Debug.LogFormat("delete dir:{0}", topDir);
+                    Joy.Debug.LogFormat("delete dir:{0}", topDir);
                 }
             }
 
@@ -69,7 +69,7 @@ namespace Huge.Utils
                 if (checkFunc(newPath, true))
                 {
                     File.Delete(newPath);
-                    Huge.Debug.LogFormat("delete file:{0}", newPath);
+                    Joy.Debug.LogFormat("delete file:{0}", newPath);
                 }
             }
         }
@@ -165,7 +165,7 @@ namespace Huge.Utils
             }
             catch (Exception ex)
             {
-                Huge.Debug.LogError($"load file error: fileName = {filePath}, error = {ex.Message}.");
+                Joy.Debug.LogError($"load file error: fileName = {filePath}, error = {ex.Message}.");
             }
             return data;
         }
@@ -182,7 +182,7 @@ namespace Huge.Utils
             }
             catch (Exception ex)
             {
-                Huge.Debug.LogError($"load file error: fileName = {filePath}, error = {ex.Message}.");
+                Joy.Debug.LogError($"load file error: fileName = {filePath}, error = {ex.Message}.");
             }
             return data;
         }
@@ -206,7 +206,7 @@ namespace Huge.Utils
             }
             catch(Exception ex)
             {
-                Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
+                Joy.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
             }
             return data;
         }
@@ -224,7 +224,7 @@ namespace Huge.Utils
             }
             catch (Exception ex)
             {
-                Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
+                Joy.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
             }
             return data;
         }
@@ -258,12 +258,12 @@ namespace Huge.Utils
                 }
                 else
                 {
-                    Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {request.error}.");
+                    Joy.Debug.LogError($"load file error: fileName = {fullPath}, error = {request.error}.");
                 }
             }
             catch (Exception ex)
             {
-                Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
+                Joy.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
             }
             finally
             {
@@ -292,12 +292,12 @@ namespace Huge.Utils
                 }
                 else
                 {
-                    Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {request.error}.");
+                    Joy.Debug.LogError($"load file error: fileName = {fullPath}, error = {request.error}.");
                 }
             }
             catch (Exception ex)
             {
-                Huge.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
+                Joy.Debug.LogError($"load file error: fileName = {fullPath}, error = {ex.Message}.");
             }
             finally
             {

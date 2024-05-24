@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Huge.FSM;
+using Joy.FSM;
 
-namespace Huge.HotFix
+namespace Joy.HotFix
 {
     public class EnterGameState : FSMState
     {

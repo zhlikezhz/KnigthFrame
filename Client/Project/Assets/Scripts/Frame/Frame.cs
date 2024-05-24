@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Huge
+namespace Joy
 {
     public class Frame : Singleton<Frame>
     {
@@ -11,10 +11,10 @@ namespace Huge
             {
                 if (m_Settings == null)
                 {
-                    m_Settings = Resources.Load<FrameSettings>("HugeFrameSettings");
+                    m_Settings = Resources.Load<FrameSettings>("JoyFrameSettings");
                     if (m_Settings == null)
                     {
-                        Huge.Debug.LogError("dot not has HugeFrameSettings.asset in Resources Folder");
+                        Joy.Debug.LogError("dot not has JoyFrameSettings.asset in Resources Folder");
                     }
                     m_Settings = new FrameSettings();
                 }

@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using Huge.FSM;
+using Joy.FSM;
 using System.IO;
 
-namespace Huge.HotFix
+namespace Joy.HotFix
 {
     internal enum FirstGameState
     {
@@ -48,7 +48,7 @@ namespace Huge.HotFix
             catch (Exception ex)
             {
                 TinkerManager.LogGameBI(false, TinkerState.PrepareFirstGame, ex.Message);
-                Huge.Debug.LogError(ex.Message);
+                Joy.Debug.LogError(ex.Message);
             }
         }
 
@@ -59,9 +59,9 @@ namespace Huge.HotFix
         async UniTask<FirstGameState> CheckFirstGameState(FSMContent content)
         {
             FirstGameState state = FirstGameState.None;
-            if (Huge.Utils.FileUtility.IsPresistentFileExists(TinkerConst.AppFootPrintFile))
+            if (Joy.Utils.FileUtility.IsPresistentFileExists(TinkerConst.AppFootPrintFile))
             {
-                string footPrint = await Huge.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.AppFootPrintFile);
+                string footPrint = await Joy.Utils.FileUtility.LoadPresistentFileByText(TinkerConst.AppFootPrintFile);
                 if (Application.buildGUID == footPrint)
                 {
                     state = FirstGameState.EnterGame;
@@ -94,7 +94,7 @@ namespace Huge.HotFix
         async UniTask FirstEnterGame(FSMContent content)
         {
             //写入footprint
-            await Huge.Utils.FileUtility.SavePresistentFileAsync(TinkerConst.AppFootPrintFile, Application.buildGUID);
+            await Joy.Utils.FileUtility.SavePresistentFileAsync(TinkerConst.AppFootPrintFile, Application.buildGUID);
             
             //首次进入游戏清理缓存
             ClearPresistentCache();
@@ -107,25 +107,25 @@ namespace Huge.HotFix
 
         void ClearPresistentCache()
         {
-            string resDir = Huge.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.ResDir);
-            Huge.Utils.FileUtility.DeleteExistDirectory(resDir);
-            string scriptDir = Huge.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.ScriptDir);
-            Huge.Utils.FileUtility.DeleteExistDirectory(scriptDir);
-            string downloadDir = Huge.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.DownloadDir);
-            Huge.Utils.FileUtility.DeleteExistDirectory(downloadDir);
-            string versionFullPath = Huge.Utils.PathUtility.GetStreamingDataFullPath(TinkerConst.VersionFile);
-            Huge.Utils.FileUtility.DeleteExistDirectory(versionFullPath);
+            string resDir = Joy.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.ResDir);
+            Joy.Utils.FileUtility.DeleteExistDirectory(resDir);
+            string scriptDir = Joy.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.ScriptDir);
+            Joy.Utils.FileUtility.DeleteExistDirectory(scriptDir);
+            string downloadDir = Joy.Utils.PathUtility.GetPresistentDataFullPath(TinkerConst.DownloadDir);
+            Joy.Utils.FileUtility.DeleteExistDirectory(downloadDir);
+            string versionFullPath = Joy.Utils.PathUtility.GetStreamingDataFullPath(TinkerConst.VersionFile);
+            Joy.Utils.FileUtility.DeleteExistDirectory(versionFullPath);
 
-            Huge.Utils.FileUtility.CreateDirectoryIfNotExist(resDir);
-            Huge.Utils.FileUtility.CreateDirectoryIfNotExist(scriptDir);
-            Huge.Utils.FileUtility.CreateDirectoryIfNotExist(downloadDir);
+            Joy.Utils.FileUtility.CreateDirectoryIfNotExist(resDir);
+            Joy.Utils.FileUtility.CreateDirectoryIfNotExist(scriptDir);
+            Joy.Utils.FileUtility.CreateDirectoryIfNotExist(downloadDir);
         }
 
         async UniTask CopyStreamingAssetsToPresistentCache()
         {
-            await Huge.Utils.FileUtility.CopyStreamingFileToPresistentDir(TinkerConst.VersionFile, TinkerConst.VersionFile);
+            await Joy.Utils.FileUtility.CopyStreamingFileToPresistentDir(TinkerConst.VersionFile, TinkerConst.VersionFile);
             string hybridCLRFile = Path.Combine(TinkerConst.ScriptDir, TinkerConst.HybridCLRFile);
-            await Huge.Utils.FileUtility.CopyStreamingFileToPresistentDir(TinkerConst.HybridCLRFile, hybridCLRFile);
+            await Joy.Utils.FileUtility.CopyStreamingFileToPresistentDir(TinkerConst.HybridCLRFile, hybridCLRFile);
         }
     }
 }

@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 using ICSharpCode.SharpZipLib.Zip;
 using Cysharp.Threading.Tasks;
 
-namespace Huge.Utils
+namespace Joy.Utils
 {
     public static class MathUtility
     {
