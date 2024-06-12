@@ -10,3 +10,6 @@
 [submodule "Client/Project/Assets/3rd/HQAds"]
 	path = Client/Project/Assets/3rd/HQAds
 	url = git@codeup.aliyun.com:joyinngames/Framework2/HQAds.git
+[submodule "Client/Project/Assets/3rd/HQGlobalSettings"]
+	path = Client/Project/Assets/3rd/HQGlobalSettings
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQGlobalSettings.git
