@@ -19,8 +19,6 @@ public class StartupGame : MonoBehaviour
         await UIManager.Instance.InitAsync();
 
         var view = Joy.MVVM.UIManager.Instance.OpenWindow<LoadingPage>(WindowType.Page);
-
-        Type t = typeof(UIManager);
     }
 
     void Update()
