@@ -19,3 +19,12 @@
 [submodule "Client/Project/Assets/3rd/HQBuild"]
 	path = Client/Project/Assets/3rd/HQBuild
 	url = git@codeup.aliyun.com:joyinngames/Framework2/HQBuild.git
+[submodule "Client/Project/Assets/3rd/HQBaseFramework"]
+	path = Client/Project/Assets/3rd/HQBaseFramework
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQBaseFramework.git
+[submodule "Client/Project/Assets/3rd/HQLogger"]
+	path = Client/Project/Assets/3rd/HQLogger
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQLogger.git
+[submodule "Client/Project/Assets/3rd/HQDebugging"]
+	path = Client/Project/Assets/3rd/HQDebugging
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQDebugging.git
