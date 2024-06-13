@@ -28,3 +28,6 @@
 [submodule "Client/Project/Assets/3rd/HQDebugging"]
 	path = Client/Project/Assets/3rd/HQDebugging
 	url = git@codeup.aliyun.com:joyinngames/Framework2/HQDebugging.git
+[submodule "Client/Project/Assets/3rd/HQIap"]
+	path = Client/Project/Assets/3rd/HQIap
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQIap.git
