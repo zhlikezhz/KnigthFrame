@@ -34,3 +34,6 @@
 [submodule "Client/Project/Assets/3rd/HQIdfa"]
 	path = Client/Project/Assets/3rd/HQIdfa
 	url = git@codeup.aliyun.com:joyinngames/Framework2/HQIdfa.git
+[submodule "Client/Project/Assets/3rd/PackageManager"]
+	path = Client/Project/Assets/3rd/PackageManager
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQPackageManager.git
