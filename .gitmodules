@@ -40,3 +40,6 @@
 [submodule "Client/Project/Assets/3rd/Luban"]
 	path = Client/Project/Assets/3rd/Luban
 	url = git@codeup.aliyun.com:joyinngames/Framework2/Luban.git
+[submodule "Client/Project/Assets/3rd/HQDataCenter"]
+	path = Client/Project/Assets/3rd/HQDataCenter
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQDataCenter.git
