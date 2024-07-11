@@ -43,3 +43,12 @@
 [submodule "Client/Project/Assets/3rd/HQDataCenter"]
 	path = Client/Project/Assets/3rd/HQDataCenter
 	url = git@codeup.aliyun.com:joyinngames/Framework2/HQDataCenter.git
+[submodule "Client/Project/Assets/3rd/HQLeaderboards"]
+	path = Client/Project/Assets/3rd/HQLeaderboards
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQLeaderboards.git
+[submodule "Client/Project/Assets/3rd/HQLogin"]
+	path = Client/Project/Assets/3rd/HQLogin
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQLogin.git
+[submodule "Client/Project/Assets/3rd/HQCloudSave"]
+	path = Client/Project/Assets/3rd/HQCloudSave
+	url = git@codeup.aliyun.com:joyinngames/Framework2/HQCloudSave.git
