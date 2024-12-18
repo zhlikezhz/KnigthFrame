@@ -55,3 +55,6 @@
 [submodule "Client/Project/Assets/3rd/Adjust"]
 	path = Client/Project/Assets/3rd/Adjust
 	url = git@codeup.aliyun.com:joyinngames/Framework2/Adjust.git
+[submodule "Client/Project/Assets/3rd/RevenueCar"]
+	path = Client/Project/Assets/3rd/RevenueCar
+	url = git@codeup.aliyun.com:joyinngames/Framework2/RevenueCat.git
