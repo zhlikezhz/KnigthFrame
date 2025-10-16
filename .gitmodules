@@ -61,3 +61,6 @@
 [submodule "Client/Project/Assets/3rd/NiceVibrations"]
 	path = Client/Project/Assets/3rd/NiceVibrations
 	url = git@codeup.aliyun.com:joyinngames/Framework2/NiceVibrations.git
+[submodule "Client/Project/Assets/3rd/AppsFlyer"]
+	path = Client/Project/Assets/3rd/AppsFlyer
+	url = git@codeup.aliyun.com:joyinngames/Framework2/AppsFlyer.git
